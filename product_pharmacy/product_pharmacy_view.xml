@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<openerp>
+    <data>
+       	<record id="view_product_add_manufacturer" model="ir.ui.view">
+            <field name="name">product.normal.form</field>
+            <field name="model">product.product</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="/form/sheet/notebook/page[@string='Information']/group" position="inside" >
+                    <group>
+                        <field name="brand" />
+                        <field name="manufacturer" />
+                    </group>
+                </xpath>
+            </field>
+        </record>
+        
+    </data>
+</openerp>
