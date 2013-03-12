@@ -10,7 +10,7 @@
             <field name="arch" type="xml">
                 <xpath expr="/form/sheet/notebook/page[@string='Information']/group" position="inside" >
                     <group>
-                        <field name="brand" />
+                        <field name="drug" />
                         <field name="manufacturer" />
                     </group>
                 </xpath>

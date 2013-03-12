@@ -17,7 +17,7 @@ class Pharmacy_Product(osv.osv):
     
     _columns = {
         
-        'brand':fields.char('Brand', size=64),
+        'drug':fields.char('Drug Name', size=64),
 			'manufacturer':fields.char('Manufacturer', size=64)
                 
             }
