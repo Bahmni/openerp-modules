@@ -22,18 +22,18 @@ class sale_order_line(osv.osv):
 			res[line.id] = 22.0
 		return res
 
-    def _sub_total(self, cr, uid, ids, field_name, arg, context=None):
-        tax_obj = self.pool.get('account.tax')
-        cur_obj = self.pool.get('res.currency')
-        res = {}
-        if context is None:
-            context = {}
-        for line in self.browse(cr, uid, ids, context=context):
-            price = line.batch_price * (1 - (line.discount or 0.0) / 100.0)
-            taxes = tax_obj.compute_all(cr, uid, line.tax_id, price, line.product_uom_qty, line.product_id, line.order_id.partner_id)
-            cur = line.order_id.pricelist_id.currency_id
-            res[line.id] = cur_obj.round(cr, uid, cur, taxes['total'])
-        return res
+#    def _sub_total(self, cr, uid, ids, field_name, arg, context=None):
+#        tax_obj = self.pool.get('account.tax')
+#        cur_obj = self.pool.get('res.currency')
+#        res = {}
+#        if context is None:
+#            context = {}
+#        for line in self.browse(cr, uid, ids, context=context):
+#            price = line.batch_price * (1 - (line.discount or 0.0) / 100.0)
+#            taxes = tax_obj.compute_all(cr, uid, line.tax_id, price, line.product_uom_qty, line.product_id, line.order_id.partner_id)
+#            cur = line.order_id.pricelist_id.currency_id
+#            res[line.id] = cur_obj.round(cr, uid, cur, taxes['total'])
+#        return res
 
     def _price(self, unit_price , batch_price):
         if(batch_price > 0):
@@ -157,8 +157,8 @@ class sale_order_line(osv.osv):
 
 
     _columns = {
-        'batch_price': fields.function(_batch_price, string="Batch Price", type="float"),
-        'price_subtotal': fields.function(_sub_total, string='Subtotal', digits_compute= dp.get_precision('Account')),
+#        'batch_price': fields.function(_batch_price, string="Batch Price", type="float"),
+#        'price_subtotal': fields.function(_sub_total, string='Subtotal', digits_compute= dp.get_precision('Account')),
 
         }
 

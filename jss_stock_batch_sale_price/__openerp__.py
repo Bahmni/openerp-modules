@@ -7,7 +7,7 @@
 	"summary": "Batch Sale Price",
     "description": """
     """,
-    'data': ['sale_batch_price_view.xml'],
+    'data': ['prod_lot_price_view.xml','sale_batch_price_view.xml','stock_view_prodlot.xml'],
     'demo': [],
     'auto_install': False,
     'application': True,
