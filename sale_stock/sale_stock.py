@@ -302,7 +302,7 @@ class sale_order(osv.osv):
             'location_id': location_id,
             'location_dest_id': output_id,
             'sale_line_id': line.id,
-            #'prodlot_id' : line.batch_id.id,
+            'prodlot_id' : line.batch_id.id,
             'tracking_id': False,
             'state': 'draft',
             #'state': 'waiting',
