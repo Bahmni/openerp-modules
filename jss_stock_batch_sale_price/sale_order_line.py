@@ -67,14 +67,16 @@ class sale_order_line(osv.osv):
         result = {}
         warning_msgs = ''
         product_obj = product_obj.browse(cr, uid, product, context=context_partner)
-
+        #-----------------populating batch id for sale order line item-----------------------------------------------------------
         stock_prod_lot = self.pool.get('stock.production.lot')
         sale_price = 20.0
         for prodlotid in stock_prod_lot.search(cr, uid,[('product_id','=',product_obj.id)]):
-                prodlot = stock_prod_lot.browse(cr, uid,prodlotid)
-                if prodlot.stock_available >= 0:
-                    sale_price = prodlot.sale_price
-                    break;
+            prodlot = stock_prod_lot.browse(cr, uid,prodlotid)
+            if qty <= prodlot.stock_available:
+                sale_price = prodlot.sale_price
+                result['batch_id'] = prodlot.id
+                break;
+        #-----------------------------------------------------------------
 
         uom2 = False
         if uom:
@@ -157,8 +159,7 @@ class sale_order_line(osv.osv):
 
 
     _columns = {
-#        'batch_price': fields.function(_batch_price, string="Batch Price", type="float"),
-#        'price_subtotal': fields.function(_sub_total, string='Subtotal', digits_compute= dp.get_precision('Account')),
+        'batch_id': fields.many2one('stock.production.lot', 'Batch No'),
 
         }
 
