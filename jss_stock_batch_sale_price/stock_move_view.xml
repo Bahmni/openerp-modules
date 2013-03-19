@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="view_split_in_lots_with_batch_price" model="ir.ui.view">
+                <field name="name">Split in Serial Numbers</field>
+                <field name="model">stock.move.split</field>
+                <field name="inherit_id" ref="stock.view_split_in_lots" />
+                <field name="arch" type="xml">
+                <form string="Split in Serial Numbers" version="7.0" position="replace">
+                  <form string="Split in Serial Numbers" version="7.0" >
+                    <group>
+                        <field name="product_id" readonly="1"/>
+                        <label for="qty"/>
+                        <div>
+                            <field name="qty" readonly="1" class="oe_inline"/>
+                            <field name="product_uom" readonly="1" class="oe_inline"/>
+                        </div>
+                        <field name="location_id" invisible="1"/>
+                        <field name="use_exist"/>
+                    </group>
+                    <field name="line_ids" attrs="{'invisible':[('use_exist','=',True)]}">
+                        <tree string="Serial Numbers" editable="bottom">
+                            <field name="name"/>
+                            <field name="quantity" />
+                            <field name="cost_price" />
+                            <field name="sale_price" />
+                            <field name="mrp" />
+                            <field name="expiry_date" />
+                        </tree>
+                        <form string="Serial Number" version="7.0">
+                            <group>
+                                <field name="name"/>
+                                <field name="quantity" />
+                                <field name="cost_price" />
+                                <field name="sale_price" />
+                                <field name="mrp" />
+                                <field name="expiry_date" />
+                            </group>
+                        </form>
+                    </field>
+                    <field name="line_exist_ids" attrs="{'invisible':[('use_exist','!=',True)]}">
+                        <tree string="Serial Numbers" editable="bottom">
+                            <field name="prodlot_id" string="Serial Number" quick_create="false" domain="[('product_id','=',parent.product_id)]" on_change="onchange_lot_id(prodlot_id, quantity, parent.location_id, parent.product_id, parent.product_uom, context)" context="{'product_id': parent.product_id}"/>
+                            <field name="quantity" on_change="onchange_lot_id(prodlot_id, quantity, parent.location_id, parent.product_id, parent.product_uom,context)" />
+                        </tree>
+                        <form string="Serial Number" version="7.0">
+                            <group>
+                                <field name="prodlot_id" domain="[('product_id','=',parent.product_id)]" on_change="onchange_lot_id(prodlot_id, quantity, parent.location_id, parent.product_id, parent.product_uom, context)"/>
+                                <field name="quantity" on_change="onchange_lot_id(prodlot_id, quantity, parent.location_id, parent.product_id, parent.product_uom, context)" />
+                            </group>
+                        </form>
+                    </field>
+                    <footer>
+                        <button name="split_lot" string="Split" type="object" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                    </footer>
+                 </form>
+                </form>
+                </field>
+            </record>
+    </data>
+</openerp>
