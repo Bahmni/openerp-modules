@@ -14,7 +14,7 @@ class sale_order(osv.osv):
                 'amount_untaxed': 0.0,
                 'amount_tax': 0.0,
                 'amount_total': 0.0,
-                'amount_net': 0.0,
+                'discount': 0.0,
                 }
             val = val1 = 0.0
             cur = order.pricelist_id.currency_id
@@ -23,8 +23,8 @@ class sale_order(osv.osv):
                 val += self._amount_line_tax(cr, uid, line, context=context)
             res[order.id]['amount_tax'] = cur_obj.round(cr, uid, cur, val)
             res[order.id]['amount_untaxed'] = cur_obj.round(cr, uid, cur, val1)
-            res[order.id]['amount_total'] = res[order.id]['amount_untaxed'] + res[order.id]['amount_tax']+2
-            res[order.id]['amount_net'] = res[order.id]['amount_total'] - res[order.id]['discount']
+            discount = order.discount
+            res[order.id]['amount_total'] = res[order.id]['amount_untaxed'] + res[order.id]['amount_tax']- discount
         return res
 
     def _get_order(self, cr, uid, ids, context=None):
