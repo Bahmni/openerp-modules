@@ -69,7 +69,7 @@ class sale_order_line(osv.osv):
         product_obj = product_obj.browse(cr, uid, product, context=context_partner)
         #-----------------populating batch id for sale order line item-----------------------------------------------------------
         stock_prod_lot = self.pool.get('stock.production.lot')
-        sale_price = 20.0
+        sale_price = 0.0
         for prodlotid in stock_prod_lot.search(cr, uid,[('product_id','=',product_obj.id)]):
             prodlot = stock_prod_lot.browse(cr, uid,prodlotid)
             if qty <= prodlot.stock_available:
