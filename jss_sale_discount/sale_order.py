@@ -29,8 +29,9 @@ class sale_order(osv.osv):
                 val += self._amount_line_tax(cr, uid, line, context=context)
             res[order.id]['amount_tax'] = cur_obj.round(cr, uid, cur, val)
             res[order.id]['amount_untaxed'] = cur_obj.round(cr, uid, cur, val1)
-            discount = order.discount
-            res[order.id]['amount_total'] = res[order.id]['amount_untaxed'] + res[order.id]['amount_tax']- discount
+            total_amount = res[order.id]['amount_untaxed'] + res[order.id]['amount_tax']
+            res[order.id]['discount'] = total_amount * order.discount_percentage / 100
+            res[order.id]['amount_total'] = res[order.id]['amount_untaxed'] + res[order.id]['amount_tax']- res[order.id]['discount']
         return res
 
     def _prepare_invoice(self, cr, uid, order, lines, context=None):
@@ -163,10 +164,14 @@ class sale_order(osv.osv):
         return result.keys()
 
     _columns = {
-    'discount':fields.float('Discount',digits=(4,2),readonly=True, states={'draft':[('readonly',False)]}),
+    'discount_percentage':fields.float('Discount %',digits=(2,0),readonly=True, states={'draft':[('readonly',False)]}),
+    'discount':fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Discount',
+        store={
+            'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line'], 10),
+            'sale.order.line': (_get_order, ['price_unit', 'tax_id', 'discount', 'product_uom_qty'], 10),
+            },
+        multi='sums', help="The discount amount."),
     'discount_head': fields.selection((('M','Malaria'), ('TB','TB')),'Discount Head' ),
-    'amount_net': fields.function(_amount_all, method=True, digits_compute= dp.get_precision('Sale Price'), string='Net Amount',
-        store = True,multi='sums', help="The amount after additional discount."),
     'amount_untaxed': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Untaxed Amount',
         store={
             'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line'], 10),

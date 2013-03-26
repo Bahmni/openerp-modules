@@ -13,6 +13,7 @@
                         <field name="amount_untaxed" widget='monetary' options="{'currency_field': 'currency_id'}"/>
                         <field name="amount_tax" widget='monetary' options="{'currency_field': 'currency_id'}"/>
                         <field  name="discount_head" />
+                        <field  name="discount_percentage" />
                         <field widget='monetary' name="discount"  />
                         <div class="oe_subtotal_footer_separator oe_inline">
                             <label for="amount_total" />

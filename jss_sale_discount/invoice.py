@@ -13,20 +13,6 @@ class account_invoice(osv.osv):
     _inherit = "account.invoice"
     _description = 'Invoice'
     
-    def _amount_net(self, cr, uid, ids, name, args, context=None):
-        res = {}
-        for invoice in self.browse(cr, uid, ids, context=context):
-            res[invoice.id] = {
-                'amount_total': 0.0,
-                'amount_net': 0.0,
-                'discount': 0.0,
-            }
-            for line in invoice.invoice_line:
-                res[invoice.id]['amount_total'] += line.price_subtotal
-            res[invoice.id]['discount']= invoice.discount
-            res[invoice.id]['amount_total'] = res[invoice.id]['amount_total'] - invoice.discount
-            res[invoice.id]['amount_net'] = res[invoice.id]['amount_total']
-        return res
 
     def _amount_all(self, cr, uid, ids, name, args, context=None):
         res = {}
@@ -100,8 +86,6 @@ class account_invoice(osv.osv):
     _columns={
               
             'discount':fields.float('Discount',digits=(4,2),readonly=True, states={'draft':[('readonly',False)]}),
-            'amount_net': fields.function(_amount_all, method=True, digits_compute=dp.get_precision('Account'), string='Net',
-                                            store=True,multi='all'),
             'amount_total': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Total',
                 store={
                     'account.invoice': (lambda self, cr, uid, ids, c={}: ids, ['invoice_line'], 20),
