@@ -8,7 +8,6 @@ class sale_order(osv.osv):
 
 
 _columns = {
-
     }
 
 sale_order()

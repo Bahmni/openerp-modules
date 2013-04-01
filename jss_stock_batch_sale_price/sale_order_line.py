@@ -13,27 +13,10 @@ class sale_order_line(osv.osv):
     _name = "sale.order.line"
     _inherit = "sale.order.line"
 
-    def _batch_price(self, cr, uid, ids, field_name, args, context=None):
-		res = {}
-		if context is None:
-			context={}
-		for line in self.browse(cr, uid, ids, context=context):
-			line.price_unit = 22.0
-			res[line.id] = 22.0
-		return res
-
-#    def _sub_total(self, cr, uid, ids, field_name, arg, context=None):
-#        tax_obj = self.pool.get('account.tax')
-#        cur_obj = self.pool.get('res.currency')
-#        res = {}
-#        if context is None:
-#            context = {}
-#        for line in self.browse(cr, uid, ids, context=context):
-#            price = line.batch_price * (1 - (line.discount or 0.0) / 100.0)
-#            taxes = tax_obj.compute_all(cr, uid, line.tax_id, price, line.product_uom_qty, line.product_id, line.order_id.partner_id)
-#            cur = line.order_id.pricelist_id.currency_id
-#            res[line.id] = cur_obj.round(cr, uid, cur, taxes['total'])
-#        return res
+#    def _batch_name(self, cr, uid, ids,batch_id,args, context=None):
+#        batch_id = context.get('batch_id')
+#        #prod_lot = self.pool.get('stock.production.lot').browse(cr, uid,batch_id )
+#        return batch_id
 
     def _price(self, unit_price , batch_price):
         if(batch_price > 0):
@@ -74,6 +57,7 @@ class sale_order_line(osv.osv):
             prodlot = stock_prod_lot.browse(cr, uid,prodlotid)
             if qty <= prodlot.stock_available:
                 sale_price = prodlot.sale_price
+                result['batch_name'] = prodlot.name
                 result['batch_id'] = prodlot.id
                 break;
         #-----------------------------------------------------------------
@@ -160,7 +144,7 @@ class sale_order_line(osv.osv):
 
     _columns = {
         'batch_id': fields.many2one('stock.production.lot', 'Batch No'),
-
+        'batch_name': fields.char('Batch No'),
         }
 
 sale_order_line()
