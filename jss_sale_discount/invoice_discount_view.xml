@@ -11,10 +11,8 @@
 
             <field name="arch" type="xml">
                 <xpath expr="/form/sheet/notebook/page[1]/group[1]/field[@name='amount_untaxed']" position="before" >
-                    <field name="discount_head" />
-					<!--field name="discount_percentage" /-->
                     <field name="discount" />
-                    <!--<field name="amount_net" />-->
+                    <field name="discount_acc_id" />
                 </xpath>
 
             </field>

@@ -1,8 +1,8 @@
 {
-    "name": "Bhamny Sale Discount",
+    "name": "Bahmny Sale Discount",
     "version": "1.0",
-    "depends": ["base","sale"],
-    "author": "ThoughtWorks tecnologies Pvt. Ltd.",
+    "depends": ["base","sale","account"],
+    "author": "ThoughtWorks Technologies Pvt. Ltd.",
     "category": "Sale",
 	"summary": "Sale Discount ",
     "description": """

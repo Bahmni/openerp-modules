@@ -12,6 +12,7 @@ class sale_order(osv.osv):
     _inherit = "sale.order"
 
 
+
     def _amount_all(self, cr, uid, ids, field_name, arg, context=None):
         cur_obj = self.pool.get('res.currency')
         res = {}
@@ -69,7 +70,7 @@ class sale_order(osv.osv):
             'date_invoice': context.get('date_invoice', False),
             'company_id': order.company_id.id,
             'discount': order.discount,
-            'discount_head': order.discount_head,
+            'discount_acc_id':order.discount_acc_id.id,
             'user_id': order.user_id and order.user_id.id or False
         }
 
@@ -171,7 +172,7 @@ class sale_order(osv.osv):
             'sale.order.line': (_get_order, ['price_unit', 'tax_id', 'discount', 'product_uom_qty'], 10),
             },
         multi='sums', help="The discount amount."),
-    'discount_head': fields.selection((('M','Malaria'), ('TB','TB')),'Discount Head' ),
+    'discount_acc_id': fields.many2one('account.account', 'Discount Account Head'),
     'amount_untaxed': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Untaxed Amount',
         store={
             'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line'], 10),
