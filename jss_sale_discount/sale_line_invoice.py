@@ -40,6 +40,7 @@ class sale_order_line_make_invoice_with_discount(osv.osv_memory):
                 pay_term = order.partner_id.property_payment_term.id
             else:
                 pay_term = False
+            sale_discount = 2.0 #order.discount if order.discount > 0 else order.calculated_discount
             inv = {
                 'name': order.name,
                 'origin': order.name,
@@ -55,7 +56,7 @@ class sale_order_line_make_invoice_with_discount(osv.osv_memory):
                 'user_id': order.user_id and order.user_id.id or False,
                 'company_id': order.company_id and order.company_id.id or False,
                 'date_invoice': fields.date.today(),
-                'discount':order.discount,
+                'discount':sale_discount,
                 'discount_head':order.discount_head
             }
             inv_id = self.pool.get('account.invoice').create(cr, uid, inv)

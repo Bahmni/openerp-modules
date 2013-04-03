@@ -4,14 +4,13 @@ import time
 from osv import fields, osv
 from tools.translate import _
 import decimal_precision as dp
+from openerp import netsvc
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT, DATETIME_FORMATS_MAP, float_compare
 
 
 class sale_order(osv.osv):
     _name = "sale.order"
     _inherit = "sale.order"
-
-
 
     def _amount_all(self, cr, uid, ids, field_name, arg, context=None):
         cur_obj = self.pool.get('res.currency')
@@ -22,6 +21,8 @@ class sale_order(osv.osv):
                 'amount_tax': 0.0,
                 'amount_total': 0.0,
                 'discount': 0.0,
+                'discount_percentage': 0.0,
+                'calculated_discount': 0.0,
                 }
             val = val1 = 0.0
             cur = order.pricelist_id.currency_id
@@ -31,7 +32,14 @@ class sale_order(osv.osv):
             res[order.id]['amount_tax'] = cur_obj.round(cr, uid, cur, val)
             res[order.id]['amount_untaxed'] = cur_obj.round(cr, uid, cur, val1)
             total_amount = res[order.id]['amount_untaxed'] + res[order.id]['amount_tax']
-            res[order.id]['discount'] = total_amount * order.discount_percentage / 100
+            if order.discount <=0 :
+                res[order.id]['discount'] = total_amount * order.discount_percentage / 100
+                res[order.id]['calculated_discount'] = res[order.id]['discount']
+                order.discount = res[order.id]['discount']
+            elif order.discount >0  :
+                res[order.id]['discount'] = order.discount
+                res[order.id]['calculated_discount'] = total_amount * order.discount_percentage / 100
+            res[order.id]['discount_percentage'] = order.discount_percentage
             res[order.id]['amount_total'] = res[order.id]['amount_untaxed'] + res[order.id]['amount_tax']- res[order.id]['discount']
         return res
 
@@ -54,6 +62,7 @@ class sale_order(osv.osv):
         if not journal_ids:
             raise osv.except_osv(_('Error!'),
                 _('Please define sales journal for this company: "%s" (id:%d).') % (order.company_id.name, order.company_id.id))
+        sale_discount = order.discount if order.discount > 0 else order.calculated_discount
         invoice_vals = {
             'name': order.client_order_ref or '',
             'origin': order.name,
@@ -69,7 +78,7 @@ class sale_order(osv.osv):
             'fiscal_position': order.fiscal_position.id or order.partner_id.property_account_position.id,
             'date_invoice': context.get('date_invoice', False),
             'company_id': order.company_id.id,
-            'discount': order.discount,
+            'discount': sale_discount,
             'discount_acc_id':order.discount_acc_id.id,
             'user_id': order.user_id and order.user_id.id or False
         }
@@ -164,18 +173,106 @@ class sale_order(osv.osv):
             result[line.order_id.id] = True
         return result.keys()
 
+    def create(self, cr, uid, vals, context=None):
+        if vals.get('name','/')=='/':
+            vals['name'] = self.pool.get('ir.sequence').get(cr, uid, 'sale.order') or '/'
+        return super(sale_order, self).create(cr, uid, vals, context=context)
+
+    def button_dummy(self, cr, uid, ids, context=None):
+        return True
+
+    def _inv_get(self, cr, uid, order, context=None):
+        return {}
+
+    def _get_order(self, cr, uid, ids, context=None):
+        result = {}
+        for line in self.pool.get('sale.order.line').browse(cr, uid, ids, context=context):
+            result[line.order_id.id] = True
+        return result.keys()
+    def action_button_confirm(self, cr, uid, ids, context=None):
+        assert len(ids) == 1, 'This option should only be used for a single id at a time.'
+        wf_service = netsvc.LocalService('workflow')
+        wf_service.trg_validate(uid, 'sale.order', ids[0], 'order_confirm', cr)
+
+        # redisplay the record as a sales order
+        view_ref = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'sale', 'view_order_form')
+        view_id = view_ref and view_ref[1] or False,
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Sales Order'),
+            'res_model': 'sale.order',
+            'res_id': ids[0],
+            'view_type': 'form',
+            'view_mode': 'form',
+            'view_id': view_id,
+            'target': 'current',
+            'nodestroy': True,
+            }
+
+    def action_wait(self, cr, uid, ids, context=None):
+        context = context or {}
+        for o in self.browse(cr, uid, ids):
+            if not o.order_line:
+                raise osv.except_osv(_('Error!'),_('You cannot confirm a sales order which has no line.'))
+            noprod = self.test_no_product(cr, uid, o, context)
+            if (o.order_policy == 'manual') or noprod:
+                self.write(cr, uid, [o.id], {'state': 'manual', 'date_confirm': fields.date.context_today(self, cr, uid, context=context)})
+            else:
+                self.write(cr, uid, [o.id], {'state': 'progress', 'date_confirm': fields.date.context_today(self, cr, uid, context=context)})
+            self.pool.get('sale.order.line').button_confirm(cr, uid, [x.id for x in o.order_line])
+        return True
+
+    def action_quotation_send(self, cr, uid, ids, context=None):
+        '''
+        This function opens a window to compose an email, with the edi sale template message loaded by default
+        '''
+        assert len(ids) == 1, 'This option should only be used for a single id at a time.'
+        ir_model_data = self.pool.get('ir.model.data')
+        try:
+            template_id = ir_model_data.get_object_reference(cr, uid, 'sale', 'email_template_edi_sale')[1]
+        except ValueError:
+            template_id = False
+        try:
+            compose_form_id = ir_model_data.get_object_reference(cr, uid, 'mail', 'email_compose_message_wizard_form')[1]
+        except ValueError:
+            compose_form_id = False
+        ctx = dict(context)
+        ctx.update({
+            'default_model': 'sale.order',
+            'default_res_id': ids[0],
+            'default_use_template': bool(template_id),
+            'default_template_id': template_id,
+            'default_composition_mode': 'comment',
+            'mark_so_as_sent': True
+        })
+        return {
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'mail.compose.message',
+            'views': [(compose_form_id, 'form')],
+            'view_id': compose_form_id,
+            'target': 'new',
+            'context': ctx,
+            }
+
+    def action_done(self, cr, uid, ids, context=None):
+        return self.write(cr, uid, ids, {'state': 'done'}, context=context)
+
+
     _columns = {
-    'discount_percentage':fields.float('Discount %',digits=(2,0),readonly=True, states={'draft':[('readonly',False)]}),
-    'discount':fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Discount',
+    'discount_percentage':fields.float('Discount %',digits_compute=dp.get_precision('Account'),readonly=True, states={'draft':[('readonly',False)]}),
+    'discount':fields.float('Discount Override',digits_compute=dp.get_precision('Account'),readonly=True, states={'draft':[('readonly',False)]}),
+    'calculated_discount':fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='% Discount Calculated',
         store={
-            'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line'], 10),
+            'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line','discount_percentage','discount'], 10),
             'sale.order.line': (_get_order, ['price_unit', 'tax_id', 'discount', 'product_uom_qty'], 10),
             },
-        multi='sums', help="The discount amount."),
+        multi='sums', help="The calc disc amount."),
     'discount_acc_id': fields.many2one('account.account', 'Discount Account Head'),
     'amount_untaxed': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Untaxed Amount',
         store={
-            'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line'], 10),
+            'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line','discount_percentage','discount'], 10),
             'sale.order.line': (_get_order, ['price_unit', 'tax_id', 'discount', 'product_uom_qty'], 10),
             },
         multi='sums', help="The amount without tax.", track_visibility='always'),
@@ -187,7 +284,7 @@ class sale_order(osv.osv):
         multi='sums', help="The tax amount."),
     'amount_total': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Total',
         store={
-            'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line'], 10),
+            'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line','discount_percentage','discount'], 10),
             'sale.order.line': (_get_order, ['price_unit', 'tax_id', 'discount', 'product_uom_qty'], 10),
             },
         multi='sums', help="The total amount."),
