@@ -216,9 +216,127 @@ class account_voucher(osv.osv):
             res[key].update(vals[key])
         return res
 
+    def _get_journal(self, cr, uid, context=None):
+        if context is None: context = {}
+        invoice_pool = self.pool.get('account.invoice')
+        journal_pool = self.pool.get('account.journal')
+        if context.get('invoice_id', False):
+            currency_id = invoice_pool.browse(cr, uid, context['invoice_id'], context=context).currency_id.id
+            journal_id = journal_pool.search(cr, uid, [('currency', '=', currency_id)], limit=1)
+            return journal_id and journal_id[0] or False
+        if context.get('journal_id', False):
+            return context.get('journal_id')
+        if not context.get('journal_id', False) and context.get('search_default_journal_id', False):
+            return context.get('search_default_journal_id')
+
+#        ttype = context.get('type', 'bank')
+#        if ttype in ('payment', 'receipt'):
+        ttype = 'cash'
+        res = self._make_journal_search(cr, uid, ttype, context=context)
+        return res and res[0] or False
+
+    def _get_period(self, cr, uid, context=None):
+        if context is None: context = {}
+        if context.get('period_id', False):
+            return context.get('period_id')
+        periods = self.pool.get('account.period').find(cr, uid)
+        return periods and periods[0] or False
+
+    def _get_partner(self, cr, uid, context=None):
+        if context is None: context = {}
+        return context.get('partner_id', False)
+
+    def _get_currency(self, cr, uid, context=None):
+        if context is None: context = {}
+        journal_pool = self.pool.get('account.journal')
+        journal_id = context.get('journal_id', False)
+        if journal_id:
+            journal = journal_pool.browse(cr, uid, journal_id, context=context)
+            if journal.currency:
+                return journal.currency.id
+        return False
+
+    def _get_reference(self, cr, uid, context=None):
+        if context is None: context = {}
+        return context.get('reference', False)
+
+    def _get_narration(self, cr, uid, context=None):
+        if context is None: context = {}
+        return context.get('narration', False)
+
+    def _get_narration(self, cr, uid, context=None):
+        if context is None: context = {}
+        return context.get('narration', False)
+
+    def _get_amount(self, cr, uid, context=None):
+        if context is None:
+            context= {}
+        return context.get('amount', 0.0)
+
+    def _get_type(self, cr, uid, context=None):
+        if context is None:
+            context = {}
+        return context.get('type', False)
+
+    def _get_tax(self, cr, uid, context=None):
+        if context is None: context = {}
+        journal_pool = self.pool.get('account.journal')
+        journal_id = context.get('journal_id', False)
+        if not journal_id:
+            ttype = context.get('type', 'bank')
+            res = journal_pool.search(cr, uid, [('type', '=', ttype)], limit=1)
+            if not res:
+                return False
+            journal_id = res[0]
+
+        if not journal_id:
+            return False
+        journal = journal_pool.browse(cr, uid, journal_id, context=context)
+        account_id = journal.default_credit_account_id or journal.default_debit_account_id
+        if account_id and account_id.tax_ids:
+            tax_id = account_id.tax_ids[0].id
+            return tax_id
+        return False
+
+    def _get_payment_rate_currency(self, cr, uid, context=None):
+        """
+        Return the default value for field payment_rate_currency_id: the currency of the journal
+        if there is one, otherwise the currency of the user's company
+        """
+        if context is None: context = {}
+        journal_pool = self.pool.get('account.journal')
+        journal_id = context.get('journal_id', False)
+        if journal_id:
+            journal = journal_pool.browse(cr, uid, journal_id, context=context)
+            if journal.currency:
+                return journal.currency.id
+            #no journal given in the context, use company currency as default
+        return self.pool.get('res.users').browse(cr, uid, uid, context=context).company_id.currency_id.id
+
 
     _columns={
 
         'balance_amount': fields.function(_get_balance_amount, string='Total Balance', type='float', readonly=True, help="Total Receivables"),
 
     }
+    _defaults = {
+        'active': True,
+        'period_id': _get_period,
+        'partner_id': _get_partner,
+        'journal_id':_get_journal,
+        'currency_id': _get_currency,
+        'reference': _get_reference,
+        'narration':_get_narration,
+        'amount': _get_amount,
+        'type':_get_type,
+        'state': 'draft',
+        'pay_now': 'pay_now',
+        'name': '',
+        'date': lambda *a: time.strftime('%Y-%m-%d'),
+        'company_id': lambda self,cr,uid,c: self.pool.get('res.company')._company_default_get(cr, uid, 'account.voucher',context=c),
+        'tax_id': _get_tax,
+        'payment_option': 'without_writeoff',
+        'comment': _('Write-Off'),
+        'payment_rate': 1.0,
+        'payment_rate_currency_id': _get_payment_rate_currency,
+        }

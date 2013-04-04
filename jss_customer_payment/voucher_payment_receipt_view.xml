@@ -11,9 +11,7 @@
             <field name="arch" type="xml">
                 <xpath expr="/form/sheet/group/group[1]/field[@name='journal_id']" position="replace" >
                     <field name="journal_id"
-                           domain="[('type','in',['cash'])]"
-                           widget="selection"
-                           on_change="onchange_journal(journal_id, line_cr_ids, False, partner_id, date, amount, type, company_id, context)"
+                           domain="[('type','=',['cash'])]"
                            string="Payment Method"/>
                 </xpath>
                 <xpath expr="/form/sheet/notebook/page/group//field[@name='writeoff_amount']" position="before" >
