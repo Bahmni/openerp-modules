@@ -12,10 +12,11 @@
                     <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
                         <field name="amount_untaxed" widget='monetary' options="{'currency_field': 'currency_id'}"/>
                         <field name="amount_tax" widget='monetary' options="{'currency_field': 'currency_id'}"/>
-                        <field  name="discount_acc_id" />
+                        <field  name="discount_acc_id" attrs="{'required':[('discount_percentage','>','0')]}"/>
                         <field  name="discount_percentage" />
                         <field  name="calculated_discount" />
-                        <field widget='monetary' name="discount"  />
+                        <field  name="round_off" />
+                        <field  name="discount" invisible="True" />
                         <div class="oe_subtotal_footer_separator oe_inline">
                             <label for="amount_total" />
                             <button name="button_dummy"
