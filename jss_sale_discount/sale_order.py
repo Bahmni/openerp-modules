@@ -32,7 +32,7 @@ class sale_order(osv.osv):
             res[order.id]['amount_untaxed'] = cur_obj.round(cr, uid, cur, val1)
             total_amount = res[order.id]['amount_untaxed'] + res[order.id]['amount_tax']
             res[order.id]['calculated_discount'] = total_amount * order.discount_percentage / 100
-            res[order.id]['discount'] = res[order.id]['calculated_discount'] + order.round_off
+            res[order.id]['discount'] = res[order.id]['calculated_discount'] - order.round_off
             res[order.id]['amount_total'] = res[order.id]['amount_untaxed'] + res[order.id]['amount_tax']- res[order.id]['discount']
         return res
 
