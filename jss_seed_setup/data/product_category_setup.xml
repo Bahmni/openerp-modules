@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
-    <data noupdate="1">
-        <record model="product.category">
+    <data noupdate="0">
+        <record model="product.category" id="product_category_food_supplements">
             <field name="name">Food Supplements</field>
             <field name="parent_id" search="[('name', '=', 'Saleable')]"></field>
         </record>
 
-        <record model="product.category">
+        <record model="product.category" id="product_category_ayurvedic_products">
             <field name="name">Ayurvedic Products</field>
             <field name="parent_id" search="[('name', '=', 'Saleable')]"></field>
         </record>
 
-        <record model="product.category">
+        <record model="product.category" id="product_category_equipments">
             <field name="name">Equipments</field>
             <field name="parent_id" search="[('name', '=', 'Saleable')]"></field>
         </record>

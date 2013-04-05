@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="0">
+        <record model="res.partner" id="res_partner_1">
+            <field name="name">COMPREHENSIVE MEDICAL SERVICES INDIA</field>
+            <field name="supplier">1</field>
+            <field name="customer" eval="0"/>
+            <field name="is_company">1</field>
+        </record>
+        <record model="res.partner" id="res_partner_2">
+            <field name="name">G MEDICAL SERVICE</field>
+            <field name="supplier">1</field>
+            <field name="customer" eval="0"/>
+            <field name="is_company">1</field>
+        </record>
+        <record model="res.partner" id="res_partner_3">
+            <field name="name">GURUNANAK MEDICAL STORE</field>
+            <field name="supplier">1</field>
+            <field name="customer" eval="0"/>
+            <field name="is_company">1</field>
+        </record>
+        <record model="res.partner" id="res_partner_4">
+            <field name="name">JAGAT TRADERS</field>
+            <field name="supplier">1</field>
+            <field name="customer" eval="0"/>
+            <field name="is_company">1</field>
+        </record>
+        <record model="res.partner" id="res_partner_5">
+            <field name="name">LOCOST</field>
+            <field name="supplier">1</field>
+            <field name="customer" eval="0"/>
+            <field name="is_company">1</field>
+        </record>
+        <record model="res.partner" id="res_partner_6">
+            <field name="name">MELARAM AND BROTHERS</field>
+            <field name="supplier">1</field>
+            <field name="customer" eval="0"/>
+            <field name="is_company">1</field>
+        </record>
+        <record model="res.partner" id="res_partner_7">
+            <field name="name">PANKAJ MEDICO TRADERS</field>
+            <field name="supplier">1</field>
+            <field name="customer" eval="0"/>
+            <field name="is_company">1</field>
+        </record>
+        <record model="res.partner" id="res_partner_8">
+            <field name="name">SALUJA MEDICAL AGENCIES</field>
+            <field name="supplier">1</field>
+            <field name="customer" eval="0"/>
+            <field name="is_company">1</field>
+        </record>
+        <record model="res.partner" id="res_partner_9">
+            <field name="name">SHIVAM MEDICO SURGICO</field>
+            <field name="supplier">1</field>
+            <field name="customer" eval="0"/>
+            <field name="is_company">1</field>
+        </record>
+        <record model="res.partner" id="res_partner_10">
+            <field name="name">SHYAM AND SONS</field>
+            <field name="supplier">1</field>
+            <field name="customer" eval="0"/>
+            <field name="is_company">1</field>
+        </record>
+        <record model="res.partner" id="res_partner_11">
+            <field name="name">VIMAL ENTERPRISES</field>
+            <field name="supplier">1</field>
+            <field name="customer" eval="0"/>
+            <field name="is_company">1</field>
+        </record>
+    </data>
+</openerp>
