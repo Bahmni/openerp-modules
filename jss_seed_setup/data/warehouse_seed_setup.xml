@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="0">
+        <record id="stock_location_stock_bahmni" model="stock.location">
+            <field name="name">Bahmni Sub-Center</field>
+            <field name="usage">internal</field>
+            <field name="location_id" search="[('name', '=', 'Stock')]"/>
+        </record>
+        <record id="stock_location_stock_semariya" model="stock.location">
+            <field name="name">Semariya Sub-Center</field>
+            <field name="usage">internal</field>
+            <field name="location_id" search="[('name', '=', 'Stock')]"/>
+        </record>
+        <record id="stock_location_stock_shivtarai" model="stock.location">
+            <field name="name">Shivtarai Sub-Center</field>
+            <field name="usage">internal</field>
+            <field name="location_id" search="[('name', '=', 'Stock')]"/>
+        </record>
+        <record id="stock_location_stock_ipd" model="stock.location">
+            <field name="name">IPD</field>
+            <field name="usage">internal</field>
+            <field name="location_id" search="[('name', '=', 'Stock')]"/>
+        </record>
+        <record id="stock_location_stock_opd" model="stock.location">
+            <field name="name">OPD</field>
+            <field name="usage">internal</field>
+            <field name="location_id" search="[('name', '=', 'Stock')]"/>
+        </record>
+        <record id="stock_location_stock_ot" model="stock.location">
+            <field name="name">OT</field>
+            <field name="usage">internal</field>
+            <field name="location_id" search="[('name', '=', 'Stock')]"/>
+        </record>
+        <record id="stock_location_stock_laboratory" model="stock.location">
+            <field name="name">Laboratory</field>
+            <field name="usage">internal</field>
+            <field name="location_id" search="[('name', '=', 'Stock')]"/>
+        </record>
+        <record id="stock_location_stock_stock_room" model="stock.location">
+            <field name="name">Stock Room</field>
+            <field name="usage">internal</field>
+            <field name="location_id" search="[('name', '=', 'Stock')]"/>
+        </record>
+
+        <record id="stock_location_stock_stock_room_pharmacy" model="stock.location">
+            <field name="name">Pharmacy</field>
+            <field name="usage">internal</field>
+            <field name="location_id" ref="stock_location_stock_stock_room"/>
+        </record>
+
+        <!-- Warehouse -->
+        <record id="warehouse_pharmacy_stock_room" model="stock.warehouse">
+            <field name="name">Pharmacy Stock Room</field>
+            <field name="lot_input_id" ref="stock_location_stock_stock_room"/>
+            <field name="lot_stock_id" ref="stock_location_stock_stock_room"/>
+            <field name="lot_output_id" search="[('name', '=', 'Output')]"/>
+        </record>
+        <record id="warehouse_ipd" model="stock.warehouse">
+            <field name="name">IPD</field>
+            <field name="lot_input_id" ref="stock_location_stock_ipd"/>
+            <field name="lot_stock_id" ref="stock_location_stock_ipd"/>
+            <field name="lot_output_id" search="[('name', '=', 'Output')]"/>
+        </record>
+        <record id="warehouse_ot" model="stock.warehouse">
+            <field name="name">OT</field>
+            <field name="lot_input_id" ref="stock_location_stock_ot"/>
+            <field name="lot_stock_id" ref="stock_location_stock_ot"/>
+            <field name="lot_output_id" search="[('name', '=', 'Output')]"/>
+        </record>
+        <record id="warehouse_laboratory" model="stock.warehouse">
+            <field name="name">Laboratory</field>
+            <field name="lot_input_id" ref="stock_location_stock_laboratory"/>
+            <field name="lot_stock_id" ref="stock_location_stock_laboratory"/>
+            <field name="lot_output_id" search="[('name', '=', 'Output')]"/>
+        </record>
+
+        <!-- Sale Shop -->
+        <record id="sale_shop_pharmacy" model="sale.shop">
+            <field name="name">Pharmacy</field>
+            <!-- defined in account_data.xml -->
+            <field name="payment_default_id" ref="account.account_payment_term_immediate"/> 
+            <field name="warehouse_id" ref="warehouse_pharmacy_stock_room"/>
+        </record>
+
+    </data>
+</openerp>
