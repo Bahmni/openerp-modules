@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<openerp>
+    <data>
+        <record id="view_picking_form_internal_move" model="ir.ui.view">
+            <field name="name">stock.picking.form</field>
+            <field name="model">stock.picking</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+
+            <field name="arch" type="xml">
+                <xpath expr="/form/sheet/group" position="after" >
+                    <group>
+                        <group>
+                            <field name="location_id" context="{'stock_picking_location_id': location_id}"/>
+                        </group>
+                        <group>
+                            <field name="location_dest_id" context="{'stock_picking_location_dest_id': location_dest_id}"/>
+                        </group>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>
