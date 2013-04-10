@@ -1,5 +1,5 @@
 {
-    "name": "Bhamny Pharmacy Product",
+    "name": "Bhamni Pharmacy Product",
     "version": "6.0",
     "depends": ["base","product"],
     "author": "ThoughtWorks tecnologies Pvt. Ltd.",

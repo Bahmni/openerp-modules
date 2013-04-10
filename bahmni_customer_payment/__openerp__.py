@@ -1,5 +1,5 @@
 {
-    "name": "Bahmny Customer Payment",
+    "name": "Bahmni Customer Payment",
     "version": "1.0",
     "depends": ["base","account"],
     "author": "ThoughtWorks Technologies Pvt. Ltd.",

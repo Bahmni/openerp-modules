@@ -1,13 +1,13 @@
 {
-    "name": "Bahmny Sale Discount",
+    "name": "Bahmni Batch Sale Price",
     "version": "1.0",
-    "depends": ["base","sale","account"],
+    "depends": ["base","stock","sale"],
     "author": "ThoughtWorks Technologies Pvt. Ltd.",
     "category": "Sale",
-	"summary": "Sale Discount ",
+	"summary": "Bahmni Batch Sale Price",
     "description": """
     """,
-    'data': ['sale_discount_price_view.xml','invoice_discount_view.xml'],
+    'data': ['prod_lot_price_view.xml','sale_batch_price_view.xml','stock_view_prodlot.xml','stock_move_view.xml'],
     'demo': [],
     'auto_install': False,
     'application': True,
