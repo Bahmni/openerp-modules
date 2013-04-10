@@ -40,7 +40,7 @@ class stock_move(osv.osv):
                 'message': _('You are moving %.2f %s but only %.2f %s available for this serial number.') % (product_qty, uom.name, amount_actual, uom.name)
             }
 
-        if(prodlot.life_date and datetime.strptime(prodlot.life_date ,"%Y-%m-%d %H:%M:%S") > datetime.now() ):
+        if(prodlot.life_date and datetime.strptime(prodlot.life_date ,"%Y-%m-%d %H:%M:%S") < datetime.now() ):
             warning = {
                 'title': _('Batch is expired'),
                 'message': _('This product is expired on %s') % (prodlot.life_date)
