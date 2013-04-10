@@ -43,6 +43,9 @@
                 <xpath expr="/tree[@string='Stock Moves']//field[@name='location_dest_id']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
+                <xpath expr="/tree[@string='Stock Moves']//field[@name='prodlot_id']" position="replace">
+                    <field name="prodlot_id" groups="stock.group_production_lot" on_change="onchange_lot_id(prodlot_id, product_qty, location_id, product_id, product_uom)"/>
+                </xpath>
             </field>
         </record>
     </data>
