@@ -1,4 +1,5 @@
 import time
+import datetime
 from lxml import etree
 import decimal_precision as dp
 
@@ -6,6 +7,9 @@ import netsvc
 import pooler
 from osv import fields, osv, orm
 from tools.translate import _
+import logging
+_logger = logging.getLogger(__name__)
+
 
 class account_invoice(osv.osv):
     
@@ -247,8 +251,61 @@ class account_invoice(osv.osv):
                 line_ids.append(line.id)
             obj_move_line.write(cr, uid, line_ids,{
                 'state': 'valid'
-                }, context, check=False)		
+                }, context, check=False)
         return
+
+
+    def update_customer_receivables(self, cr, uid, vals,context=None):
+        patient_ref = vals[0][1]
+        amount = vals[1][1]
+        if(not amount):
+            amount = 0.0
+        if context is None:
+            context = {}
+            #disc_account = self.pool.get('account.account')
+        amount_currency = 0.0
+        date = time.strftime('%Y-%m-%d')
+        period_obj = self.pool.get('account.period')
+        period_ids = period_obj.find(cr, uid, date, context)
+        period_id = period_ids and period_ids[0] or False
+        acc_id = self.pool.get('account.account').search(cr, uid,[('name','=','Debtors')])[0]
+        partner_id = self.pool.get('res.partner').search(cr, uid,[('ref','=',patient_ref)])[0]
+        #company_id = self.pool.get('res.company').browse(cr, uid,uids)[0]
+
+        l1 = {
+            'debit': amount,
+            'credit': 0,
+            'account_id': acc_id,
+            'partner_id': partner_id,
+            'ref':"",
+            'date': date,
+            'period_id':period_id,
+            #'currency_id':context['currency_id'],
+            'amount_currency':amount_currency,
+            'company_id': "1",
+            'state': 'valid',
+            }
+
+        name = ""
+        l1['name'] = name
+        lines = [(0, 0, l1)]
+
+        acc_journal_id = self.pool.get('account.journal').search(cr, uid,[('name','=','Cash')])[0]
+        #acc_journal = self.pool.get('account.journal').browse(cr, uid,acc_journal_id)
+
+        move = {'ref': "migration", 'line_id': lines, 'journal_id': acc_journal_id, 'period_id': period_id, 'date': date}
+        move_ids =[]
+        move_id = self.pool.get('account.move').create(cr, uid, move, context=context)
+        move_ids.append(move_id)
+        obj_move_line = self.pool.get('account.move.line')
+        line_ids=[]
+        for move_new in self.pool.get('account.move').browse(cr,uid,move_ids,context=context):
+            for line in move_new.line_id:
+                line_ids.append(line.id)
+            obj_move_line.write(cr, uid, line_ids,{
+                'state': 'valid'
+            }, context, check=False)
+        return True
 
     def pay_and_reconcile(self, cr, uid, ids, pay_amount, pay_account_id, period_id, pay_journal_id, writeoff_acc_id, writeoff_period_id, writeoff_journal_id, context=None, name=''):
         if context is None:
@@ -420,6 +477,73 @@ class account_invoice(osv.osv):
         if move:
             invoice_ids = self.pool.get('account.invoice').search(cr, uid, [('move_id','in',move.keys())], context=context)
         return invoice_ids
+
+    def _find_partner(self, inv):
+        '''
+        Find the partner for which the accounting entries will be created
+        '''
+        #if the chosen partner is not a company and has a parent company, use the parent for the journal entries
+        #because you want to invoice 'Agrolait, accounting department' but the journal items are for 'Agrolait'
+        part = inv.partner_id
+        if part.parent_id and not part.is_company:
+            part = part.parent_id
+        return part
+
+    def group_lines(self, cr, uid, iml, line, inv):
+        """Merge account move lines (and hence analytic lines) if invoice line hashcodes are equals"""
+        if inv.journal_id.group_invoice_lines:
+            line2 = {}
+            for x, y, l in line:
+                tmp = self.inv_line_characteristic_hashcode(inv, l)
+
+                if tmp in line2:
+                    am = line2[tmp]['debit'] - line2[tmp]['credit'] + (l['debit'] - l['credit'])
+                    line2[tmp]['debit'] = (am > 0) and am or 0.0
+                    line2[tmp]['credit'] = (am < 0) and -am or 0.0
+                    line2[tmp]['tax_amount'] += l['tax_amount']
+                    line2[tmp]['analytic_lines'] += l['analytic_lines']
+                else:
+                    line2[tmp] = l
+            line = []
+            for key, val in line2.items():
+                line.append((0,0,val))
+        return line
+
+    def inv_line_characteristic_hashcode(self, invoice, invoice_line):
+        """Overridable hashcode generation for invoice lines. Lines having the same hashcode
+        will be grouped together if the journal has the 'group line' option. Of course a module
+        can add fields to invoice lines that would need to be tested too before merging lines
+        or not."""
+        return "%s-%s-%s-%s-%s"%(
+            invoice_line['account_id'],
+            invoice_line.get('tax_code_id',"False"),
+            invoice_line.get('product_id',"False"),
+            invoice_line.get('analytic_account_id',"False"),
+            invoice_line.get('date_maturity',"False"))
+
+
+    def line_get_convert(self, cr, uid, x, part, date, context=None):
+        return {
+            'date_maturity': x.get('date_maturity', False),
+            'partner_id': part,
+            'name': x['name'][:64],
+            'date': date,
+            'debit': x['price']>0 and x['price'],
+            'credit': x['price']<0 and -x['price'],
+            'account_id': x['account_id'],
+            'analytic_lines': x.get('analytic_lines', []),
+            'amount_currency': x['price']>0 and abs(x.get('amount_currency', False)) or -abs(x.get('amount_currency', False)),
+            'currency_id': x.get('currency_id', False),
+            'tax_code_id': x.get('tax_code_id', False),
+            'tax_amount': x.get('tax_amount', False),
+            'ref': x.get('ref', False),
+            'quantity': x.get('quantity',1.00),
+            'product_id': x.get('product_id', False),
+            'product_uom_id': x.get('uos_id', False),
+            'analytic_account_id': x.get('account_analytic_id', False),
+            }
+
+
 
 
     _columns={
