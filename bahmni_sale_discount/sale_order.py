@@ -1,11 +1,15 @@
+import logging
+import time
+import decimal_precision as dp
+
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
-import time
 from osv import fields, osv
 from tools.translate import _
-import decimal_precision as dp
 from openerp import netsvc
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT, DATETIME_FORMATS_MAP, float_compare
+
+_logger = logging.getLogger(__name__)
 
 
 class sale_order(osv.osv):
@@ -254,6 +258,23 @@ class sale_order(osv.osv):
     def action_done(self, cr, uid, ids, context=None):
         return self.write(cr, uid, ids, {'state': 'done'}, context=context)
 
+    def _check_discount_range(self, cr, uid, ids, context=None):
+        sale_orders = self.browse(cr, uid, ids, context)
+        for sale_order in sale_orders:
+            if(sale_order.discount_percentage < 0 or sale_order.discount_percentage > 100):
+                return False
+        return True
+
+    def _check_total_amount_non_negative(self, cr, uid, ids, context=None):
+        sale_order = self.browse(cr, uid, ids[0], context)
+        if(sale_order.round_off + sale_order.amount_total < 0 ):
+            return False
+        return True
+
+    _constraints = [
+        (_check_discount_range, 'Error!\nDiscount percentage should be between 0-100%.', ['discount_percentage']),
+        (_check_total_amount_non_negative, 'Error!\nTotal Amount is less than 0. Please make sure Amount round off value is correct', ['round_off', 'amount_total']),
+    ]
 
     _columns = {
     'discount_percentage':fields.float('Discount %',digits_compute=dp.get_precision('Account'),readonly=True, states={'draft':[('readonly',False)]}),
@@ -270,7 +291,7 @@ class sale_order(osv.osv):
             'sale.order.line': (_get_order, ['price_unit', 'tax_id', 'discount', 'product_uom_qty'], 10),
             },
         multi='sums', help="The calc disc amount."),
-    'discount_acc_id': fields.many2one('account.account', 'Discount Account Head'),
+    'discount_acc_id': fields.many2one('account.account', 'Discount Account Head', domain=[('parent_id.name', '=', 'Discounts')]),
     'amount_untaxed': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Untaxed Amount',
         store={
             'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line','discount_percentage','discount','round_off'], 10),
