@@ -57,6 +57,9 @@ class sale_order_line(osv.osv):
         #-----------------populating batch id for sale order line item-----------------------------------------------------------
         stock_prod_lot = self.pool.get('stock.production.lot')
         sale_price = 0.0
+        result['batch_name'] = None
+        result['batch_id'] = None
+
         for prodlotid in stock_prod_lot.search(cr, uid,[('product_id','=',product_obj.id)]):
             prodlot = stock_prod_lot.browse(cr, uid,prodlotid)
             if(prodlot.life_date and datetime.strptime(prodlot.life_date, tools.DEFAULT_SERVER_DATETIME_FORMAT) < datetime.now()):
