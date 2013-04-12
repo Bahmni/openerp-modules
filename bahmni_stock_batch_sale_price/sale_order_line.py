@@ -1,13 +1,17 @@
+import logging
 from osv import fields, osv
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 import time
 from openerp import pooler
+from openerp import tools
 from openerp.osv import fields, osv
 from openerp.tools.translate import _
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT, DATETIME_FORMATS_MAP, float_compare
 
 import openerp.addons.decimal_precision as dp
+
+_logger = logging.getLogger(__name__)
 
 class sale_order_line(osv.osv):
     _name = "sale.order.line"
@@ -55,6 +59,8 @@ class sale_order_line(osv.osv):
         sale_price = 0.0
         for prodlotid in stock_prod_lot.search(cr, uid,[('product_id','=',product_obj.id)]):
             prodlot = stock_prod_lot.browse(cr, uid,prodlotid)
+            if(prodlot.life_date and datetime.strptime(prodlot.life_date, tools.DEFAULT_SERVER_DATETIME_FORMAT) < datetime.now()):
+                continue;
             if qty <= prodlot.stock_available:
                 sale_price = prodlot.sale_price
                 result['batch_name'] = prodlot.name
