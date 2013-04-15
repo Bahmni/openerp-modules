@@ -7,7 +7,13 @@
 	"summary": "Bahmni Batch Sale Price",
     "description": """
     """,
-    'data': ['prod_lot_price_view.xml','sale_batch_price_view.xml','stock_view_prodlot.xml','stock_move_view.xml'],
+    'data': [
+                'prod_lot_price_view.xml',
+                'sale_batch_price_view.xml',
+                'stock_view_prodlot.xml',
+                'stock_move_view.xml',
+                'sale_order_line_extension.xml',
+            ],
     'demo': [],
     'auto_install': False,
     'application': True,

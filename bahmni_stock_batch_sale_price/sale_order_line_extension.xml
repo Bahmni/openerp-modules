@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="sale_form_remove_description_and_tax" model="ir.ui.view">
+            <field name="name">sale.order.form</field>
+            <field name="model">sale.order</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+
+            <field name="arch" type="xml">
+                <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='name']" position="attributes" >
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>
