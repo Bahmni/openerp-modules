@@ -12,7 +12,7 @@
                 <xpath expr="/form/sheet/group" position="after" >
                     <group>
                         <group>
-                            <field name="location_id" context="{'stock_picking_location_id': location_id}"/>
+                            <field name="location_id" context="{'stock_picking_location_id': location_id}" string="Source Location"/>
                         </group>
                         <group>
                             <field name="location_dest_id" context="{'stock_picking_location_dest_id': location_dest_id}"/>
