@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<openerp>
+    <data>
+        <record id="bahmni_view_voucher_tree" model="ir.ui.view">
+            <field name="name">account.voucher.tree</field>
+            <field name="model">account.voucher</field>
+            <field name="type">tree</field>
+            <field name="inherit_id" ref="account_voucher.view_voucher_tree"/>
+
+            <field name="arch" type="xml">
+                <xpath expr="/tree//field[@name='state']" position="after" >
+                    <field name="create_uid"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>

@@ -352,8 +352,9 @@ class account_voucher(osv.osv):
     _columns={
 
         'balance_amount': fields.function(_get_balance_amount, string='Total Balance', type='float', readonly=True, help="Total Receivables"),
-
+        'create_uid':  fields.many2one('res.users', 'Cashier', readonly=True),
     }
+
     _defaults = {
         'active': True,
         'period_id': _get_period,
