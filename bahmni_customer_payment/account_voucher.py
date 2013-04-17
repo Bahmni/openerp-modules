@@ -6,6 +6,9 @@ from openerp.osv import fields, osv
 import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
 from openerp.tools import float_compare
+import logging
+_logger = logging.getLogger(__name__)
+
 
 class account_voucher(osv.osv):
     _name = 'account.voucher'
@@ -24,6 +27,38 @@ class account_voucher(osv.osv):
                 amount_unreconciled +=l.amount_unreconciled
             currency = voucher.currency_id or voucher.company_id.currency_id
             res[voucher.id] =  currency_obj.round(cr, uid, currency, amount_unreconciled - voucher.amount)
+        return res
+
+    def fields_view_get(self, cr, uid, view_id=None, view_type=False, context=None, toolbar=False, submenu=False):
+        mod_obj = self.pool.get('ir.model.data')
+        if context is None: context = {}
+
+        if view_type == 'form':
+            if not view_id and context.get('invoice_type'):
+                if context.get('invoice_type') in ('out_invoice', 'out_refund'):
+                    result = mod_obj.get_object_reference(cr, uid, 'account_voucher', 'view_vendor_receipt_form')
+                else:
+                    result = mod_obj.get_object_reference(cr, uid, 'account_voucher', 'view_vendor_payment_form')
+                result = result and result[1] or False
+                view_id = result
+            if not view_id and context.get('line_type'):
+                if context.get('line_type') == 'customer':
+                    result = mod_obj.get_object_reference(cr, uid, 'account_voucher', 'view_vendor_receipt_form')
+                else:
+                    result = mod_obj.get_object_reference(cr, uid, 'account_voucher', 'view_vendor_payment_form')
+                result = result and result[1] or False
+                view_id = result
+
+        res = super(account_voucher, self).fields_view_get(cr, uid, view_id=view_id, view_type=view_type, context=context, toolbar=toolbar, submenu=submenu)
+        doc = etree.XML(res['arch'])
+
+        if context.get('type', 'sale') in ('purchase', 'payment'):
+            nodes = doc.xpath("//field[@name='partner_id']")
+            for node in nodes:
+                node.set('context', "{'search_default_supplier': 1}")
+                if context.get('invoice_type','') in ('in_invoice', 'in_refund'):
+                    node.set('string', _("Supplier"))
+        res['arch'] = etree.tostring(doc)
         return res
 
 
