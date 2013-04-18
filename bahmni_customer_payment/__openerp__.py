@@ -7,7 +7,12 @@
 	"summary": "Customer Payment",
     "description": """
     """,
-    'data': ["voucher_payment_receipt_view.xml", "show_creator_in_account_voucher_list.xml", "add_cashier_as_filter_group.xml"],
+    'data': [
+                "voucher_payment_receipt_view.xml",
+                "show_creator_in_account_voucher_list.xml",
+                "add_cashier_as_filter_group.xml",
+                "customer_invoice_show_partner_reference.xml",
+            ],
     'demo': [],
     'auto_install': False,
     'application': True,

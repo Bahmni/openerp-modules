@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="customer_invoice_show_partner_reference" model="ir.ui.view">
+            <field name="name">account.invoice.form</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_form"/>
+
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="replace" >
+                    <field string="Customer" name="partner_id"
+                        on_change="onchange_partner_id(type,partner_id,date_invoice,payment_term, partner_bank_id,company_id)"
+                        groups="base.group_user" context="{'search_default_customer':1, 'testing': 123}"
+                        options='{"always_reload": True}'/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>
