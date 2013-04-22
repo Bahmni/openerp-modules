@@ -16,6 +16,15 @@
                 </xpath>
 
             </field>
+            <field name="arch" type="xml">
+              <xpath expr="/form/sheet/notebook/page[1]/group[1]/field[@name='residual']" position="after" >
+                <field name="amount_before_payment" />
+                <field name="amount_paid" />
+                <field name="amount_outstanding" />
+                <!--<field name="total_outstanding_balance"/>-->
+              </xpath>
+            </field>
+
             <!--<field>-->
                 <!--<xpath expr="/form/notebook/page/group/field[@name='tax_line']" position="replace">-->
              <!--</xpath>-->

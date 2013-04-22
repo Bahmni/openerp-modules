@@ -17,6 +17,7 @@ class account_invoice(osv.osv):
     _inherit = "account.invoice"
     _description = 'Invoice'
 
+
     def compute_invoice_totals(self, cr, uid, inv, company_currency, ref, invoice_move_lines, context=None):
         if context is None:
             context={}
@@ -411,7 +412,6 @@ class account_invoice(osv.osv):
         self.pool.get('account.invoice').write(cr, uid, ids, {}, context=context)
         return True
 
-
     def _amount_all(self, cr, uid, ids, name, args, context=None):
         res = {}
         for invoice in self.browse(cr, uid, ids, context=context):
@@ -451,6 +451,40 @@ class account_invoice(osv.osv):
                     if m.account_id.type in ('receivable','payable'):
                         result[invoice.id] += m.amount_residual_currency
         return result
+
+    def _calculate_balances(self, cr, uid, ids, name, args, context=None):
+        res = {}
+
+        amount_unreconciled = 0.0
+        amount_paid = 0.0
+        for invoice in self.browse(cr, uid, ids, context=context):
+            res[invoice.id] = {
+                'amount_before_payment': 0.0,
+                'amount_paid': 0.0,
+                'amount_outstanding': 0.0,
+                }
+            voucher_ids = self.pool.get('account.voucher').search(cr, uid,[('partner_id','=',invoice.partner_id.id)])
+            vouchers= self.pool.get('account.voucher').browse(cr,uid,voucher_ids)
+
+            vouchers = sorted(vouchers, key=lambda v: v.id,reverse=True)
+            voucher_line_name =""
+            if(vouchers and len(vouchers) > 0):
+                voucher = vouchers[0]
+                amount_paid = voucher.amount
+                for voucher_line in voucher.line_ids :
+                    amount_unreconciled = amount_unreconciled + voucher_line.amount_unreconciled - voucher_line.amount
+                    voucher_line_name = voucher_line.name
+                if(invoice.number == voucher_line_name):
+                    res[invoice.id]['amount_before_payment'] = amount_unreconciled + amount_paid
+                    res[invoice.id]['amount_paid'] = amount_paid
+                    res[invoice.id]['amount_outstanding'] = amount_unreconciled
+                else :
+                    res[invoice.id]['amount_before_payment'] = amount_unreconciled
+                    res[invoice.id]['amount_paid'] = 0.0
+                    res[invoice.id]['amount_outstanding'] = amount_unreconciled
+
+        return res
+
 
     def _get_invoice_from_line(self, cr, uid, ids, context=None):
         move = {}
@@ -580,7 +614,9 @@ class account_invoice(osv.osv):
                     'account.move.reconcile': (_get_invoice_from_reconcile, None, 50),
                     },
                 help="Remaining amount due."),
-
+            'amount_before_payment':fields.function(_calculate_balances, digits_compute=dp.get_precision('Account'), string='Previous Balance', multi='all'),
+            'amount_paid':fields.function(_calculate_balances, digits_compute=dp.get_precision('Account'), string='Amount Paid', multi='all'),
+            'amount_outstanding':fields.function(_calculate_balances, digits_compute=dp.get_precision('Account'), string='Outstanding Balance', multi='all'),
             }
     
     _defaults={
