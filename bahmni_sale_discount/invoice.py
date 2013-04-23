@@ -47,6 +47,24 @@ class account_invoice(osv.osv):
         total -= inv.discount
         return total, total_currency, invoice_move_lines
 
+    def invoice_print(self, cr, uid, ids, context=None):
+        '''
+        This function prints the invoice and mark it as sent, so that we can see more easily the next step of the workflow
+        '''
+        assert len(ids) == 1, 'This option should only be used for a single id at a time.'
+        self.write(cr, uid, ids, {'sent': True}, context=context)
+        datas = {
+            'ids': ids,
+            'model': 'account.invoice',
+            'form': self.read(cr, uid, ids[0], context=context)
+        }
+        return {
+            'type': 'ir.actions.report.xml',
+            'report_name': 'account.invoice.with.balance',
+            'datas': datas,
+            'nodestroy' : True
+        }
+
     def action_move_create(self, cr, uid, ids, context=None):
         """Creates invoice related analytics and financial move lines"""
         ait_obj = self.pool.get('account.invoice.tax')
@@ -468,20 +486,39 @@ class account_invoice(osv.osv):
 
             vouchers = sorted(vouchers, key=lambda v: v.id,reverse=True)
             voucher_line_name =""
+            no_of_vouchers = len(vouchers)
+            #if at least one payment done
             if(vouchers and len(vouchers) > 0):
                 voucher = vouchers[0]
                 amount_paid = voucher.amount
                 for voucher_line in voucher.line_ids :
                     amount_unreconciled = amount_unreconciled + voucher_line.amount_unreconciled - voucher_line.amount
                     voucher_line_name = voucher_line.name
+                # If this voucher has been created for the current invoice (happens when u come back to invoice page after payment)
                 if(invoice.number == voucher_line_name):
-                    res[invoice.id]['amount_before_payment'] = amount_unreconciled + amount_paid
+                    if(invoice.residual < invoice.amount_total):
+                        #first payment
+                        if(no_of_vouchers == 1):
+                            res[invoice.id]['amount_before_payment'] = 0.0
+                        else :
+                            res[invoice.id]['amount_before_payment'] = amount_unreconciled + amount_paid
+                    else :
+                        res[invoice.id]['amount_before_payment'] = amount_unreconciled - invoice.amount_total + amount_paid
                     res[invoice.id]['amount_paid'] = amount_paid
                     res[invoice.id]['amount_outstanding'] = amount_unreconciled
+                #no voucher for invoice created yet
                 else :
                     res[invoice.id]['amount_before_payment'] = amount_unreconciled
                     res[invoice.id]['amount_paid'] = 0.0
                     res[invoice.id]['amount_outstanding'] = amount_unreconciled
+                    #update outstanding amount on validation
+                    if(invoice.state != 'draft'):
+                        res[invoice.id]['amount_outstanding'] = amount_unreconciled + invoice.amount_total
+            #if first invoice
+            else :
+                res[invoice.id]['amount_before_payment'] = 0.0
+                if(invoice.state != 'draft'):
+                    res[invoice.id]['amount_outstanding'] = invoice.amount_total
 
         return res
 
@@ -616,7 +653,8 @@ class account_invoice(osv.osv):
                 help="Remaining amount due."),
             'amount_before_payment':fields.function(_calculate_balances, digits_compute=dp.get_precision('Account'), string='Previous Balance', multi='all'),
             'amount_paid':fields.function(_calculate_balances, digits_compute=dp.get_precision('Account'), string='Amount Paid', multi='all'),
-            'amount_outstanding':fields.function(_calculate_balances, digits_compute=dp.get_precision('Account'), string='Outstanding Balance', multi='all'),
+            'amount_outstanding':fields.function(_calculate_balances, digits_compute=dp.get_precision('Account'), string='Outstanding Balance',
+             multi='all'),
             }
     
     _defaults={
