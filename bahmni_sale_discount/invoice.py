@@ -520,6 +520,8 @@ class account_invoice(osv.osv):
                 if(invoice.state != 'draft'):
                     res[invoice.id]['amount_outstanding'] = invoice.amount_total
 
+            res[invoice.id]['bill_amount'] =  res[invoice.id]['amount_before_payment'] + invoice.amount_total
+
         return res
 
 
@@ -620,7 +622,7 @@ class account_invoice(osv.osv):
     _columns={
               
             'discount':fields.float('Discount',digits=(4,2),readonly=True, states={'draft':[('readonly',False)]}),
-            'amount_total': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Total',
+            'amount_total': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='New Charges ',
                 store={
                     'account.invoice': (lambda self, cr, uid, ids, c={}: ids, ['invoice_line'], 20),
                     'account.invoice.tax': (_get_invoice_tax, None, 20),
@@ -652,7 +654,8 @@ class account_invoice(osv.osv):
                     },
                 help="Remaining amount due."),
             'amount_before_payment':fields.function(_calculate_balances, digits_compute=dp.get_precision('Account'), string='Previous Balance', multi='all'),
-            'amount_paid':fields.function(_calculate_balances, digits_compute=dp.get_precision('Account'), string='Amount Paid', multi='all'),
+            'amount_paid':fields.function(_calculate_balances, digits_compute=dp.get_precision('Account'), string=' Paid Amount', multi='all'),
+            'bill_amount':fields.function(_calculate_balances, digits_compute=dp.get_precision('Account'), string='Bill Amount', multi='all'),
             'amount_outstanding':fields.function(_calculate_balances, digits_compute=dp.get_precision('Account'), string='Outstanding Balance',
              multi='all'),
             }

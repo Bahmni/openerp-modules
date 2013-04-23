@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="0">
+   	<!-- Original Reports to Overwrite -->
+        <report
+        auto="False"
+        id="account.account_invoices"
+        model="account.invoice"
+        name="account.invoice"
+        rml="extra_reports/reports/account_print_invoice.rml"
+        string="Invoices"
+<!--         attachment_use= eval="False"-->
+        />
+        
+        <report 
+        auto="False" 
+        id="account.account_3rdparty_account_balance" 
+        menu="False" 
+        model="account.account" 
+        name="account.partner.balance" 
+        rml="extra_reports/reports/account_partner_balance.rml" 
+        string="Partner Balance"/>
+        
+   	<!-- New Reports -->
+        <report 
+        auto="False" 
+        id="journal_entry" 
+        model="account.move" 
+        name="journal_entry" 
+        rml="extra_reports/reports/journal_entry.rml" 
+        string="Journal Entry"/>
+        
+        <report 
+        auto="False" 
+        id="product_moves" 
+        model="product.product" 
+        name="product_moves" 
+        rml="extra_reports/reports/product_moves.rml" 
+        string="Product Moves"/>
+        
+        <report 
+        auto="False" 
+        id="account_voucher" 
+        model="account.voucher" 
+        name="account_voucher" 
+        rml="extra_reports/reports/account_voucher.rml" 
+        string="Receipt/Payment"/>
+    </data>
+</openerp>

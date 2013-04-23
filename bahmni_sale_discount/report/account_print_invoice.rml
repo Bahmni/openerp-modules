@@ -272,7 +272,7 @@
           </para>
         </td>
         <td>
-          <para style="terp_default_9"> Total:</para>
+          <para style="terp_default_9"> New Charges:</para>
         </td>
         <td>
           <para style="terp_default_Right_9">[[ formatLang(o.amount_total, digits=get_digits(dp='Account'), currency_obj=o.currency_id) ]]</para>
@@ -298,10 +298,10 @@
           </para>
         </td>
         <td>
-          <para style="terp_default_9">Paid Amount:</para>
+          <para style="terp_default_Bold_9">Total Bill:</para>
         </td>
         <td>
-          <para style="terp_default_Right_9">[[ formatLang(o.amount_paid, dp='Account', currency_obj=o.currency_id) ]]</para>
+          <para style="terp_default_Bold_9">[[ formatLang(o.bill_amount, dp='Account', currency_obj=o.currency_id) ]]</para>
         </td>
       </tr>
       <tr>
@@ -311,7 +311,20 @@
           </para>
         </td>
         <td>
-          <para style="terp_default_Bold_9">Total Outstanding:</para>
+          <para style="terp_default_Bold_9">Amount Paid:</para>
+        </td>
+        <td>
+          <para style="terp_default_Bold_9">[[ formatLang(o.amount_paid, dp='Account', currency_obj=o.currency_id) ]]</para>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <para style="terp_default_8">
+            <font color="white"> </font>
+          </para>
+        </td>
+        <td>
+          <para style="terp_default_9">Outstanding Balance:</para>
         </td>
         <td>
           <para style="terp_default_Right_9">[[ formatLang(o.amount_outstanding, dp='Account', currency_obj=o.currency_id) ]]</para>

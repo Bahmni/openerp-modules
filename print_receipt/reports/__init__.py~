@@ -1,0 +1,4 @@
+# -*- coding: utf-8 -*-
+import journal_entry
+import product_moves
+import account_voucher
