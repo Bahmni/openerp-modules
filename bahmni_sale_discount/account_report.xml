@@ -4,7 +4,7 @@
 
         <report
             auto="False"
-            id="account.account_invoices"
+            <!--id="account.account_invoices"-->
             model="account.invoice"
             name="account.invoice.with.balance"
             rml="bahmni_sale_discount/report/account_print_invoice.rml"

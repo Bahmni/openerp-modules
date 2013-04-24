@@ -18,6 +18,8 @@
                 </xpath>
                 <xpath expr="/form/sheet/notebook/page/group//field[@name='writeoff_amount']" position="before" >
                     <field name="balance_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                    <field name="bill_amount" widget="monetary" options="{'currency_field': 'currency_id'}" invisible="1"/>
+                    <!--<field name="invoice_id" />-->
                 </xpath>
             </field>
         </record>

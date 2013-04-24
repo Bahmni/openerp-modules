@@ -14,6 +14,30 @@ class account_voucher(osv.osv):
     _name = 'account.voucher'
     _inherit = "account.voucher"
 
+    def _calculate_balances(self, cr, uid, ids, name, args, context=None):
+        res = {}
+        #                for voucher_line in voucher.line_ids :
+        #                    amount_unreconciled = amount_unreconciled + voucher_line.amount_unreconciled - voucher_line.amount
+
+        for voucher in self.browse(cr, uid, ids, context=context):
+            res[voucher.id] ={'invoice_id':0,
+                              'bill_amount':0.0}
+            line_ids = sorted(voucher.line_ids, key=lambda v: v.id,reverse=True)
+            if(line_ids and len(line_ids) > 0):
+                voucher_line = line_ids[0]
+                inv_no = voucher_line.name
+                inv_ids = self.pool.get("account.invoice").search(cr, uid,[('number','=',inv_no)])
+                if(inv_ids and len(inv_ids) > 0):
+                    inv_id = inv_ids[0]
+                    invoice = self.pool.get("account.invoice").browse(cr,uid,inv_id,context=context)
+            if(invoice):
+                voucher.invoice_id = invoice.id
+            res[voucher.id]['bill_amount'] =   invoice.amount_total
+            self.write(cr, uid, voucher.id, {'invoice_id': invoice.id})
+
+        return res
+
+
     def _get_balance_amount(self, cr, uid, ids, name, args, context=None):
         if not ids: return {}
         currency_obj = self.pool.get('res.currency')
@@ -353,8 +377,10 @@ class account_voucher(osv.osv):
 
         'balance_amount': fields.function(_get_balance_amount, string='Total Balance', type='float', readonly=True, help="Total Receivables"),
         'create_uid':  fields.many2one('res.users', 'Cashier', readonly=True),
-    }
+        'invoice_id':fields.many2one('account.invoice', 'Invoice'),
+        'bill_amount':fields.function(_calculate_balances, digits_compute=dp.get_precision('Account'), string='Current Bill Amount', multi='all'),
 
+        }
     _defaults = {
         'active': True,
         'period_id': _get_period,

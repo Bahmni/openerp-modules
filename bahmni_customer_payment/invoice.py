@@ -25,6 +25,9 @@ from openerp.tools.translate import _
 class invoice(osv.osv):
     _inherit = 'account.invoice'
 
+
+
+
     def invoice_pay_customer(self, cr, uid, ids, context=None):
         if not ids: return []
         dummy, view_id = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'account_voucher', 'view_vendor_receipt_form')
@@ -38,7 +41,9 @@ class invoice(osv.osv):
             'res_model': 'account.voucher',
             'type': 'ir.actions.act_window',
             'nodestroy': True,
-            'target': 'new',
+            'target': 'current',
+            #'url':final_url
+            'tag': 'onchange_partner_id',
             'domain': '[]',
             'context': {
                 'default_partner_id': inv.partner_id.id,
@@ -46,9 +51,12 @@ class invoice(osv.osv):
                 'close_after_process': True,
                 'invoice_type': inv.type,
                 'default_type': inv.type in ('out_invoice','out_refund') and 'receipt' or 'payment',
-                'type': inv.type in ('out_invoice','out_refund') and 'receipt' or 'payment'
+                'type': inv.type in ('out_invoice','out_refund') and 'receipt' or 'payment',
+                'active_ids':'',
+                'active_id':'',
             }
         }
+
 
 invoice()
 
