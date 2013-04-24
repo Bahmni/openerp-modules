@@ -17,16 +17,22 @@ class sale_order_line(osv.osv):
     _name = "sale.order.line"
     _inherit = "sale.order.line"
 
-#    def _batch_name(self, cr, uid, ids,batch_id,args, context=None):
-#        batch_id = context.get('batch_id')
-#        #prod_lot = self.pool.get('stock.production.lot').browse(cr, uid,batch_id )
-#        return batch_id
-
     def _price(self, unit_price , batch_price):
         if(batch_price > 0):
             return batch_price
         else:
             return unit_price
+
+    def _get_prodlot_context(self, cr, uid, context):
+        shop_id = context.get('shop', False)
+        shop_obj = self.pool.get('sale.shop')
+        shop = shop_obj.browse(cr, uid, shop_id)
+        prodlot_context = {}
+        if shop:
+            location_id = shop.warehouse_id and shop.warehouse_id.lot_stock_id.id
+            if location_id:
+                prodlot_context['location_id'] = location_id
+        return prodlot_context
 
     def product_id_change(self, cr, uid, ids, pricelist, product, qty=0,
                           uom=False, qty_uos=0, uos=False, name='', partner_id=False,
@@ -39,7 +45,7 @@ class sale_order_line(osv.osv):
         product_uom_obj = self.pool.get('product.uom')
         partner_obj = self.pool.get('res.partner')
         product_obj = self.pool.get('product.product')
-        context = {'lang': lang, 'partner_id': partner_id}
+
         if partner_id:
             lang = partner_obj.browse(cr, uid, partner_id).lang
         context_partner = {'lang': lang, 'partner_id': partner_id}
@@ -60,8 +66,8 @@ class sale_order_line(osv.osv):
         result['batch_name'] = None
         result['batch_id'] = None
 
-        for prodlotid in stock_prod_lot.search(cr, uid,[('product_id','=',product_obj.id)]):
-            prodlot = stock_prod_lot.browse(cr, uid,prodlotid)
+        for prodlot_id in stock_prod_lot.search(cr, uid,[('product_id','=',product_obj.id)]):
+            prodlot = stock_prod_lot.browse(cr, uid, prodlot_id, context=self._get_prodlot_context(cr, uid, context))
             if(prodlot.life_date and datetime.strptime(prodlot.life_date, tools.DEFAULT_SERVER_DATETIME_FORMAT) < datetime.now()):
                 continue;
             if qty <= prodlot.stock_available:
@@ -154,6 +160,6 @@ class sale_order_line(osv.osv):
     _columns = {
         'batch_id': fields.many2one('stock.production.lot', 'Batch No'),
         'batch_name': fields.char('Batch No'),
-        }
+    }
 
 sale_order_line()

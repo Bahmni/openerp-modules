@@ -3,12 +3,11 @@ from tools.translate import _
 import decimal_precision as dp
 import netsvc
 
-class jss_production_lot(osv.osv):
+class stock_production_lot(osv.osv):
 
     _name = 'stock.production.lot'
     _inherit = 'stock.production.lot'
     _order = 'life_date'
-
 
     _columns = {
         'sale_price':fields.float('Sale Price',digits=(4,2)),
@@ -22,7 +21,4 @@ class jss_production_lot(osv.osv):
             help='This is the date on which the goods with this Serial Number should be removed from the stock.'),
         'alert_date': fields.date('Alert Date',
             help="This is the date on which an alert should be notified about the goods with this Serial Number."),
-
-        }
-
-jss_production_lot()
+    }
