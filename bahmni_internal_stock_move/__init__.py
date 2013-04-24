@@ -1,1 +1,1 @@
-import stock_move
+import stock_move, stock_picking
