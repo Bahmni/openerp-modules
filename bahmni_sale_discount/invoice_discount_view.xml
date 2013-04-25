@@ -16,12 +16,12 @@
                 </xpath>
 
             </field>
-            <field name="arch" type="xml">
-                <xpath expr="/form/sheet/notebook/page[1]/group[2]" position="replace" >
-
-                </xpath>
-            </field>
             <!--<field name="arch" type="xml">-->
+                <!--<xpath expr="/form/sheet/notebook/page[1]/group[2]" position="replace" >-->
+
+                <!--</xpath>-->
+            <!--</field>-->
+            <!--&lt;!&ndash;<field name="arch" type="xml">&ndash;&gt;-->
               <!--<xpath expr="/form/sheet/notebook/page[1]/group[1]/field[@name='residual']" position="replace" >-->
                 <!--<div class="oe_clear">-->
                 <!--<h4>-->
