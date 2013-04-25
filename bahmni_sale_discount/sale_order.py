@@ -8,7 +8,7 @@ from osv import fields, osv
 from tools.translate import _
 from openerp import netsvc
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT, DATETIME_FORMATS_MAP, float_compare
-
+import logging
 _logger = logging.getLogger(__name__)
 
 
@@ -16,34 +16,23 @@ class sale_order(osv.osv):
     _name = "sale.order"
     _inherit = "sale.order"
 
-#    def _calculate_balances(self, cr, uid, ids, name, args, context=None):
-#        res = {}
-#        for order in self.browse(cr, uid, ids, context=context):
-#            res[order.id] = 0.0
-#            amount_unreconciled = 0.0
-#            amount_paid = 0.0
-#            voucher_ids = self.pool.get('account.voucher').search(cr, uid,[('partner_id','=',order.partner_id.id)])
-#            vouchers= self.pool.get('account.voucher').browse(cr,uid,voucher_ids)
-#
-#            vouchers = sorted(vouchers, key=lambda v: v.id,reverse=True)
-#            #if at least one payment done
-#            if(vouchers and len(vouchers) > 0):
-#                voucher = vouchers[0]
-#                amount_paid = voucher.amount
-#                for voucher_line in voucher.line_ids :
-#                    amount_unreconciled = amount_unreconciled + voucher_line.amount_unreconciled - voucher_line.amount
-#                    res[order.id]['amount_before_payment'] = amount_unreconciled
-##                    if(order.state != 'draft'):
-#                    res[order.id]['amount_outstanding'] = amount_unreconciled + order.amount_total
-#            #if first invoice
-#            else :
-#                res[order.id]['amount_before_payment'] = 0.0
-##                if(order.state != 'draft'):
-#                res[order.id]['amount_outstanding'] = order.amount_total
-#
-#            res[order.id]['bill_amount'] =  res[order.id]['amount_before_payment'] + order.amount_total
-#
-#        return res
+    def _calculate_balance(self, cr, uid, ids, name, args, context=None):
+        res = {}
+        for order in self.browse(cr, uid, ids, context=context):
+            res[order.id] = 0.0
+            amount_unreconciled = 0.0
+            voucher_ids = self.pool.get('account.voucher').search(cr, uid,[('partner_id','=',order.partner_id.id)])
+            vouchers= self.pool.get('account.voucher').browse(cr,uid,voucher_ids)
+
+            vouchers = sorted(vouchers, key=lambda v: v.id,reverse=True)
+            if(vouchers and len(vouchers) > 0):
+                voucher = vouchers[0]
+                for voucher_line in voucher.line_ids :
+                    amount_unreconciled = amount_unreconciled + voucher_line.amount_unreconciled - voucher_line.amount
+                res[order.id] = amount_unreconciled
+            else :
+                res[order.id] = 0.0
+        return res
 
 
     def _amount_all(self, cr, uid, ids, field_name, arg, context=None):
@@ -350,6 +339,12 @@ class sale_order(osv.osv):
             'sale.order.line': (_get_order, ['price_unit', 'tax_id', 'discount', 'product_uom_qty'], 10),
             },
         multi='sums', help="The total amount."),
+    'prev_amount_outstanding': fields.function(_calculate_balance, digits_compute=dp.get_precision('Account'), string='Previous Balance',
+        store={
+            'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line','discount_percentage','discount','round_off', 'calculated_discount'], 10),
+            'sale.order.line': (_get_order, ['price_unit', 'tax_id', 'discount', 'product_uom_qty'], 10),
+            },
+             help="The Previous Outstanding amount."),
 
     }
 
