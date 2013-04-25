@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
-    <data noupdate="0">
+    <data noupdate="1">
         <record model="product.category" id="product_category_food_supplements">
             <field name="name">Food Supplements</field>
             <field name="parent_id" search="[('name', '=', 'Saleable')]"></field>
@@ -22,67 +22,67 @@
             <field name="parent_id" search="[('name', '=', 'Saleable')]"></field>
         </record>
 
-        <record model="product.category">
+        <record model="product.category" id="product_category_drugs_tablets">
             <field name="name">Tablets</field>
             <field name="parent_id" ref="product_category_drugs"></field>
         </record>
-        <record model="product.category">
+        <record model="product.category" id="product_category_drugs_capsules">
             <field name="name">Capsules</field>
             <field name="parent_id" ref="product_category_drugs"></field>
         </record>
-        <record model="product.category">
+        <record model="product.category" id="product_category_drugs_injections">
             <field name="name">Injections</field>
             <field name="parent_id" ref="product_category_drugs"></field>
         </record>
-        <record model="product.category">
+        <record model="product.category" id="product_category_drugs_inhalers">
             <field name="name">Inhalers</field>
             <field name="parent_id" ref="product_category_drugs"></field>
         </record>
-        <record model="product.category">
+        <record model="product.category" id="product_category_drugs_syrups">
             <field name="name">Syrups</field>
             <field name="parent_id" ref="product_category_drugs"></field>
         </record>
-        <record model="product.category">
+        <record model="product.category" id="product_category_drugs_pessaries">
             <field name="name">Pessaries</field>
             <field name="parent_id" ref="product_category_drugs"></field>
         </record>
-        <record model="product.category">
+        <record model="product.category" id="product_category_drugs_creams">
             <field name="name">Creams</field>
             <field name="parent_id" ref="product_category_drugs"></field>
         </record>
-        <record model="product.category">
+        <record model="product.category" id="product_category_drugs_drops">
             <field name="name">Drops</field>
             <field name="parent_id" ref="product_category_drugs"></field>
         </record>
-        <record model="product.category">
+        <record model="product.category" id="product_category_drugs_solutions">
             <field name="name">Solutions</field>
             <field name="parent_id" ref="product_category_drugs"></field>
         </record>
-        <record model="product.category">
+        <record model="product.category" id="product_category_drugs_gels">
             <field name="name">Gels</field>
             <field name="parent_id" ref="product_category_drugs"></field>
         </record>
-        <record model="product.category">
+        <record model="product.category" id="product_category_drugs_lotions">
             <field name="name">Lotions</field>
             <field name="parent_id" ref="product_category_drugs"></field>
         </record>
-        <record model="product.category">
+        <record model="product.category" id="product_category_drugs_powders">
             <field name="name">Powders</field>
             <field name="parent_id" ref="product_category_drugs"></field>
         </record>
-        <record model="product.category">
+        <record model="product.category" id="product_category_drugs_ointments">
             <field name="name">Ointments</field>
             <field name="parent_id" ref="product_category_drugs"></field>
         </record>
-        <record model="product.category">
+        <record model="product.category" id="product_category_drugs_jellies">
             <field name="name">Jellies</field>
             <field name="parent_id" ref="product_category_drugs"></field>
         </record>
-        <record model="product.category">
+        <record model="product.category" id="product_category_drugs_sprays">
             <field name="name">Sprays</field>
             <field name="parent_id" ref="product_category_drugs"></field>
         </record>
-        <record model="product.category">
+        <record model="product.category" id="product_category_drugs_liquids">
             <field name="name">Liquids</field>
             <field name="parent_id" ref="product_category_drugs"></field>
         </record>
@@ -93,23 +93,23 @@
             <field name="parent_id" search="[('name', '=', 'All products')]"></field>
         </record>
 
-        <record model="product.category">
+        <record model="product.category" id="product_category_services_ipd_charges">
             <field name="name">IPD Charges</field>
             <field name="parent_id" ref="product_category_services"></field>
         </record>
-        <record model="product.category">
+        <record model="product.category" id="product_category_services_lab_tests">
             <field name="name">Lab Tests</field>
             <field name="parent_id" ref="product_category_services"></field>
         </record>
-        <record model="product.category">
+        <record model="product.category" id="product_category_services_radiology_tests">
             <field name="name">Radiology Tests</field>
             <field name="parent_id" ref="product_category_services"></field>
         </record>
-        <record model="product.category">
+        <record model="product.category" id="product_category_services_surgeries">
             <field name="name">Surgeries</field>
             <field name="parent_id" ref="product_category_services"></field>
         </record>
-        <record model="product.category">
+        <record model="product.category" id="product_category_services_procedures">
             <field name="name">Procedures</field>
             <field name="parent_id" ref="product_category_services"></field>
         </record>
