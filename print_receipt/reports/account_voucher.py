@@ -14,6 +14,7 @@ class account_voucher(report_sxw.rml_parse):
                                   'time': time,
                                   'getLines': self._lines_get,
                                   'getInvoiceLines': self._invoice_lines_get,
+                                  'getInvoiceDiscount': self._invoice_discount_get,
                                   })
         self.context = context
     
@@ -28,6 +29,13 @@ class account_voucher(report_sxw.rml_parse):
         invoice_lines = invoice_line_obj.search(self.cr, self.uid,[('invoice_id','=',voucher.invoice_id.id)])
         invoice_lines = invoice_line_obj.browse(self.cr, self.uid, invoice_lines)
         return invoice_lines
+
+    def _invoice_discount_get(self, voucher):
+        invoice_obj = pooler.get_pool(self.cr.dbname).get('account.invoice')
+        invoice = invoice_obj.browse(self.cr, self.uid,voucher.invoice_id.id)
+        return invoice.discount
+
+
 
 report_sxw.report_sxw('report.account_voucher', 'account.voucher',
                       'addons/print_receipt/reports/account_voucher.rml',

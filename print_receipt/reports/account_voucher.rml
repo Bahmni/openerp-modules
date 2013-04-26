@@ -118,7 +118,8 @@
     <blockTable colWidths="362.0,172.0" style="Table1">
       <tr>
         <td>
-          <para style="P6">[[ ((voucher.type in ['sale','receipt']) or (removeParentNode('para'))) and ('Customer: '+voucher.partner_id.name)  ]]</para>
+          <para style="P6">[[ ((voucher.type in ['sale','receipt']) or (removeParentNode('para'))) and ('Patient Name: '+voucher.partner_id.name)  ]]</para>
+          <para style="P6">[[ ((voucher.type in ['sale','receipt']) or (removeParentNode('para'))) and ('Patient ID: '+voucher.partner_id.ref)  ]]</para>
           <para style="P6">[[ ((voucher.type in ['purchase','payment']) or (removeParentNode('para'))) and ('Supplier: '+voucher.partner_id.name)  ]]</para>
         </td>
         <td>
@@ -172,6 +173,19 @@
       </blockTable>
     </section>
     <blockTable colWidths="262.0,172.0,101.0" style="Table5">
+      <tr>
+        <td>
+          <para style="P11">
+            <font color="white"> </font>
+          </para>
+        </td>
+        <td>
+          <para style="P11">Discount:</para>
+        </td>
+        <td>
+          <para style="P14">[[ formatLang(getInvoiceDiscount(voucher),2) ]]  [[ company.currency_id.symbol ]]</para>
+        </td>
+      </tr>
       <tr>
         <td>
           <para style="P11">
