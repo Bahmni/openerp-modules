@@ -19,7 +19,7 @@ class sale_order(osv.osv):
     def _calculate_balance(self, cr, uid, ids, name, args, context=None):
         res = {}
         for order in self.browse(cr, uid, ids, context=context):
-            res[order.id] = 0.0
+            res[order.id] = {'prev_amount_outstanding':0.0,'total_outstanding':0.0}
             amount_unreconciled = 0.0
             voucher_ids = self.pool.get('account.voucher').search(cr, uid,[('partner_id','=',order.partner_id.id)])
             vouchers= self.pool.get('account.voucher').browse(cr,uid,voucher_ids)
@@ -29,9 +29,11 @@ class sale_order(osv.osv):
                 voucher = vouchers[0]
                 for voucher_line in voucher.line_ids :
                     amount_unreconciled = amount_unreconciled + voucher_line.amount_unreconciled - voucher_line.amount
-                res[order.id] = amount_unreconciled
+                res[order.id]['prev_amount_outstanding'] = amount_unreconciled
+                res[order.id]['total_outstanding'] = amount_unreconciled + order.amount_total
             else :
-                res[order.id] = 0.0
+                res[order.id]['prev_amount_outstanding'] = 0.0
+                res[order.id]['total_outstanding'] = order.amount_total
         return res
 
 
@@ -321,7 +323,7 @@ class sale_order(osv.osv):
             },
         multi='sums', help="The calc disc amount."),
     'discount_acc_id': fields.many2one('account.account', 'Discount Account Head', domain=[('parent_id.name', '=', 'Discounts')]),
-    'amount_untaxed': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Untaxed Amount',
+    'amount_untaxed': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='New Charges',
         store={
             'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line','discount_percentage','discount','round_off', 'calculated_discount'], 10),
             'sale.order.line': (_get_order, ['price_unit', 'tax_id', 'discount', 'product_uom_qty'], 10),
@@ -340,11 +342,9 @@ class sale_order(osv.osv):
             },
         multi='sums', help="The total amount."),
     'prev_amount_outstanding': fields.function(_calculate_balance, digits_compute=dp.get_precision('Account'), string='Previous Balance',
-        store={
-            'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line','discount_percentage','discount','round_off', 'calculated_discount'], 10),
-            'sale.order.line': (_get_order, ['price_unit', 'tax_id', 'discount', 'product_uom_qty'], 10),
-            },
-             help="The Previous Outstanding amount."),
+             help="The Previous Outstanding amount.",multi="all"),
+    'total_outstanding': fields.function(_calculate_balance, digits_compute=dp.get_precision('Account'), string='Total Outstanding',
+             help="The Total Outstanding amount at the time of sale order creation.",multi="all"),
 
     }
 
