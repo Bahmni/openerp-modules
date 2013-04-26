@@ -1,25 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <data noupdate="0">
+        <!-- For warehouse > serial numbers -->
         <record model="ir.filters" id="stock_prouduction_lot_expired_today">
             <field name="name">Batches that Expired Today</field>
             <field name="model_id">stock.production.lot</field>
+            <field name="user_id"></field>
             <field name="domain">[['life_date', '=', context_today().strftime('%Y-%m-%d')]]</field>
         </record>
         <record model="ir.filters" id="stock_prouduction_lot_available_batches">
             <field name="name">Available Batches</field>
             <field name="model_id">stock.production.lot</field>
             <field name="is_default">1</field>
+            <field name="user_id"></field>
             <field name="domain">[['life_date', '&gt;', context_today().strftime('%Y-%m-%d')], ['stock_available', '&gt;', 0]]</field>
         </record>
         <record model="ir.filters" id="stock_prouduction_lot_expired">
             <field name="name">Expired Batches</field>
             <field name="model_id">stock.production.lot</field>
+            <field name="user_id"></field>
             <field name="domain">[['life_date', '&lt;', context_today().strftime('%Y-%m-%d')], ['stock_available', '&gt;', 0]]</field>
         </record>
         <record model="ir.filters" id="stock_prouduction_lot_soon_to_expire">
             <field name="name">Batches Expiring in the one Month</field>
             <field name="model_id">stock.production.lot</field>
+            <field name="user_id"></field>
             <field name="domain">
                 [
                     ['life_date', '&gt;', context_today().strftime('%Y-%m-%d')],
@@ -27,6 +32,55 @@
                     ['stock_available', '&gt;', 0],
                 ]
             </field>
+        </record>
+
+        <!-- For Accounting > Customer payment -->
+        <record model="ir.filters" id="all_customer_payments_today_by_current_user">
+            <field name="name">Payments collected by me today</field>
+            <field name="model_id">account.voucher</field>
+            <field name="user_id"></field>
+            <field name="domain">[['create_uid', '=', uid], ['date', '=', context_today().strftime('%Y-%m-%d')]]</field>
+        </record>
+        <record model="ir.filters" id="all_customer_payments_today">
+            <field name="name">Today's Payments</field>
+            <field name="model_id">account.voucher</field>
+            <field name="user_id"></field>
+            <field name="domain">[['date', '=', context_today().strftime('%Y-%m-%d')]]</field>
+        </record>
+        <record model="ir.filters" id="all_customer_payments_yesterday">
+            <field name="name">Yesterdays's Payments</field>
+            <field name="model_id">account.voucher</field>
+            <field name="user_id"></field>
+            <field name="domain">[['date', '=', (context_today() - datetime.timedelta(1)).strftime('%Y-%m-%d')]]</field>
+        </record>
+
+
+        <!-- Sales > Sales Order -->
+        <record model="ir.filters" id="sales_order_today">
+            <field name="name">Today's Sales</field>
+            <field name="model_id">sale.order</field>
+            <field name="user_id"></field>
+            <field name="domain">[['date_order', '=', context_today().strftime('%Y-%m-%d')]]</field>
+        </record>
+        <record model="ir.filters" id="sales_order_yesterday">
+            <field name="name">Yesterdays's Sales</field>
+            <field name="model_id">sale.order</field>
+            <field name="user_id"></field>
+            <field name="domain">[['date_order', '=', (context_today() - datetime.timedelta(1)).strftime('%Y-%m-%d')]]</field>
+        </record>
+
+        <!-- Accounting > Customer Invoices -->
+        <record model="ir.filters" id="customer_invoices_today">
+            <field name="name">Today's Invoices</field>
+            <field name="model_id">account.invoice</field>
+            <field name="user_id"></field>
+            <field name="domain">[['date_invoice', '=', context_today().strftime('%Y-%m-%d')]]</field>
+        </record>
+        <record model="ir.filters" id="customer_invoices_yesterday">
+            <field name="name">Yesterdays's Invoices</field>
+            <field name="model_id">account.invoice</field>
+            <field name="user_id"></field>
+            <field name="domain">[['date_invoice', '=', (context_today() - datetime.timedelta(1)).strftime('%Y-%m-%d')]]</field>
         </record>
     </data>
 </openerp>
