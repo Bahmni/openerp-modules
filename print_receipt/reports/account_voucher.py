@@ -3,6 +3,7 @@
 import time
 from openerp.report import report_sxw
 from openerp import pooler
+import re
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -15,6 +16,7 @@ class account_voucher(report_sxw.rml_parse):
                                   'getLines': self._lines_get,
                                   'getInvoiceLines': self._invoice_lines_get,
                                   'getInvoiceDiscount': self._invoice_discount_get,
+                                  'removeInternalRef': self._remove_internal_ref,
                                   })
         self.context = context
     
@@ -35,7 +37,10 @@ class account_voucher(report_sxw.rml_parse):
         invoice = invoice_obj.browse(self.cr, self.uid,voucher.invoice_id.id)
         return invoice.discount
 
-
+    def _remove_internal_ref(self, name):
+        name = re.sub(r"<\[*\]", "", name)
+        _logger.info(name)
+        return name
 
 report_sxw.report_sxw('report.account_voucher', 'account.voucher',
                       'addons/print_receipt/reports/account_voucher.rml',
