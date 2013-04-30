@@ -9,6 +9,8 @@ import decimal_precision as dp
 import netsvc
 import logging
 
+_logger = logging.getLogger(__name__)
+
 class product_product(osv.osv):
     
     _name = 'product.product'
@@ -155,7 +157,36 @@ class product_product(osv.osv):
             res[prod_id] -= amount
         return res
 
+    def _check_low_stock(self, cr, uid, ids, field_name, arg, context=None):
+        orderpoint_obj = self.pool.get('stock.warehouse.orderpoint')
+        for product in self.browse(cr, uid, ids, context=context):
+            orderpoints = sorted(product.orderpoint_ids, key=lambda orderpoint: orderpoint.product_min_qty, reverse=True)
+            if (len(orderpoints) > 0 and product.virtual_available < orderpoints[0].product_min_qty):
+                return True
+            else:
+                return False
+        return False
+
+    def _search_low_stock(self, cr, uid, obj, name, args, context=None):
+        ids = set()
+        context = context or {}
+        location = context.get('location', False)
+        location_condition = ""
+        if(location):
+            location_condition = "where location_id=" + str(location)
+        for cond in args:
+            cr.execute("select product_id from stock_warehouse_orderpoint " + location_condition)
+            product_ids = set(id[0] for id in cr.fetchall())
+            for product in self.browse(cr, uid, list(product_ids), context=context):
+                orderpoints = sorted(product.orderpoint_ids, key=lambda orderpoint: orderpoint.product_min_qty, reverse=True)
+                if (len(orderpoints) > 0 and product.virtual_available < orderpoints[0].product_min_qty):
+                    ids.add(product.id)
+        if ids:
+            return [('id', 'in', tuple(ids))]
+        return [('id', '=', '0')]
+
     _columns = {
         'drug':fields.char('Drug Name', size=64),
-        'manufacturer':fields.char('Manufacturer', size=64)
+        'manufacturer':fields.char('Manufacturer', size=64),
+        'low_stock': fields.function(_check_low_stock, type="boolean", string="Low Stock", fnct_search=_search_low_stock)
     }

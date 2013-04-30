@@ -82,5 +82,13 @@
             <field name="user_id"></field>
             <field name="domain">[['date_invoice', '=', (context_today() - datetime.timedelta(1)).strftime('%Y-%m-%d')]]</field>
         </record>
+
+        <!-- Low stock for products -->
+        <record model="ir.filters" id="low_stock">
+            <field name="name">Low Stock</field>
+            <field name="model_id">product.product</field>
+            <field name="user_id"></field>
+            <field name="domain">[['low_stock', '=', True]]</field>
+        </record>
     </data>
 </openerp>
