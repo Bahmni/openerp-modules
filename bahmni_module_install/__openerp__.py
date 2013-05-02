@@ -2,7 +2,7 @@
     "name": "Bahmni Module Install",
     "version": "6.0",
     "depends": ["base",
-                "base_crypt",
+                "auth_crypt",
                 "product",
                 "account",
                 "account_voucher",
