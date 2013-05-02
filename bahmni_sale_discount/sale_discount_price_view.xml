@@ -8,6 +8,12 @@
             <field name="inherit_id" ref="sale.view_order_form"/>
 
             <field name="arch" type="xml">
+
+                <xpath expr="/form/header/button[@string='Create Invoice']" position="replace" >
+                    <button name="action_invoice_create" string="Create Invoice"
+                            states="manual" class="oe_highlight" type="object" groups="base.group_user"/>
+                </xpath>
+
                 <xpath expr="/form/sheet/notebook/page/group[@name='sale_total']" position="replace" >
                     <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
                         <field name="amount_untaxed" widget='monetary' options="{'currency_field': 'currency_id'}"/>
