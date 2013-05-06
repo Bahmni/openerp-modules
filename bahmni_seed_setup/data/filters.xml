@@ -19,7 +19,7 @@
             <field name="name">Expired Batches</field>
             <field name="model_id">stock.production.lot</field>
             <field name="user_id"></field>
-            <field name="domain">[['life_date', '&lt;', context_today().strftime('%Y-%m-%d')], ['stock_available', '&gt;', 0]]</field>
+            <field name="domain">[['life_date', '&lt;=', context_today().strftime('%Y-%m-%d')], ['stock_available', '&gt;', 0]]</field>
         </record>
         <record model="ir.filters" id="stock_prouduction_lot_soon_to_expire">
             <field name="name">Batches Expiring in the one Month</field>
