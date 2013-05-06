@@ -20,21 +20,28 @@ class sale_order(osv.osv):
         res = {}
         for order in self.browse(cr, uid, ids, context=context):
             res[order.id] = {'prev_amount_outstanding':0.0,'total_outstanding':0.0}
-            amount_unreconciled = 0.0
-            voucher_ids = self.pool.get('account.voucher').search(cr, uid,[('partner_id','=',order.partner_id.id)])
-            vouchers= self.pool.get('account.voucher').browse(cr,uid,voucher_ids)
-
-            vouchers = sorted(vouchers, key=lambda v: v.id,reverse=True)
-            if(vouchers and len(vouchers) > 0):
-                voucher = vouchers[0]
-                for voucher_line in voucher.line_ids :
-                    amount_unreconciled = amount_unreconciled + voucher_line.amount_unreconciled - voucher_line.amount
-                res[order.id]['prev_amount_outstanding'] = amount_unreconciled
-                res[order.id]['total_outstanding'] = amount_unreconciled + order.amount_total
-            else :
-                res[order.id]['prev_amount_outstanding'] = 0.0
-                res[order.id]['total_outstanding'] = order.amount_total
+            total_receivable =  self._total_receivable(cr,uid,ids,order,context=context)
+            res[order.id]['prev_amount_outstanding'] = total_receivable
+            res[order.id]['total_outstanding'] = total_receivable + order.amount_total
         return res
+
+    def _total_receivable(self, cr, uid, ids,order, context=None):
+        query = self.pool.get('account.move.line')._query_get(cr, uid, context=context)
+        cr.execute("""SELECT l.partner_id, a.type, SUM(l.debit-l.credit)
+                      FROM account_move_line l
+                      LEFT JOIN account_account a ON (l.account_id=a.id)
+                      WHERE a.type IN ('receivable','payable')
+                      AND l.partner_id = %s
+                      AND l.reconcile_id IS NULL
+                      GROUP BY l.partner_id, a.type
+                      """,(order.partner_id.id,))
+        res = {}
+        receivable =0.0
+        for pid,type,val in cr.fetchall():
+            if val is None: val=0
+            receivable = (type=='receivable') and val or -val
+        return receivable
+
 
 
     def _amount_all(self, cr, uid, ids, field_name, arg, context=None):

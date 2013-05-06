@@ -30,8 +30,8 @@
                                     states="draft,sent" string="(update)" type="object" class="oe_edit_only oe_link"/>
                         </div>
                         <field name="amount_total"  nolabel="1" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}"/>
-                        <field name="prev_amount_outstanding"  class="oe_subtotal_footer_separator" attrs="{'invisible':['|',('state', '!=', 'draft')]}" widget='monetary' options="{'currency_field': 'currency_id'}"/>
-                        <field name="total_outstanding"  class="oe_subtotal_footer_separator" attrs="{'invisible':['|',('state', '!=', 'draft')]}" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                        <field name="prev_amount_outstanding"  attrs="{'invisible':['|',('state', '!=', 'draft')]}" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                        <field name="total_outstanding"   attrs="{'invisible':['|',('state', '!=', 'draft')]}" widget='monetary' options="{'currency_field': 'currency_id'}"/>
                     </group>
                 </xpath>
             </field>
