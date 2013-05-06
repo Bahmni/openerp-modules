@@ -365,7 +365,7 @@ class sale_order(osv.osv):
             'sale.order.line': (_get_order, ['price_unit', 'tax_id', 'discount', 'product_uom_qty'], 10),
             },
         multi='sums', help="The tax amount."),
-    'amount_total': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Total',
+    'amount_total': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Net Amount',
         store={
             'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line','discount_percentage','discount','round_off', 'calculated_discount'], 10),
             'sale.order.line': (_get_order, ['price_unit', 'tax_id', 'discount', 'product_uom_qty'], 10),

@@ -622,7 +622,7 @@ class account_invoice(osv.osv):
     _columns={
               
             'discount':fields.float('Discount',digits=(4,2),readonly=True, states={'draft':[('readonly',False)]}),
-            'amount_total': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='New Charges ',
+            'amount_total': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Net Amount',
                 store={
                     'account.invoice': (lambda self, cr, uid, ids, c={}: ids, ['invoice_line'], 20),
                     'account.invoice.tax': (_get_invoice_tax, None, 20),
@@ -630,7 +630,7 @@ class account_invoice(osv.osv):
                     },
                 multi='all'),
             'discount_acc_id': fields.many2one('account.account', 'Discount Account Head', readonly=True, states={'draft': [('readonly', False)]}),
-            'amount_untaxed': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Subtotal', track_visibility='always',
+            'amount_untaxed': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='New Charges', track_visibility='always',
                 store={
                     'account.invoice': (lambda self, cr, uid, ids, c={}: ids, ['invoice_line'], 20),
                     'account.invoice.tax': (_get_invoice_tax, None, 20),
