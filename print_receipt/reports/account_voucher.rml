@@ -118,11 +118,11 @@
       </tr>
       <tr>
         <td>
-          <para style="P6">Number: [[ (voucher.state == 'posted' or removeParentNode('para')) and voucher.number ]]</para>
-          <para style="P6">Number: [[ (voucher.state == 'cancel' or removeParentNode('para')) and 'Cancelled' ]]</para>
-          <para style="P6">Number: [[ (voucher.state == 'draft' or removeParentNode('para')) and 'Draft' ]]</para>
         </td>
         <td>
+          <para style="P6">Bill Number: [[ (voucher.state == 'posted' or removeParentNode('para')) and voucher.number ]]</para>
+          <para style="P6">Bill Number: [[ (voucher.state == 'cancel' or removeParentNode('para')) and 'Cancelled' ]]</para>
+          <para style="P6">Bill Number: [[ (voucher.state == 'draft' or removeParentNode('para')) and 'Draft' ]]</para>
         </td>
       </tr>
     </blockTable>
@@ -230,7 +230,7 @@
           </para>
         </td>
         <td>
-          <para style="P11">Total Bill:</para>
+          <para style="P11">Bill Amount:</para>
         </td>
         <td>
           <para style="P14">[[ formatLang(voucher.amount +voucher.balance_amount,2) ]]  </para>
@@ -245,7 +245,7 @@
           </para>
         </td>
         <td>
-          <para style="P11">Total Paid:</para>
+          <para style="P11">Paid Amount:</para>
         </td>
         <td>
           <para style="P14">[[ formatLang(voucher.amount,2) ]]  </para>
