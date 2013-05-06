@@ -68,11 +68,17 @@ class sale_order(osv.osv):
                 res[order.id]['calculated_discount'] = total_amount * order.discount_percentage / 100
             else:
                 res[order.id]['calculated_discount'] = order.discount_amount
-            res[order.id]['discount'] = res[order.id]['calculated_discount'] - order.round_off
-            res[order.id]['amount_total'] = res[order.id]['amount_untaxed'] + res[order.id]['amount_tax']- res[order.id]['discount']
-            self.write(cr, uid, order.id, {'discount_amount': res[order.id]['calculated_discount']})
+
+            amount_total_before_round_off = res[order.id]['amount_untaxed'] + res[order.id]['amount_tax'] - res[order.id]['calculated_discount']
+            round_off_amount = self._round_off_amount_for_nearest_five(amount_total_before_round_off)
+            res[order.id]['discount'] = res[order.id]['calculated_discount'] - round_off_amount
+            res[order.id]['amount_total'] = amount_total_before_round_off + round_off_amount
+            self.write(cr, uid, order.id, {'discount_amount': res[order.id]['calculated_discount'], 'round_off': round_off_amount})
         return res
 
+    def _round_off_amount_for_nearest_five(self, value):
+        remainder = value % 5
+        return  -remainder if remainder < 3 else 5 - remainder
 
     def _prepare_invoice(self, cr, uid, order, lines, context=None):
         """Prepare the dict of values to create the new invoice for a
@@ -325,15 +331,8 @@ class sale_order(osv.osv):
                 return False
         return True
 
-    def _check_total_amount_non_negative(self, cr, uid, ids, context=None):
-        sale_order = self.browse(cr, uid, ids[0], context)
-        if(sale_order.round_off + sale_order.amount_total < 0 ):
-            return False
-        return True
-
     _constraints = [
         (_check_discount_range, 'Error!\nDiscount percentage should be between 0-100%.', ['discount_percentage']),
-        (_check_total_amount_non_negative, 'Error!\nTotal Amount is less than 0. Please make sure Amount round off value is correct', ['round_off', 'amount_total']),
     ]
 
     _columns = {
@@ -342,20 +341,20 @@ class sale_order(osv.osv):
     'round_off':fields.float('Amount Round off',digits_compute=dp.get_precision('Account'),readonly=True, states={'draft':[('readonly',False)]}),
     'discount':fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string= 'Discount ',
         store={
-            'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line','discount_percentage','discount','round_off','calculated_discount'], 10),
+            'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line','discount_percentage','discount', 'calculated_discount'], 10),
             'sale.order.line': (_get_order, ['price_unit', 'tax_id', 'discount', 'product_uom_qty'], 10),
             },
         multi='sums', help="The calc disc amount."),
     'calculated_discount':fields.function(_amount_all, fnct_inv=_get_calculated_discount, digits_compute=dp.get_precision('Account'), string='Discount Amount',
         store={
-            'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line','discount_percentage','discount','round_off', 'calculated_discount'], 10),
+            'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line','discount_percentage','discount', 'calculated_discount'], 10),
             'sale.order.line': (_get_order, ['price_unit', 'tax_id', 'discount', 'product_uom_qty'], 10),
             },
         multi='sums', help="The calc disc amount."),
     'discount_acc_id': fields.many2one('account.account', 'Discount Account Head', domain=[('parent_id.name', '=', 'Discounts')]),
     'amount_untaxed': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='New Charges',
         store={
-            'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line','discount_percentage','discount','round_off', 'calculated_discount'], 10),
+            'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line','discount_percentage','discount', 'calculated_discount'], 10),
             'sale.order.line': (_get_order, ['price_unit', 'tax_id', 'discount', 'product_uom_qty'], 10),
             },
         multi='sums', help="The amount without tax.", track_visibility='always'),
@@ -367,7 +366,7 @@ class sale_order(osv.osv):
         multi='sums', help="The tax amount."),
     'amount_total': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Net Amount',
         store={
-            'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line','discount_percentage','discount','round_off', 'calculated_discount'], 10),
+            'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line','discount_percentage','discount', 'calculated_discount'], 10),
             'sale.order.line': (_get_order, ['price_unit', 'tax_id', 'discount', 'product_uom_qty'], 10),
             },
         multi='sums', help="The total amount."),

@@ -22,7 +22,7 @@
                         <field  name="discount_percentage"/>
                         <field  name="discount_amount" invisible="True"/>
                         <field  name="calculated_discount" />
-                        <field  name="round_off" />
+                        <field  name="round_off" readonly="1"/>
                         <field  name="discount" invisible="True" />
                         <div class="oe_subtotal_footer_separator oe_inline">
                             <label for="amount_total" />
