@@ -190,6 +190,9 @@ class sale_order(osv.osv):
         for val in invoices.values():
             if grouped:
                 res = self._make_invoice(cr, uid, val[0][0], reduce(lambda x, y: x + y, [l for o, l in val], []), context=context)
+                inv_ids = [res]
+                invoice.action_move_create(cr, uid, inv_ids, context)
+                invoice.invoice_validate( cr, uid, inv_ids, context)
                 invoice_ref = ''
                 for o, l in val:
                     invoice_ref += o.name + '|'
@@ -199,6 +202,9 @@ class sale_order(osv.osv):
             else:
                 for order, il in val:
                     res = self._make_invoice(cr, uid, order, il, context=context)
+                    inv_ids = [res]
+                    invoice.action_move_create(cr, uid, inv_ids, context)
+                    invoice.invoice_validate(cr, uid, inv_ids, context)
                     invoice_ids.append(res)
                     self.write(cr, uid, [order.id], {'state': 'progress'})
                     cr.execute('insert into sale_order_invoice_rel (order_id,invoice_id) values (%s,%s)', (order.id, res))
@@ -251,25 +257,43 @@ class sale_order(osv.osv):
             result[line.order_id.id] = True
         return result.keys()
 
+    def action_wait(self, cr, uid, ids, context=None):
+        context = context or {}
+        for o in self.browse(cr, uid, ids):
+            if not o.order_line:
+                raise osv.except_osv(_('Error!'),_('You cannot confirm a sales order which has no line.'))
+            noprod = self.test_no_product(cr, uid, o, context)
+            if (o.order_policy == 'manual') or noprod:
+                self.write(cr, uid, [o.id], {'state': 'manual', 'date_confirm': fields.date.context_today(self, cr, uid, context=context)})
+            else:
+                self.write(cr, uid, [o.id], {'state': 'progress', 'date_confirm': fields.date.context_today(self, cr, uid, context=context)})
+            self.pool.get('sale.order.line').button_confirm(cr, uid, [x.id for x in o.order_line])
+        return True
+
+    def button_confirm(self, cr, uid, ids, context=None):
+        return self.write(cr, uid, ids, {'state': 'confirmed'})
+
     def action_button_confirm(self, cr, uid, ids, context=None):
         assert len(ids) == 1, 'This option should only be used for a single id at a time.'
         wf_service = netsvc.LocalService('workflow')
         wf_service.trg_validate(uid, 'sale.order', ids[0], 'order_confirm', cr)
 
-        # redisplay the record as a sales order
-        view_ref = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'sale', 'view_order_form')
-        view_id = view_ref and view_ref[1] or False,
-        return {
-            'type': 'ir.actions.act_window',
-            'name': _('Sales Order'),
-            'res_model': 'sale.order',
-            'res_id': ids[0],
-            'view_type': 'form',
-            'view_mode': 'form',
-            'view_id': view_id,
-            'target': 'current',
-            'nodestroy': True,
-            }
+        return self.action_invoice_create(cr, uid, ids, False, None,False, context)
+
+#        # redisplay the record as a sales order
+#        view_ref = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'sale', 'view_order_form')
+#        view_id = view_ref and view_ref[1] or False,
+#        return {
+#            'type': 'ir.actions.act_window',
+#            'name': _('Sales Order'),
+#            'res_model': 'sale.order',
+#            'res_id': ids[0],
+#            'view_type': 'form',
+#            'view_mode': 'form',
+#            'view_id': view_id,
+#            'target': 'current',
+#            'nodestroy': True,
+#            }
 
     def action_wait(self, cr, uid, ids, context=None):
         context = context or {}
