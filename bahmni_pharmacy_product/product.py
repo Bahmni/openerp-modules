@@ -97,7 +97,7 @@ class product_product(osv.osv):
             where.append(tuple(date_values))
 
         prodlot_id = context.get('prodlot_id', False)
-        prodlot_clause = ' and spl.life_date > now() '
+        prodlot_clause = ' and (spl.life_date is null or spl.life_date > now()) '
         if prodlot_id:
             prodlot_clause = ' and prodlot_id = %s '
             where += [prodlot_id]
@@ -107,10 +107,10 @@ class product_product(osv.osv):
             # all moves from a location out of the set to a location in the set
             cr.execute(
                 'select sum(sm.product_qty), sm.product_id, sm.product_uom '\
-                'from stock_move sm, '\
-                'stock_production_lot spl '\
-                'where sm.prodlot_id = spl.id '\
-                'and sm.location_id NOT IN %s '\
+                'from stock_move sm '\
+                'left outer join stock_production_lot spl on sm.prodlot_id = spl.id '\
+                'where '\
+                'sm.location_id NOT IN %s '\
                 'and sm.location_dest_id IN %s '\
                 'and sm.product_id IN %s '\
                 'and sm.state IN %s ' + (date_str and 'and '+date_str+' ' or '') +' '\
@@ -121,10 +121,10 @@ class product_product(osv.osv):
             # all moves from a location in the set to a location out of the set
             cr.execute(
                 'select sum(sm.product_qty), sm.product_id, sm.product_uom '\
-                'from stock_move sm , '\
-                'stock_production_lot spl '\
-                'where sm.prodlot_id = spl.id '\
-                'and sm.location_id IN %s '\
+                'from stock_move sm '\
+                'left outer join stock_production_lot spl on sm.prodlot_id = spl.id '\
+                'where '\
+                'sm.location_id IN %s '\
                 'and sm.location_dest_id NOT IN %s '\
                 'and sm.product_id  IN %s '\
                 'and sm.state in %s ' + (date_str and 'and '+date_str+' ' or '') + ' '\
