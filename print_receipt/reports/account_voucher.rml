@@ -177,7 +177,7 @@
         </td>
       </tr>
     </blockTable>
-    <blockTable colWidths="162.0,162.0,60.0" style="Table6">
+    <blockTable colWidths="162.0,162.0,60.0" style="Table5">
       <tr>
         <td>
           <para style="P11">
@@ -189,6 +189,21 @@
         </td>
         <td>
           <para style="P14">[[ formatLang(getInvoiceDiscount(voucher),2) ]] </para>
+        </td>
+      </tr>
+     </blockTable>
+    <blockTable colWidths="162.0,162.0,60.0" style="Table6">
+      <tr>
+        <td>
+          <para style="P11">
+            <font color="white"> </font>
+          </para>
+        </td>
+        <td>
+          <para style="P11">Round-Off:</para>
+        </td>
+        <td>
+          <para style="P14">[[ formatLang(getInvoiceRoundOff(voucher),2) ]] </para>
         </td>
       </tr>
      </blockTable>

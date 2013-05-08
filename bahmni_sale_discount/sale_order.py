@@ -71,7 +71,7 @@ class sale_order(osv.osv):
 
             amount_total_before_round_off = res[order.id]['amount_untaxed'] + res[order.id]['amount_tax'] - res[order.id]['calculated_discount']
             round_off_amount = self._round_off_amount_for_nearest_five(amount_total_before_round_off)
-            res[order.id]['discount'] = res[order.id]['calculated_discount'] - round_off_amount
+            res[order.id]['discount'] = res[order.id]['calculated_discount']
             res[order.id]['amount_total'] = amount_total_before_round_off + round_off_amount
             self.write(cr, uid, order.id, {'discount_amount': res[order.id]['calculated_discount'], 'round_off': round_off_amount})
         return res
@@ -116,6 +116,7 @@ class sale_order(osv.osv):
             'date_invoice': context.get('date_invoice', False),
             'company_id': order.company_id.id,
             'discount': sale_discount,
+            'round_off': order.round_off,
             'discount_acc_id':order.discount_acc_id.id,
             'user_id': order.user_id and order.user_id.id or False
         }

@@ -3,8 +3,8 @@
     <data noupdate="0">
    	<!-- New Reports -->
         <report 
-        auto="False" 
-        id="account_voucher" 
+        auto="False"
+        id="account_voucher"
         model="account.voucher" 
         name="account_voucher" 
         rml="print_receipt/reports/account_voucher.rml" 

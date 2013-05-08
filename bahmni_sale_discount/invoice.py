@@ -45,6 +45,7 @@ class account_invoice(osv.osv):
                 total_currency -= i['amount_currency'] or i['price']
 
         total -= inv.discount
+        total += inv.round_off
         return total, total_currency, invoice_move_lines
 
     def invoice_print(self, cr, uid, ids, context=None):
@@ -445,7 +446,7 @@ class account_invoice(osv.osv):
                 res[invoice.id]['amount_tax'] += line.amount
             #jss apply discount
             res[invoice.id]['discount']= invoice.discount
-            res[invoice.id]['amount_total'] = res[invoice.id]['amount_tax'] + res[invoice.id]['amount_untaxed'] - invoice.discount
+            res[invoice.id]['amount_total'] = res[invoice.id]['amount_tax'] + res[invoice.id]['amount_untaxed'] - invoice.discount + invoice.round_off
         return res
 
     def _get_invoice_tax(self, cr, uid, ids, context=None):
@@ -567,6 +568,7 @@ class account_invoice(osv.osv):
     _columns={
               
             'discount':fields.float('Discount',digits=(4,2),readonly=True, states={'draft':[('readonly',False)]}),
+            'round_off':fields.float('Amount Round off',digits_compute=dp.get_precision('Account'),readonly=True, states={'draft':[('readonly',False)]}),
             'amount_total': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Net Amount',
                 store={
                     'account.invoice': (lambda self, cr, uid, ids, c={}: ids, ['invoice_line'], 20),

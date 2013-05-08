@@ -13,6 +13,7 @@
                 <xpath expr="/form/sheet/notebook/page[1]/group[1]/field[@name='amount_untaxed']" position="after" >
                     <field name="discount_acc_id"/>
                     <field name="discount" />
+                    <field name="round_off" />
                 </xpath>
 
             </field>

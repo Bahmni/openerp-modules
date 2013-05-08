@@ -16,6 +16,7 @@ class account_voucher(report_sxw.rml_parse):
                                   'getLines': self._lines_get,
                                   'getInvoiceLines': self._invoice_lines_get,
                                   'getInvoiceDiscount': self._invoice_discount_get,
+                                  'getInvoiceRoundOff': self._invoice_roundoff_get,
                                   'removeInternalRef': self._remove_internal_ref,
                                   })
         self.context = context
@@ -37,9 +38,13 @@ class account_voucher(report_sxw.rml_parse):
         invoice = invoice_obj.browse(self.cr, self.uid,voucher.invoice_id.id)
         return invoice.discount
 
+    def _invoice_roundoff_get(self, voucher):
+        invoice_obj = pooler.get_pool(self.cr.dbname).get('account.invoice')
+        invoice = invoice_obj.browse(self.cr, self.uid,voucher.invoice_id.id)
+        return invoice.round_off
+
     def _remove_internal_ref(self, name):
         name = re.sub(r"<\[*\]", "", name)
-        _logger.info(name)
         return name
 
 report_sxw.report_sxw('report.account_voucher', 'account.voucher',
