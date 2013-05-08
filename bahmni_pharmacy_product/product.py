@@ -84,14 +84,14 @@ class product_product(osv.osv):
         date_values = False
         where = [tuple(location_ids),tuple(location_ids),tuple(ids),tuple(states)]
         if from_date and to_date:
-            date_str = "date>=%s and date<=%s"
+            date_str = "sm.date>=%s and sm.date<=%s"
             where.append(tuple([from_date]))
             where.append(tuple([to_date]))
         elif from_date:
-            date_str = "date>=%s"
+            date_str = "sm.date>=%s"
             date_values = [from_date]
         elif to_date:
-            date_str = "date<=%s"
+            date_str = "sm.date<=%s"
             date_values = [to_date]
         if date_values:
             where.append(tuple(date_values))
