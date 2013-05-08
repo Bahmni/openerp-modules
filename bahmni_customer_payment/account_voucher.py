@@ -23,6 +23,7 @@ class account_voucher(osv.osv):
             res[voucher.id] ={'invoice_id':0,
                               'bill_amount':0.0}
             line_ids = sorted(voucher.line_ids, key=lambda v: v.id,reverse=True)
+            invoice = None
             if(line_ids and len(line_ids) > 0):
                 voucher_line = line_ids[0]
                 inv_no = voucher_line.name
@@ -32,8 +33,8 @@ class account_voucher(osv.osv):
                     invoice = self.pool.get("account.invoice").browse(cr,uid,inv_id,context=context)
             if(invoice):
                 voucher.invoice_id = invoice.id
-            res[voucher.id]['bill_amount'] =   invoice.amount_total
-            self.write(cr, uid, voucher.id, {'invoice_id': invoice.id})
+                res[voucher.id]['bill_amount'] =   invoice.amount_total
+                self.write(cr, uid, voucher.id, {'invoice_id': invoice.id})
 
         return res
 

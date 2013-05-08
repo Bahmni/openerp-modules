@@ -280,21 +280,6 @@ class sale_order(osv.osv):
 
         return self.action_invoice_create(cr, uid, ids, False, None,False, context)
 
-#        # redisplay the record as a sales order
-#        view_ref = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'sale', 'view_order_form')
-#        view_id = view_ref and view_ref[1] or False,
-#        return {
-#            'type': 'ir.actions.act_window',
-#            'name': _('Sales Order'),
-#            'res_model': 'sale.order',
-#            'res_id': ids[0],
-#            'view_type': 'form',
-#            'view_mode': 'form',
-#            'view_id': view_id,
-#            'target': 'current',
-#            'nodestroy': True,
-#            }
-
     def action_wait(self, cr, uid, ids, context=None):
         context = context or {}
         for o in self.browse(cr, uid, ids):
