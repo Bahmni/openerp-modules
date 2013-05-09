@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
-    <data noupdate="1">
+    <data noupdate="0">
+        <record model="stock.location" id="stock.stock_location_company">
+            <field name="name">JSS</field>
+        </record>
+
         <record id="stock_location_stock_bahmni" model="stock.location">
             <field name="name">Bahmni Sub-Center</field>
             <field name="usage">internal</field>
