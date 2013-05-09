@@ -192,6 +192,7 @@ class sale_order(osv.osv):
             if grouped:
                 res = self._make_invoice(cr, uid, val[0][0], reduce(lambda x, y: x + y, [l for o, l in val], []), context=context)
                 inv_ids = [res]
+                invoice_ids.append(res)
                 invoice.action_move_create(cr, uid, inv_ids, context)
                 invoice.invoice_validate( cr, uid, inv_ids, context)
                 invoice_ref = ''
@@ -209,7 +210,38 @@ class sale_order(osv.osv):
                     invoice_ids.append(res)
                     self.write(cr, uid, [order.id], {'state': 'progress'})
                     cr.execute('insert into sale_order_invoice_rel (order_id,invoice_id) values (%s,%s)', (order.id, res))
-        return self.action_view_invoice(cr,uid,ids,context=context)
+
+            dummy, view_id = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'account_voucher', 'view_vendor_receipt_form')
+            inv = invoice.browse(cr, uid, invoice_ids[0], context=context)
+            return {
+                'name':_("Pay Invoice"),
+                'view_mode': 'form',
+                'view_id': view_id,
+                'view_type': 'form',
+                'res_model': 'account.voucher',
+                'type': 'ir.actions.act_window',
+                'nodestroy': True,
+                'target': 'current',
+                'create':False,
+                'edit':False,
+                #'url':final_url
+                'tag': 'onchange_partner_id',
+                'domain': '[]',
+                'context': {
+                    'default_partner_id': inv.partner_id.id,
+                    'default_reference': inv.name,
+                    'close_after_process': True,
+                    'invoice_type': inv.type,
+                    'default_type': inv.type in ('out_invoice','out_refund') and 'receipt' or 'payment',
+                    'type': inv.type in ('out_invoice','out_refund') and 'receipt' or 'payment',
+                    'active_ids':'',
+                    'active_id':'',
+                    'create':False,
+                    'edit':False,
+                    }
+                }
+
+  #  return self.action_view_invoice(cr,uid,ids,context=context)
 
     def action_view_invoice(self, cr, uid, ids, context=None):
         '''
