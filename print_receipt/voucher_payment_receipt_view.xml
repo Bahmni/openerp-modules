@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<openerp>
+    <data>
+        <record id="jss_invoice_form_add_discount" model="ir.ui.view">
+            <field name="name">account.voucher.receipt.form</field>
+            <field name="model">account.voucher</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="account_voucher.view_vendor_receipt_form"/>
+
+            <field name="arch" type="xml">
+                <xpath expr="/form/header/button[@name='proforma_voucher']" position="after" >
+                    <button name="voucher_print" string="Print" type="object"  class="oe_highlight" groups="base.group_user"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>

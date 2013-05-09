@@ -6,7 +6,7 @@
     'author'  : 'Anas Taji',
     'license' : 'AGPL-3',
     'depends' : ['account_accountant', ],
-    'update_xml' : ['print_receipt_reports.xml',],
+    'update_xml' : ['print_receipt_reports.xml','voucher_payment_receipt_view.xml'],
     'installable': True,
     'application': True,
     'auto_install': False,
