@@ -1,7 +1,7 @@
 {
     "name": "Bahmni Seed Data setup",
     "version": "1.0",
-    "depends": ["base","product", "stock", "sale"],
+    "depends": ["base","product", "stock", "sale", "sale_stock"],
     "author": "ThoughtWorks Technologies Pvt. Ltd.",
     "category": "Setup",
 	"summary": "Initial data setup",

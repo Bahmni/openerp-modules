@@ -40,28 +40,28 @@
             <field name="usage">internal</field>
             <field name="location_id" search="[('name', '=', 'Stock')]"/>
         </record>
-        <record id="stock_location_stock_stock_room" model="stock.location">
-            <field name="name">Stock Room</field>
+        <record id="stock_location_stock_pharmacy" model="stock.location">
+            <field name="name">Pharmacy</field>
             <field name="usage">internal</field>
             <field name="location_id" search="[('name', '=', 'Stock')]"/>
         </record>
 
-        <record id="stock_location_stock_stock_room_pharmacy" model="stock.location">
-            <field name="name">Pharmacy</field>
+        <record id="stock_location_stock_pharmacy_stock_room" model="stock.location">
+            <field name="name">Stock Room</field>
             <field name="usage">internal</field>
-            <field name="location_id" ref="stock_location_stock_stock_room"/>
+            <field name="location_id" ref="stock_location_stock_pharmacy"/>
         </record>
 
         <!-- Warehouse -->
         <record id="warehouse_pharmacy_stock_room" model="stock.warehouse">
             <field name="name">Pharmacy Stock Room</field>
-            <field name="lot_input_id" ref="stock_location_stock_stock_room"/>
-            <field name="lot_stock_id" ref="stock_location_stock_stock_room"/>
+            <field name="lot_input_id" ref="stock_location_stock_pharmacy_stock_room"/>
+            <field name="lot_stock_id" ref="stock_location_stock_pharmacy"/>
             <field name="lot_output_id" search="[('name', '=', 'Output')]"/>
         </record>
         <record id="warehouse_ipd" model="stock.warehouse">
             <field name="name">IPD</field>
-            <field name="lot_input_id" ref="stock_location_stock_ipd"/>
+            <field name="lot_input_id" ref="stock_location_stock_pharmacy_stock_room"/>
             <field name="lot_stock_id" ref="stock_location_stock_ipd"/>
             <field name="lot_output_id" search="[('name', '=', 'Output')]"/>
         </record>
