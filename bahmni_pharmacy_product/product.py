@@ -185,8 +185,15 @@ class product_product(osv.osv):
             return [('id', 'in', tuple(ids))]
         return [('id', '=', '0')]
 
+    def _get_actual_stock(self, cr, uid, ids, field_name, arg, context=None):
+        context = context or {}
+        ctx = context.copy()
+        ctx.update({ 'states': ('done',), 'what': ('in', 'out'), 'compute_child': False })
+        return self.get_product_available(cr, uid, ids, context=ctx)
+
     _columns = {
         'drug':fields.char('Drug Name', size=64),
         'manufacturer':fields.char('Manufacturer', size=64),
-        'low_stock': fields.function(_check_low_stock, type="boolean", string="Low Stock", fnct_search=_search_low_stock)
+        'low_stock': fields.function(_check_low_stock, type="boolean", string="Low Stock", fnct_search=_search_low_stock),
+        'actual_stock': fields.function(_get_actual_stock, type="float", string="Actual Stock"),
     }

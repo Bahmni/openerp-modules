@@ -16,6 +16,16 @@
                 </xpath>
             </field>
         </record>
-        
+
+        <record id="add_actual_stock_product_tree" model="ir.ui.view">
+            <field name="name">product.product.tree</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_product_tree_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="/tree/field[@name='qty_available']" position="after">
+                    <field name="actual_stock"/>
+                </xpath>
+            </field>
+        </record>
     </data>
 </openerp>
