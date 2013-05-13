@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
-    <data noupdate="0">
+    <data noupdate="1">
         <!-- Delete Default Shop & Warehouse-->
         <delete model="sale.shop" search="[('name', '=', 'Your Company')]"/>
         <delete model="stock.warehouse" search="[('name', '=', 'Your Company')]"/>

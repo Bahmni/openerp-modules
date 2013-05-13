@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
-    <data noupdate="0">
+    <data noupdate="1">
         <!-- For warehouse > serial numbers -->
         <record model="ir.filters" id="stock_prouduction_lot_expired_today">
             <field name="name">Batches that Expired Today</field>
