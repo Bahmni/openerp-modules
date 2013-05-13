@@ -37,7 +37,10 @@ class product_product(osv.osv):
             return res
 
         if context.get('shop', False):
-            warehouse_id = shop_obj.read(cr, uid, int(context['shop']), ['warehouse_id'])['warehouse_id'][0]
+            warehouse_ids = shop_obj.read(cr, uid, int(context['shop']), ['warehouse_id'])['warehouse_id']
+            warehouse_id = None;
+            if(warehouse_ids and len(warehouse_ids) > 0):
+                warehouse_id = shop_obj.read(cr, uid, int(context['shop']), ['warehouse_id'])['warehouse_id'][0]
             if warehouse_id:
                 context['warehouse'] = warehouse_id
 
