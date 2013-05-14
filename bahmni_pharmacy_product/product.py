@@ -191,7 +191,9 @@ class product_product(osv.osv):
     def _get_actual_stock(self, cr, uid, ids, field_name, arg, context=None):
         context = context or {}
         ctx = context.copy()
-        ctx.update({ 'states': ('done',), 'what': ('in', 'out'), 'compute_child': False })
+        ctx.update({ 'states': ('done',), 'what': ('in', 'out')})
+        if(ctx.get('location', False)):
+            ctx.update({'compute_child': False})
         return self.get_product_available(cr, uid, ids, context=ctx)
 
     _columns = {
