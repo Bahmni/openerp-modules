@@ -1,1 +1,1 @@
-import sale_order,invoice,account
+import sale_order,invoice,account,total_receivables
