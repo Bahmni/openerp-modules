@@ -14,7 +14,6 @@ _logger = logging.getLogger(__name__)
 class total_receivables(osv.osv):
 
     _name = "account.receivables"
-    _inherit = "account.invoice"
     _description = 'Total Receivables update service'
 
     def update_customer_receivables(self, cr, uid, vals,context=None):
