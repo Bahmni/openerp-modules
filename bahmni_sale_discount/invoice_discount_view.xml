@@ -17,7 +17,6 @@
                 </xpath>
                 <xpath expr="/form/sheet/notebook/page[1]/field[@name='invoice_line']/tree/field[@name='invoice_line_tax_id']" position="replace" >
                 </xpath>
-
             </field>
             <!--<field name="arch" type="xml">-->
                 <!--<xpath expr="/form/sheet/notebook/page[1]/group[2]" position="replace" >-->

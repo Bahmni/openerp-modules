@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates>
+    <span t-name="test_button" t-attf-class="base" class="oe_web_example">  
+        <button name="print" type="object" id="bstart">Print</button>
+        <iframe id="printBillFrame" style="display:none"/>
+    </span>
+
+    <div t-name="Bill" t-attf-class="base" class="oe_web_example">
+        <div style="margin-top: 10px">
+            <div>Jan Swasthya Sahyog</div>
+            <div>Ganiyari, Bilaspur (C.G) 495112</div>
+        </div>
+        <div style="margin-top: 20px">
+            <div>Phone: 07753-244819</div>
+            <div>Email: janswasthya@gmail.com</div>
+        </div>
+        <div><h2>Receipt</h2></div>
+
+        <div style="margin-top: 20px">
+            <div style="width: 40%; float: left">
+                <div>Patient: <t t-esc="partner_name"/></div>
+                <div>Patient ID: <t t-esc="partner_ref"/></div>
+            </div>
+            <div style="width: 40%; float: right">
+                <div>Bill Number: <t t-esc="voucher_number"/></div>
+                <div>Date: <t t-esc="voucher_date"/></div>
+            </div>
+        </div>
+
+        <table>
+            <tr>
+                <th style="text-align:left">Product</th>
+                <th>Unit Price</th>
+                <th>Quantity</th>
+                <th>SubTotal</th>
+            </tr>
+            <tr t-foreach="invoice_line_items" t-as="invoice_line_item">
+                <td><t t-esc="invoice_line_item.product_name"/></td>
+                <td><t t-esc="invoice_line_item.unit_price"/></td>
+                <td><t t-esc="invoice_line_item.quantity"/></td>
+                <td><t t-esc="invoice_line_item.subtotal"/></td>
+            </tr>
+        </table>
+
+        <div style="width:50%;float:right">
+            <div>New Charges: <t t-esc="new_charges"/></div>
+            <div>Discount Head: <t t-esc="discount_head"/></div>
+            <div>Discount: <t t-esc="discount"/></div>
+            <div><hr/></div>
+            <div>Net Amount: <t t-esc="net_amount"/></div>
+            <div>Previous Balance: <t t-esc="previous_balance"/></div>
+            <div><hr/></div>
+            <div>Bill Amount: <t t-esc="bill_amount"/></div>
+            <div>Paid Amount: <t t-esc="paid_amount"/></div>
+            <div><hr/></div>
+            <div>Outstanding Balance: <t t-esc="balance_amount"/></div>
+        </div>
+    </div>
+</templates>
