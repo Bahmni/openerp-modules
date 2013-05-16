@@ -28,7 +28,13 @@
 
                 <field name="client_order_ref" position="replace"/>
 
+                <button name="action_quotation_send" string="Send by Email" type="object" position="attributes" >
+                    <attribute name="invisible">1</attribute>/>
+                </button>
 
+                <button name="print_quotation" string="Print" type="object" states="draft" class="oe_highlight" groups="base.group_user" position="attributes">
+                    <attribute name="invisible">1</attribute>/>
+                </button>
 
                 <!--<xpath expr="/form/sheet/notebook/page[@string='Order Lines']/field[@name='order_line']/tree/field[@name='tax_id']" position="replace" >-->
                 <!--</xpath>-->

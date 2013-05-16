@@ -16,6 +16,25 @@
                            on_change="onchange_journal(journal_id, line_cr_ids, False, partner_id, date, amount, type, company_id, context)"
                            string="Payment Method"/>
                 </xpath>
+
+                <field name="reference" string="Payment Ref" placeholder="e.g. 003/10" position="attributes" >
+                    <attribute name="invisible">1</attribute>/>
+                </field>
+
+                <field name="name" colspan="2" placeholder="e.g. Invoice SAJ/0042" position="attributes" >
+                    <attribute name="invisible">1</attribute>/>
+                </field>
+
+                <field name="account_id"  groups="base.group_no_one" domain="[('type','=','receivable')]" position="attributes" >
+                    <attribute name="invisible">1</attribute>/>
+                </field>
+
+                <field name="date_due" readonly="1" position="attributes" >
+                    <attribute name="invisible">1</attribute>/>
+                </field>
+
+
+
                 <xpath expr="/form/sheet/notebook/page/group//field[@name='writeoff_amount']" position="before" >
                     <field name="balance_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                     <field name="bill_amount" widget="monetary" options="{'currency_field': 'currency_id'}" invisible="1"/>
