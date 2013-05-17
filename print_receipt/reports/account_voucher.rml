@@ -114,15 +114,15 @@
         </td>
         <td>
           <para style="P6">Date: [[ formatLang(voucher.date,date=True) ]]</para>
+          <para style="P6">Bill Number: [[ (voucher.state == 'posted' or removeParentNode('para')) and voucher.number ]]</para>
+          <para style="P6">Bill Number: [[ (voucher.state == 'cancel' or removeParentNode('para')) and 'Cancelled' ]]</para>
+          <para style="P6">Bill Number: [[ (voucher.state == 'draft' or removeParentNode('para')) and 'Draft' ]]</para>
         </td>
       </tr>
       <tr>
         <td>
         </td>
         <td>
-          <para style="P6">Bill Number: [[ (voucher.state == 'posted' or removeParentNode('para')) and voucher.number ]]</para>
-          <para style="P6">Bill Number: [[ (voucher.state == 'cancel' or removeParentNode('para')) and 'Cancelled' ]]</para>
-          <para style="P6">Bill Number: [[ (voucher.state == 'draft' or removeParentNode('para')) and 'Draft' ]]</para>
         </td>
       </tr>
     </blockTable>
@@ -162,6 +162,19 @@
         </tr>
       </blockTable>
     </section>
+    <blockTable colWidths="100.0,100.0,129.0,205.0" style="Table2">
+                <tr>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                  </td>
+                </tr>
+    </blockTable>
+
     <blockTable colWidths="162.0,162.0,60.0" style="Table5">
       <tr>
         <td>
