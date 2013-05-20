@@ -78,7 +78,7 @@ class sale_order(osv.osv):
 
     def _round_off_amount_for_nearest_five(self, value):
         remainder = value % 5
-        return  -remainder if remainder < 3 else 5 - remainder
+        return  -remainder if remainder < 2.5 else 5 - remainder
 
     def _prepare_invoice(self, cr, uid, order, lines, context=None):
         """Prepare the dict of values to create the new invoice for a
