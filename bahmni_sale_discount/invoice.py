@@ -511,9 +511,6 @@ class account_invoice(osv.osv):
             'analytic_account_id': x.get('account_analytic_id', False),
             }
 
-
-
-
     _columns={
               
             'discount':fields.float('Discount',digits=(4,2),readonly=True, states={'draft':[('readonly',False)]}),
@@ -549,11 +546,6 @@ class account_invoice(osv.osv):
                     'account.move.reconcile': (_get_invoice_from_reconcile, None, 50),
                     },
                 help="Remaining amount due."),
-#            'amount_before_payment':fields.function(_calculate_balances, digits_compute=dp.get_precision('Account'), string='Previous Balance', multi='all'),
-#            'amount_paid':fields.function(_calculate_balances, digits_compute=dp.get_precision('Account'), string=' Paid Amount', multi='all'),
-#            'bill_amount':fields.function(_calculate_balances, digits_compute=dp.get_precision('Account'), string='Bill Amount', multi='all'),
-#            'amount_outstanding':fields.function(_calculate_balances, digits_compute=dp.get_precision('Account'), string='Outstanding Balance',
-#             multi='all'),
             }
     
     _defaults={
