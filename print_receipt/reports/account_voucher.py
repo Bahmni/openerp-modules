@@ -20,7 +20,7 @@ class account_voucher(report_sxw.rml_parse):
                                   'removeInternalRef': self._remove_internal_ref,
                                   })
         self.context = context
-    
+
     def _lines_get(self, voucher):
         voucherline_obj = pooler.get_pool(self.cr.dbname).get('account.voucher.line')
         voucherlines = voucherline_obj.search(self.cr, self.uid,[('voucher_id','=',voucher.id)])
