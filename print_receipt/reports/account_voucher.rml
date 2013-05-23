@@ -32,6 +32,10 @@
       <lineStyle kind="LINEBELOW" colorName="#000000" start="3,0" stop="3,0"/>
       <lineStyle kind="LINEBELOW" colorName="#000000" start="3,3" stop="3,3"/>
     </blockTableStyle>
+    <blockTableStyle id="Table2.5">
+      <blockAlignment value="LEFT"/>
+      <blockValign value="TOP"/>
+    </blockTableStyle>
     <blockTableStyle id="Table4">
       <blockAlignment value="LEFT"/>
       <blockValign value="TOP"/>
@@ -74,10 +78,14 @@
     <paraStyle name="P7" fontName="Helvetica" fontSize="10.0" leading="13" alignment="CENTER"/>
     <paraStyle name="P8" fontName="Helvetica" fontSize="10.0" leading="13"/>
     <paraStyle name="P9" fontName="Helvetica" fontSize="10.0" leading="13" alignment="LEFT"/>
+    <paraStyle name="P9B" fontName="Helvetica-Bold" fontSize="10.0" leading="13" alignment="LEFT"/>
     <paraStyle name="P10" fontName="Helvetica" fontSize="10.0" leading="13" alignment="CENTER"/>
+    <paraStyle name="P10B" fontName="Helvetica-Bold" fontSize="10.0" leading="13" alignment="CENTER"/>
+    <paraStyle name="P11NB" fontName="Helvetica" fontSize="10.0" leading="13" alignment="RIGHT"/>
     <paraStyle name="P11" fontName="Helvetica-Bold" fontSize="10.0" leading="13" alignment="RIGHT"/>
     <paraStyle name="P12" fontName="Helvetica-Bold" fontSize="9.0" leading="11" alignment="RIGHT"/>
     <paraStyle name="P13" rightIndent="0.0" leftIndent="0.0" fontName="Helvetica" fontSize="9.0" leading="11" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
+    <paraStyle name="P14NB" rightIndent="0.0" leftIndent="-3.0" fontName="Helvetica" fontSize="9.0" leading="11" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
     <paraStyle name="P14" rightIndent="0.0" leftIndent="-3.0" fontName="Helvetica-Bold" fontSize="9.0" leading="11" alignment="RIGHT" spaceBefore="0.0" spaceAfter="0.0"/>
     <paraStyle name="P15" fontName="Helvetica-Bold" fontSize="10.0" leading="13" alignment="CENTER"/>
     <paraStyle name="Standard" fontName="Helvetica"/>
@@ -127,25 +135,25 @@
       </tr>
     </blockTable>
     <para style="P15"/>
-    <blockTable colWidths="100.0,100.0,129.0,205.0" style="Table2">
+    <blockTable colWidths="154.0,100.0,100.0,180.0" style="Table2">
       <tr>
         <td>
-          <para style="P9">Product</para>
+          <para style="P9B">Product</para>
         </td>
         <td>
-          <para style="P10">Unit Price</para>
+          <para style="P10B">Unit Price</para>
         </td>
         <td>
-          <para style="P10">Quantity</para>
+          <para style="P10B">Quantity</para>
         </td>
         <td>
-          <para style="P10">SubTotal</para>
+          <para style="P10B">SubTotal</para>
         </td>
       </tr>
     </blockTable>
     <section>
       <para style="P4">[[ repeatIn(getInvoiceLines(voucher), 'line') ]]</para>
-      <blockTable colWidths="100.0,100.0,129.0,205.0" style="Table4">
+      <blockTable colWidths="154.0,100.0,100.0,180.0" style="Table4">
         <tr>
           <td>
             <para style="P9">[[ removeInternalRef(line['name']) ]]</para>
@@ -162,7 +170,7 @@
         </tr>
       </blockTable>
     </section>
-    <blockTable colWidths="100.0,100.0,129.0,205.0" style="Table2">
+    <blockTable colWidths="100.0,100.0,129.0,205.0" style="Table2.5">
                 <tr>
                   <td>
                   </td>
@@ -193,15 +201,15 @@
     <blockTable colWidths="162.0,162.0,60.0" style="Table5">
       <tr>
         <td>
-          <para style="P11">
+          <para style="P11NB">
             <font color="white"> </font>
           </para>
         </td>
         <td>
-          <para style="P11">Discount:</para>
+          <para style="P11NB">Discount:</para>
         </td>
         <td>
-          <para style="P14">[[ formatLang(getInvoiceDiscount(voucher),2) ]] </para>
+          <para style="P14NB">[[ formatLang(getInvoiceDiscount(voucher),2) ]] </para>
         </td>
       </tr>
      </blockTable>
@@ -213,10 +221,10 @@
           </para>
         </td>
         <td>
-          <para style="P11">Round-Off:</para>
+          <para style="P11NB">Round-Off:</para>
         </td>
         <td>
-          <para style="P14">[[ formatLang(getInvoiceRoundOff(voucher),2) ]] </para>
+          <para style="P14NB">[[ formatLang(getInvoiceRoundOff(voucher),2) ]] </para>
         </td>
       </tr>
      </blockTable>
@@ -238,15 +246,15 @@
     <blockTable colWidths="162.0,162.0,60.0" style="Table6">
       <tr>
         <td>
-          <para style="P11">
+          <para style="P11NB">
             <font color="white"> </font>
           </para>
         </td>
         <td>
-          <para style="P11">Previous Balance:</para>
+          <para style="P11NB">Previous Balance:</para>
         </td>
         <td>
-          <para style="P14">[[ formatLang(voucher.balance_amount + voucher.amount - voucher.bill_amount,2) ]]  </para>
+          <para style="P14NB">[[ formatLang(voucher.balance_amount + voucher.amount - voucher.bill_amount,2) ]]  </para>
         </td>
       </tr>
     </blockTable>
@@ -268,15 +276,15 @@
     <blockTable colWidths="162.0,162.0,60.0" style="Table6">
       <tr>
         <td>
-          <para style="P11">
+          <para style="P11NB">
             <font color="white"> </font>
           </para>
         </td>
         <td>
-          <para style="P11">Paid Amount:</para>
+          <para style="P11NB">Paid Amount:</para>
         </td>
         <td>
-          <para style="P14">[[ formatLang(voucher.amount,2) ]]  </para>
+          <para style="P14NB">[[ formatLang(voucher.amount,2) ]]  </para>
         </td>
       </tr>
     </blockTable>
