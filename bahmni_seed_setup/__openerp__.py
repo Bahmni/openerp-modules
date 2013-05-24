@@ -14,6 +14,8 @@
         'data/warehouse_seed_setup.xml',
         'data/filters.xml',
         'data/discount_heads.xml',
+        'data/unit_of_measures.xml',
+        'data/payment_method.xml',
     ],
     'demo': [],
     'auto_install': False,
