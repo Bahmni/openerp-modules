@@ -7,7 +7,14 @@
 	"summary": "Initial data setup",
     "description": """
     """,
-    'data': ['data/settings.xml', 'data/product_category_setup.xml', 'data/suppliers_seed_setup.xml', 'data/warehouse_seed_setup.xml', 'data/filters.xml'],
+    'data': [
+        'data/settings.xml',
+        'data/product_category_setup.xml',
+        'data/suppliers_seed_setup.xml',
+        'data/warehouse_seed_setup.xml',
+        'data/filters.xml',
+        'data/discount_heads.xml',
+    ],
     'demo': [],
     'auto_install': False,
     'application': True,

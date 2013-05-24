@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <!-- Discount Heads -->
+        <record model="account.account" id="account_discounts">
+            <field name="code">222</field>
+            <field name="name">Discounts</field>
+            <field name="parent_id" ref="account.conf_ovr"/>
+            <field name="type">view</field>
+            <field name="user_type" ref="account.account_type_expense_view1"/>
+        </record>
+
+        <record model="account.account" id="account_discounts_att">
+            <field name="code">D1</field>
+            <field name="name">ATT</field>
+            <field name="parent_id" ref="account_discounts"/>
+            <field name="type">other</field>
+            <field name="user_type" ref="account.data_account_type_expense"/>
+        </record>
+        <record model="account.account" id="account_discounts_baiga">
+            <field name="code">D2</field>
+            <field name="name">BAIGA</field>
+            <field name="parent_id" ref="account_discounts"/>
+            <field name="type">other</field>
+            <field name="user_type" ref="account.data_account_type_expense"/>
+        </record>
+        <record model="account.account" id="account_discounts_cancer">
+            <field name="code">D3</field>
+            <field name="name">CANCER</field>
+            <field name="parent_id" ref="account_discounts"/>
+            <field name="type">other</field>
+            <field name="user_type" ref="account.data_account_type_expense"/>
+        </record>
+        <record model="account.account" id="account_discounts_diabetes">
+            <field name="code">D4</field>
+            <field name="name">DIABETES</field>
+            <field name="parent_id" ref="account_discounts"/>
+            <field name="type">other</field>
+            <field name="user_type" ref="account.data_account_type_expense"/>
+        </record>
+        <record model="account.account" id="account_discounts_hiv">
+            <field name="code">D5</field>
+            <field name="name">HIV</field>
+            <field name="parent_id" ref="account_discounts"/>
+            <field name="type">other</field>
+            <field name="user_type" ref="account.data_account_type_expense"/>
+        </record>
+        <record model="account.account" id="account_discounts_lab">
+            <field name="code">D6</field>
+            <field name="name">LAB</field>
+            <field name="parent_id" ref="account_discounts"/>
+            <field name="type">other</field>
+            <field name="user_type" ref="account.data_account_type_expense"/>
+        </record>
+        <record model="account.account" id="account_discounts_leprosy">
+            <field name="code">D7</field>
+            <field name="name">LEPROSY</field>
+            <field name="parent_id" ref="account_discounts"/>
+            <field name="type">other</field>
+            <field name="user_type" ref="account.data_account_type_expense"/>
+        </record>
+        <record model="account.account" id="account_discounts_obstetric">
+            <field name="code">D8</field>
+            <field name="name">OBSTETRIC</field>
+            <field name="parent_id" ref="account_discounts"/>
+            <field name="type">other</field>
+            <field name="user_type" ref="account.data_account_type_expense"/>
+        </record>
+        <record model="account.account" id="account_discounts_poor_patient">
+            <field name="code">D9</field>
+            <field name="name">POOR PATIENT</field>
+            <field name="parent_id" ref="account_discounts"/>
+            <field name="type">other</field>
+            <field name="user_type" ref="account.data_account_type_expense"/>
+        </record>
+        <record model="account.account" id="account_discounts_rhd">
+            <field name="code">D10</field>
+            <field name="name">RHD</field>
+            <field name="parent_id" ref="account_discounts"/>
+            <field name="type">other</field>
+            <field name="user_type" ref="account.data_account_type_expense"/>
+        </record>
+        <record model="account.account" id="account_discounts_sickle_cell">
+            <field name="code">D11</field>
+            <field name="name">SICKLE CELL</field>
+            <field name="parent_id" ref="account_discounts"/>
+            <field name="type">other</field>
+            <field name="user_type" ref="account.data_account_type_expense"/>
+        </record>
+        <record model="account.account" id="account_discounts_swf">
+            <field name="code">D12</field>
+            <field name="name">SWF</field>
+            <field name="parent_id" ref="account_discounts"/>
+            <field name="type">other</field>
+            <field name="user_type" ref="account.data_account_type_expense"/>
+        </record>
+        <record model="account.account" id="account_discounts_vhw">
+            <field name="code">D13</field>
+            <field name="name">VHW</field>
+            <field name="parent_id" ref="account_discounts"/>
+            <field name="type">other</field>
+            <field name="user_type" ref="account.data_account_type_expense"/>
+        </record>
+        <record model="account.account" id="account_discounts_ajws">
+            <field name="code">D14</field>
+            <field name="name">AJWS</field>
+            <field name="parent_id" ref="account_discounts"/>
+            <field name="type">other</field>
+            <field name="user_type" ref="account.data_account_type_expense"/>
+        </record>
+        <record model="account.account" id="account_discounts_oxfam">
+            <field name="code">D15</field>
+            <field name="name">OXFAM</field>
+            <field name="parent_id" ref="account_discounts"/>
+            <field name="type">other</field>
+            <field name="user_type" ref="account.data_account_type_expense"/>
+        </record>
+        <record model="account.account" id="account_discounts_malaria">
+            <field name="code">D16</field>
+            <field name="name">MALARIA</field>
+            <field name="parent_id" ref="account_discounts"/>
+            <field name="type">other</field>
+            <field name="user_type" ref="account.data_account_type_expense"/>
+        </record>
+    </data>
+</openerp>
