@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
-    <data noupdate="1">
+    <data noupdate="0">
         <!-- For warehouse > serial numbers -->
         <record model="ir.filters" id="stock_prouduction_lot_expired_today">
             <field name="name">Batches that Expired Today</field>
@@ -62,13 +62,23 @@
             <field name="name">Today's Sales</field>
             <field name="model_id">sale.order</field>
             <field name="user_id"></field>
-            <field name="domain">[['date_order', '=', context_today().strftime('%Y-%m-%d')]]</field>
+            <field name="domain">
+                [
+                    ['date_order', '&gt;=', context_today().strftime('%Y-%m-%d')],
+                    ['date_order', '&lt;', (context_today() + datetime.timedelta(1)).strftime('%Y-%m-%d')],
+                ]
+            </field>
         </record>
         <record model="ir.filters" id="sales_order_yesterday">
             <field name="name">Yesterdays's Sales</field>
             <field name="model_id">sale.order</field>
             <field name="user_id"></field>
-            <field name="domain">[['date_order', '=', (context_today() - datetime.timedelta(1)).strftime('%Y-%m-%d')]]</field>
+            <field name="domain">
+                [
+                    ['date_order', '&lt;=', (context_today() - datetime.timedelta(1)).strftime('%Y-%m-%d')],
+                    ['date_order', '&gt;', (context_today() - datetime.timedelta(2)).strftime('%Y-%m-%d 23:59:59')],
+                ]
+            </field>
         </record>
 
         <!-- Accounting > Customer Invoices -->
