@@ -81,6 +81,43 @@
             </field>
         </record>
 
+        <!--  For Delivery orders -->
+        <record model="ir.filters" id="delivery_order_today">
+            <field name="name">Today's Order</field>
+            <field name="model_id">stock.picking.out</field>
+            <field name="user_id"></field>
+            <field name="domain">
+                [
+                    ['date', '&gt;=', context_today().strftime('%Y-%m-%d')],
+                    ['date', '&lt;', (context_today() + datetime.timedelta(1)).strftime('%Y-%m-%d')],
+                ]
+            </field>
+        </record>
+        <record model="ir.filters" id="delivery_order_delivered_today">
+            <field name="name">Delivered Today</field>
+            <field name="model_id">stock.picking.out</field>
+            <field name="user_id"></field>
+            <field name="domain">
+                [
+                    ['date', '&gt;=', context_today().strftime('%Y-%m-%d')],
+                    ['date', '&lt;', (context_today() + datetime.timedelta(1)).strftime('%Y-%m-%d')],
+                    ['state', '=', 'done'],
+                ]
+            </field>
+        </record>
+        <record model="ir.filters" id="delivery_order_undelivered_today">
+            <field name="name">To be Delivered Today</field>
+            <field name="model_id">stock.picking.out</field>
+            <field name="user_id"></field>
+            <field name="domain">
+                [
+                    ['date', '&gt;=', context_today().strftime('%Y-%m-%d')],
+                    ['date', '&lt;', (context_today() + datetime.timedelta(1)).strftime('%Y-%m-%d')],
+                    ['state', '!=', 'done'],
+                ]
+            </field>
+        </record>
+
         <!-- Accounting > Customer Invoices -->
         <record model="ir.filters" id="customer_invoices_today">
             <field name="name">Today's Invoices</field>
