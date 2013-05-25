@@ -418,7 +418,16 @@ class account_invoice(osv.osv):
                 for m in invoice.move_id.line_id:
                     if m.account_id.type in ('receivable','payable'):
                         result[invoice.id] += m.amount_residual_currency
-        return result
+            if(result[invoice.id] <= 0 and invoice.state != 'paid'):
+                    self.confirm_paid(cr,uid,ids,context)
+            return result
+
+    def confirm_paid(self, cr, uid, ids, context=None):
+        if context is None:
+            context = {}
+        self.write(cr, uid, ids, {'state':'paid'}, context=context)
+        return True
+
 
     def _get_invoice_from_line(self, cr, uid, ids, context=None):
         move = {}
