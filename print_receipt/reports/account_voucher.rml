@@ -213,7 +213,7 @@
         </td>
       </tr>
      </blockTable>
-    <!--blockTable colWidths="162.0,162.0,60.0" style="Table5">
+    <blockTable colWidths="162.0,162.0,60.0" style="Table5">
       <tr>
         <td>
           <para style="P11">
@@ -227,7 +227,7 @@
           <para style="P14">[[ formatLang(voucher.bill_amount,2) ]] </para>
         </td>
       </tr>
-     </blockTable-->
+     </blockTable>
     <blockTable colWidths="162.0,162.0,60.0" style="Table6">
       <tr>
         <td>

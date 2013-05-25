@@ -44,7 +44,7 @@ class account_voucher(report_sxw.rml_parse):
         return invoice.round_off
 
     def _remove_internal_ref(self, name):
-        name = re.sub(r"<\[*\]", "", name)
+        name = re.sub(r"\[.*\]", "", name)
         return name
 
 report_sxw.report_sxw('report.account_voucher', 'account.voucher',
