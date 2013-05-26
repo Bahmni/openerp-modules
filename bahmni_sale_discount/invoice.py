@@ -48,23 +48,6 @@ class account_invoice(osv.osv):
         total += inv.round_off
         return total, total_currency, invoice_move_lines
 
-    def invoice_print(self, cr, uid, ids, context=None):
-        '''
-        This function prints the invoice and mark it as sent, so that we can see more easily the next step of the workflow
-        '''
-        assert len(ids) == 1, 'This option should only be used for a single id at a time.'
-        self.write(cr, uid, ids, {'sent': True}, context=context)
-        datas = {
-            'ids': ids,
-            'model': 'account.invoice',
-            'form': self.read(cr, uid, ids[0], context=context)
-        }
-        return {
-            'type': 'ir.actions.report.xml',
-            'report_name': 'account.invoice.with.balance',
-            'datas': datas,
-            'nodestroy' : True
-        }
 
     def action_move_create(self, cr, uid, ids, context=None):
         """Creates invoice related analytics and financial move lines"""
@@ -275,111 +258,6 @@ class account_invoice(osv.osv):
         return
 
 
-
-    def pay_and_reconcile(self, cr, uid, ids, pay_amount, pay_account_id, period_id, pay_journal_id, writeoff_acc_id, writeoff_period_id, writeoff_journal_id, context=None, name=''):
-        if context is None:
-            context = {}
-            #TODO check if we can use different period for payment and the writeoff line
-        assert len(ids)==1, "Can only pay one invoice at a time."
-        invoice = self.browse(cr, uid, ids[0], context=context)
-        src_account_id = invoice.account_id.id
-        # Take the seq as name for move
-        types = {'out_invoice': -1, 'in_invoice': 1, 'out_refund': 1, 'in_refund': -1}
-        direction = types[invoice.type]
-        #take the choosen date
-        if 'date_p' in context and context['date_p']:
-            date=context['date_p']
-        else:
-            date=time.strftime('%Y-%m-%d')
-
-        # Take the amount in currency and the currency of the payment
-        if 'amount_currency' in context and context['amount_currency'] and 'currency_id' in context and context['currency_id']:
-            amount_currency = context['amount_currency']
-            currency_id = context['currency_id']
-        else:
-            amount_currency = False
-            currency_id = False
-
-        pay_journal = self.pool.get('account.journal').read(cr, uid, pay_journal_id, ['type'], context=context)
-        if invoice.type in ('in_invoice', 'out_invoice'):
-            if pay_journal['type'] == 'bank':
-                entry_type = 'bank_pay_voucher' # Bank payment
-            else:
-                entry_type = 'pay_voucher' # Cash payment
-        else:
-            entry_type = 'cont_voucher'
-        if invoice.type in ('in_invoice', 'in_refund'):
-            ref = invoice.reference
-        else:
-            ref = self._convert_ref(cr, uid, invoice.number)
-        partner = invoice.partner_id
-        if partner.parent_id and not partner.is_company:
-            partner = partner.parent_id
-
-
-            # Pay attention to the sign for both debit/credit AND amount_currency
-        l1 = {
-            'debit': direction * pay_amount>0 and direction * pay_amount,
-            'credit': direction * pay_amount<0 and - direction * pay_amount,
-            'account_id': src_account_id,
-            'partner_id': partner.id,
-            'ref':ref,
-            'date': date,
-            'currency_id':currency_id,
-            'amount_currency':amount_currency and direction * amount_currency or 0.0,
-            'company_id': invoice.company_id.id,
-            }
-        l2 = {
-            'debit': direction * pay_amount<0 and - direction * pay_amount,
-            'credit': direction * pay_amount>0 and direction * pay_amount,
-            'account_id': pay_account_id,
-            'partner_id': partner.id,
-            'ref':ref,
-            'date': date,
-            'currency_id':currency_id,
-            'amount_currency':amount_currency and - direction * amount_currency or 0.0,
-            'company_id': invoice.company_id.id,
-            }
-
-        if not name:
-            name = invoice.invoice_line and invoice.invoice_line[0].name or invoice.number
-        l1['name'] = name
-        l2['name'] = name
-
-        lines = [(0, 0, l1), (0, 0, l2)]
-        move = {'ref': ref, 'line_id': lines, 'journal_id': pay_journal_id, 'period_id': period_id, 'date': date}
-        move_id = self.pool.get('account.move').create(cr, uid, move, context=context)
-
-        line_ids = []
-        total = 0.0
-        line = self.pool.get('account.move.line')
-        move_ids = [move_id,]
-        if invoice.move_id:
-            move_ids.append(invoice.move_id.id)
-        cr.execute('SELECT id FROM account_move_line '\
-                   'WHERE move_id IN %s',
-            ((move_id, invoice.move_id.id),))
-        lines = line.browse(cr, uid, map(lambda x: x[0], cr.fetchall()) )
-        for l in lines+invoice.payment_ids:
-            if l.account_id.id == src_account_id:
-                line_ids.append(l.id)
-                total += (l.debit or 0.0) - (l.credit or 0.0)
-
-        inv_id, name = self.name_get(cr, uid, [invoice.id], context=context)[0]
-        if (not round(total,self.pool.get('decimal.precision').precision_get(cr, uid, 'Account'))) or writeoff_acc_id:
-            self.pool.get('account.move.line').reconcile(cr, uid, line_ids, 'manual', writeoff_acc_id, writeoff_period_id, writeoff_journal_id, context)
-        else:
-            code = invoice.currency_id.symbol
-            # TODO: use currency's formatting function
-            msg = _("Invoice partially paid: %s%s of %s%s (%s%s remaining).") %\
-                  (pay_amount, code, invoice.amount_total, code, total, code)
-            self.message_post(cr, uid, [inv_id], body=msg, context=context)
-            self.pool.get('account.move.line').reconcile_partial(cr, uid, line_ids, 'manual', context)
-
-        # Update the stored value (fields.function), so we write to trigger recompute
-        self.pool.get('account.invoice').write(cr, uid, ids, {}, context=context)
-        return True
-
     def _amount_all(self, cr, uid, ids, name, args, context=None):
         res = {}
         for invoice in self.browse(cr, uid, ids, context=context):
@@ -418,8 +296,9 @@ class account_invoice(osv.osv):
                 for m in invoice.move_id.line_id:
                     if m.account_id.type in ('receivable','payable'):
                         result[invoice.id] += m.amount_residual_currency
-            if(result[invoice.id] <= 0 and invoice.state != 'paid'):
-                    self.confirm_paid(cr,uid,ids,context)
+                if invoice.type not in ('out_refund', 'in_refund'):
+                    if(result[invoice.id] <= 0 and invoice.state != 'paid'):
+                        self.confirm_paid(cr,uid,ids,context)
             return result
 
     def confirm_paid(self, cr, uid, ids, context=None):

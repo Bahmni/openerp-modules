@@ -1,1 +1,1 @@
-import partner,account_voucher,invoice
+import partner,account_voucher
