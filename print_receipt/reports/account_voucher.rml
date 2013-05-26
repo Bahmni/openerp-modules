@@ -135,7 +135,7 @@
       </tr>
     </blockTable>
     <para style="P15"/>
-    <blockTable colWidths="154.0,100.0,100.0,180.0" style="Table2">
+    <blockTable colWidths="184.0,90.0,90.0,190.0" style="Table2">
       <tr>
         <td>
           <para style="P9B">Product</para>
@@ -153,7 +153,7 @@
     </blockTable>
     <section>
       <para style="P4">[[ repeatIn(getInvoiceLines(voucher), 'line') ]]</para>
-      <blockTable colWidths="154.0,100.0,100.0,180.0" style="Table4">
+      <blockTable colWidths="184.0,90.0,90.0,190.0" style="Table4">
         <tr>
           <td>
             <para style="P9">[[ removeInternalRef(line['name']) ]]</para>
@@ -183,7 +183,7 @@
                 </tr>
     </blockTable>
 
-    <blockTable colWidths="162.0,162.0,60.0" style="Table5">
+    <blockTable colWidths="172.0,162.0,70.0" style="Table5">
       <tr>
         <td>
           <para style="P11">
@@ -194,11 +194,26 @@
           <para style="P11">New Charges:</para>
         </td>
         <td>
-          <para style="P14">[[ formatLang(voucher.bill_amount + getInvoiceDiscount(voucher) - getInvoiceRoundOff(voucher),2) ]] </para>
+          <para style="P14">[[ formatLang(voucher.bill_amount + getInvoiceDiscount(voucher) + getInvoiceRoundOff(voucher),2) ]] </para>
         </td>
       </tr>
     </blockTable>
-    <blockTable colWidths="162.0,162.0,60.0" style="Table6">
+    <blockTable colWidths="172.0,162.0,70.0" style="Table5">
+      <tr>
+        <td>
+          <para style="P11NB">
+            <font color="white"> </font>
+          </para>
+        </td>
+        <td>
+          <para style="P11NB">Discount Head:</para>
+        </td>
+        <td>
+          <para style="P14NB">[[ getInvoiceDiscountHead(voucher) ]] </para>
+        </td>
+      </tr>
+     </blockTable>
+    <blockTable colWidths="172.0,162.0,70.0" style="Table6">
       <tr>
         <td>
           <para style="P11NB">
@@ -213,7 +228,7 @@
         </td>
       </tr>
      </blockTable>
-    <blockTable colWidths="162.0,162.0,60.0" style="Table5">
+    <blockTable colWidths="172.0,162.0,70.0" style="Table5">
       <tr>
         <td>
           <para style="P11">
@@ -228,7 +243,7 @@
         </td>
       </tr>
      </blockTable>
-    <blockTable colWidths="162.0,162.0,60.0" style="Table6">
+    <blockTable colWidths="172.0,162.0,70.0" style="Table6">
       <tr>
         <td>
           <para style="P11NB">
@@ -243,7 +258,7 @@
         </td>
       </tr>
     </blockTable>
-    <blockTable colWidths="162.0,162.0,60.0" style="Table5">
+    <blockTable colWidths="172.0,162.0,70.0" style="Table5">
       <tr>
         <td>
           <para style="P11">
@@ -258,7 +273,7 @@
         </td>
       </tr>
     </blockTable>
-    <blockTable colWidths="162.0,162.0,60.0" style="Table6">
+    <blockTable colWidths="172.0,162.0,70.0" style="Table6">
       <tr>
         <td>
           <para style="P11NB">
@@ -273,7 +288,7 @@
         </td>
       </tr>
     </blockTable>
-    <blockTable colWidths="162.0,162.0,60.0" style="Table5">
+    <blockTable colWidths="172.0,162.0,70.0" style="Table5">
       <tr>
         <td>
           <para style="P11">

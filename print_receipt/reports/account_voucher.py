@@ -16,6 +16,7 @@ class account_voucher(report_sxw.rml_parse):
                                   'getLines': self._lines_get,
                                   'getInvoiceLines': self._invoice_lines_get,
                                   'getInvoiceDiscount': self._invoice_discount_get,
+                                  'getInvoiceDiscountHead': self._invoice_discount_head_get,
                                   'getInvoiceRoundOff': self._invoice_roundoff_get,
                                   'removeInternalRef': self._remove_internal_ref,
                                   })
@@ -34,18 +35,30 @@ class account_voucher(report_sxw.rml_parse):
         return invoice_lines
 
     def _invoice_discount_get(self, voucher):
-        invoice_obj = pooler.get_pool(self.cr.dbname).get('account.invoice')
-        invoice = invoice_obj.browse(self.cr, self.uid,voucher.invoice_id.id)
+        invoice = self._invoice_get(voucher.invoice_id.id)
         return invoice.discount
 
+    def _invoice_discount_head_get(self, voucher):
+        invoice = self._invoice_get(voucher.invoice_id.id)
+        disc_account_obj = pooler.get_pool(self.cr.dbname).get('account.account')
+        _logger.info("acccount id")
+        _logger.info(invoice.discount_acc_id.id)
+        disc_account_obj = disc_account_obj.browse(self.cr,self.uid,invoice.discount_acc_id.id)
+        _logger.info(disc_account_obj)
+        return disc_account_obj.name
+
     def _invoice_roundoff_get(self, voucher):
-        invoice_obj = pooler.get_pool(self.cr.dbname).get('account.invoice')
-        invoice = invoice_obj.browse(self.cr, self.uid,voucher.invoice_id.id)
+        invoice = self._invoice_get(voucher.invoice_id.id)
         return invoice.round_off
 
     def _remove_internal_ref(self, name):
         name = re.sub(r"\[.*\]", "", name)
         return name
+
+    def _invoice_get(self,invoice_id):
+        invoice_obj = pooler.get_pool(self.cr.dbname).get('account.invoice')
+        return invoice_obj.browse(self.cr, self.uid,invoice_id)
+
 
 report_sxw.report_sxw('report.account_voucher', 'account.voucher',
                       'addons/print_receipt/reports/account_voucher.rml',
