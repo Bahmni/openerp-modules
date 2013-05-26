@@ -16,8 +16,6 @@ class account_voucher(osv.osv):
 
     def _calculate_balances(self, cr, uid, ids, name, args, context=None):
         res = {}
-        #                for voucher_line in voucher.line_ids :
-        #                    amount_unreconciled = amount_unreconciled + voucher_line.amount_unreconciled - voucher_line.amount
 
         for voucher in self.browse(cr, uid, ids, context=context):
             res[voucher.id] ={'invoice_id':0,
