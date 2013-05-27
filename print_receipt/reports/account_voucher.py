@@ -41,10 +41,7 @@ class account_voucher(report_sxw.rml_parse):
     def _invoice_discount_head_get(self, voucher):
         invoice = self._invoice_get(voucher.invoice_id.id)
         disc_account_obj = pooler.get_pool(self.cr.dbname).get('account.account')
-        _logger.info("acccount id")
-        _logger.info(invoice.discount_acc_id.id)
         disc_account_obj = disc_account_obj.browse(self.cr,self.uid,invoice.discount_acc_id.id)
-        _logger.info(disc_account_obj)
         return disc_account_obj.name
 
     def _invoice_roundoff_get(self, voucher):

@@ -43,14 +43,65 @@ class account_voucher(osv.osv):
         res = {}
         amount_unreconciled = 0.0
         for voucher in self.browse(cr, uid, ids, context=context):
+            partner = voucher.partner_id
+            res[voucher.id] = partner.credit
+        return res
+
+    def _compute_writeoff_amount(self, cr, uid, line_dr_ids, line_cr_ids, amount, type):
+        debit = credit = 0.0
+        sign = type == 'payment' and -1 or 1
+        for l in line_dr_ids:
+            debit += l['amount']
+        for l in line_cr_ids:
+            credit += l['amount']
+        return amount - sign * (credit - debit)
+
+    def _compute_total_balance(self, cr, uid, partner_id,amount):
+        partner_obj = self.pool.get('res.partner')
+        partner = partner_obj.browse(cr,uid,partner_id)
+        return partner.credit - amount
+
+    def onchange_line_ids(self, cr, uid, ids, line_dr_ids, line_cr_ids, amount, voucher_currency, type, context=None):
+        context = context or {}
+        if not line_dr_ids and not line_cr_ids:
+            return {'value':{}}
+        partner_id = context['partner_id']
+        _logger.info("partner_id")
+        _logger.info(partner_id)
+        line_osv = self.pool.get("account.voucher.line")
+        line_dr_ids = resolve_o2m_operations(cr, uid, line_osv, line_dr_ids, ['amount'], context)
+        line_cr_ids = resolve_o2m_operations(cr, uid, line_osv, line_cr_ids, ['amount'], context)
+
+        #compute the field is_multi_currency that is used to hide/display options linked to secondary currency on the voucher
+        is_multi_currency = False
+        if voucher_currency:
+            # if the voucher currency is not False, it means it is different than the company currency and we need to display the options
+            is_multi_currency = True
+        else:
+            #loop on the voucher lines to see if one of these has a secondary currency. If yes, we need to define the options
+            for voucher_line in line_dr_ids+line_cr_ids:
+                company_currency = False
+                company_currency = voucher_line.get('move_line_id', False) and self.pool.get('account.move.line').browse(cr, uid, voucher_line.get('move_line_id'), context=context).company_id.currency_id.id
+                if voucher_line.get('currency_id', company_currency) != company_currency:
+                    is_multi_currency = True
+                    break
+        return {'value': {'writeoff_amount': self._compute_writeoff_amount(cr, uid, line_dr_ids, line_cr_ids, amount, type),'balance_amount':self._compute_total_balance(cr, uid, partner_id,amount), 'is_multi_currency': is_multi_currency}}
+
+    def _get_writeoff_amount(self, cr, uid, ids, name, args, context=None):
+        if not ids: return {}
+        currency_obj = self.pool.get('res.currency')
+        res = {}
+        debit = credit = 0.0
+        for voucher in self.browse(cr, uid, ids, context=context):
             sign = voucher.type == 'payment' and -1 or 1
             for l in voucher.line_dr_ids:
-                amount_unreconciled +=l.amount_unreconciled
+                debit += l.amount
             for l in voucher.line_cr_ids:
-                amount_unreconciled +=l.amount_unreconciled
+                credit += l.amount
             currency = voucher.currency_id or voucher.company_id.currency_id
-            res[voucher.id] =  currency_obj.round(cr, uid, currency, amount_unreconciled - voucher.amount)
+            res[voucher.id] =  currency_obj.round(cr, uid, currency, voucher.amount - sign * (credit - debit))
         return res
+
 
     def fields_view_get(self, cr, uid, view_id=None, view_type=False, context=None, toolbar=False, submenu=False):
         mod_obj = self.pool.get('ir.model.data')
@@ -401,3 +452,23 @@ class account_voucher(osv.osv):
         'payment_rate': 1.0,
         'payment_rate_currency_id': _get_payment_rate_currency,
         }
+
+def resolve_o2m_operations(cr, uid, target_osv, operations, fields, context):
+    results = []
+    for operation in operations:
+        result = None
+        if not isinstance(operation, (list, tuple)):
+            result = target_osv.read(cr, uid, operation, fields, context=context)
+        elif operation[0] == 0:
+            # may be necessary to check if all the fields are here and get the default values?
+            result = operation[2]
+        elif operation[0] == 1:
+            result = target_osv.read(cr, uid, operation[1], fields, context=context)
+            if not result: result = {}
+            result.update(operation[2])
+        elif operation[0] == 4:
+            result = target_osv.read(cr, uid, operation[1], fields, context=context)
+        if result != None:
+            results.append(result)
+    return results
+
