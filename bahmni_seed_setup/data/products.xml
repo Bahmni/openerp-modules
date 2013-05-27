@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+
+        <delete model="product.product" id="product.product_product_consultant"/> <!-- Removing default service product -->
+
+        <!-- IPD services -->
+        <record model="product.product" id="product_service_ipd_admission_charges">
+            <field name="name">Admission Charges</field>
+            <field name="list_price">0.0</field>
+            <field name="standard_price">0.0</field>
+            <field name="uom_id" ref="product.product_uom_unit"/>
+            <field name="uom_po_id" ref="product.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_services_ipd"/>
+            <field name="type">service</field>
+        </record>
+        <record model="product.product" id="product_service_ipd_bed">
+            <field name="name">Bed</field>
+            <field name="list_price">40.0</field>
+            <field name="standard_price">0.0</field>
+            <field name="uom_id" ref="product.product_uom_day"/>
+            <field name="uom_po_id" ref="product.product_uom_day"/>
+            <field name="categ_id" ref="product_category_services_ipd"/>
+            <field name="type">service</field>
+        </record>
+        <record model="product.product" id="product_service_ipd_charges">
+            <field name="name">IPD Charges</field>
+            <field name="list_price">0.0</field>
+            <field name="standard_price">0.0</field>
+            <field name="uom_id" ref="product.product_uom_unit"/>
+            <field name="uom_po_id" ref="product.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_services_ipd"/>
+            <field name="type">service</field>
+        </record>
+
+        <!--  Lab services -->
+        <record model="product.product" id="product_service_lab_charges">
+            <field name="name">Lab Charges</field>
+            <field name="list_price">0.0</field>
+            <field name="standard_price">0.0</field>
+            <field name="uom_id" ref="product.product_uom_unit"/>
+            <field name="uom_po_id" ref="product.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_services_lab"/>
+            <field name="type">service</field>
+        </record>
+
+        <!--  OT services -->
+        <record model="product.product" id="product_service_surgery_charges">
+            <field name="name">Surgery Charges</field>
+            <field name="list_price">0.0</field>
+            <field name="standard_price">0.0</field>
+            <field name="uom_id" ref="product.product_uom_unit"/>
+            <field name="uom_po_id" ref="product.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_services_ot"/>
+            <field name="type">service</field>
+        </record>
+
+        <!--  Radiology services -->
+        <record model="product.product" id="product_service_radiology_ultrasound">
+            <field name="name">Ultrasound</field>
+            <field name="list_price">0.0</field>
+            <field name="standard_price">0.0</field>
+            <field name="uom_id" ref="product.product_uom_unit"/>
+            <field name="uom_po_id" ref="product.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_services_radiology"/>
+            <field name="type">service</field>
+        </record>
+        <record model="product.product" id="product_service_radiology_xray">
+            <field name="name">X-Ray</field>
+            <field name="list_price">0.0</field>
+            <field name="standard_price">0.0</field>
+            <field name="uom_id" ref="product.product_uom_unit"/>
+            <field name="uom_po_id" ref="product.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_services_radiology"/>
+            <field name="type">service</field>
+        </record>
+
+        <record model="product.product" id="product_service_other">
+            <field name="name">Other</field>
+            <field name="list_price">0.0</field>
+            <field name="standard_price">0.0</field>
+            <field name="uom_id" ref="product.product_uom_unit"/>
+            <field name="uom_po_id" ref="product.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_services"/>
+            <field name="type">service</field>
+        </record>
+    </data>
+</openerp>

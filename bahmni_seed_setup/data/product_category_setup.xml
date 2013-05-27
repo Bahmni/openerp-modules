@@ -2,15 +2,13 @@
 <openerp>
     <data noupdate="1">
 
-        <delete model="product.product" id="product.product_product_consultant"/> <!-- Removing default service product -->
-
         <record model="product.category" id="product_category_food_supplement">
             <field name="name">Food Supplement</field>
             <field name="parent_id" search="[('name', '=', 'Saleable')]"></field>
         </record>
 
-        <record model="product.category" id="product_category_ayurvedic_product">
-            <field name="name">Ayurvedic Product</field>
+        <record model="product.category" id="product_category_ayurvedic">
+            <field name="name">Ayurvedic</field>
             <field name="parent_id" search="[('name', '=', 'Saleable')]"></field>
         </record>
 
@@ -100,20 +98,16 @@
             <field name="name">IPD</field>
             <field name="parent_id" ref="product_category_services"></field>
         </record>
-        <record model="product.category" id="product_category_services_lab_test">
-            <field name="name">Lab Test</field>
+        <record model="product.category" id="product_category_services_lab">
+            <field name="name">Lab</field>
             <field name="parent_id" ref="product_category_services"></field>
         </record>
-        <record model="product.category" id="product_category_services_radiology_test">
-            <field name="name">Radiology Test</field>
+        <record model="product.category" id="product_category_services_radiology">
+            <field name="name">Radiology</field>
             <field name="parent_id" ref="product_category_services"></field>
         </record>
-        <record model="product.category" id="product_category_services_surgery">
-            <field name="name">Surgery</field>
-            <field name="parent_id" ref="product_category_services"></field>
-        </record>
-        <record model="product.category" id="product_category_services_procedure">
-            <field name="name">Procedure</field>
+        <record model="product.category" id="product_category_services_ot">
+            <field name="name">OT</field>
             <field name="parent_id" ref="product_category_services"></field>
         </record>
     </data>
