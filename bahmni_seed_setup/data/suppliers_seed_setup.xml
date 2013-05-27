@@ -67,5 +67,17 @@
             <field name="customer" eval="0"/>
             <field name="is_company">1</field>
         </record>
+        <record model="res.partner" id="res_partner_12">
+            <field name="name">NITIN MEDICAL AGENCY</field>
+            <field name="supplier">1</field>
+            <field name="customer" eval="0"/>
+            <field name="is_company">1</field>
+        </record>
+        <record model="res.partner" id="res_partner_13">
+            <field name="name">VIKAS ENTERPRISES</field>
+            <field name="supplier">1</field>
+            <field name="customer" eval="0"/>
+            <field name="is_company">1</field>
+        </record>
     </data>
 </openerp>
