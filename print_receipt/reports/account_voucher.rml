@@ -194,7 +194,7 @@
           <para style="P11">New Charges:</para>
         </td>
         <td>
-          <para style="P14">[[ formatLang(voucher.bill_amount + getInvoiceDiscount(voucher) + getInvoiceRoundOff(voucher),2) ]] </para>
+          <para style="P14">[[ formatLang(voucher.bill_amount + getInvoiceDiscount(voucher),2) ]] </para>
         </td>
       </tr>
     </blockTable>
