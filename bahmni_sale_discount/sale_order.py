@@ -386,14 +386,8 @@ class sale_order(osv.osv):
         (_check_discount_range, 'Error!\nDiscount percentage should be between 0-100%.', ['discount_percentage']),
     ]
 
-    def _get_default_shop(self, cr, uid, context=None):
-        company_id = self.pool.get('res.users').browse(cr, uid, uid, context=context).company_id.id
-        shop_ids = self.pool.get('sale.shop').search(cr, uid, [('company_id','=',company_id)], context=context)
-        if not shop_ids:
-            raise osv.except_osv(_('Error!'), _('There is no default shop for the current user\'s company!'))
-        return shop_ids[0]
-
     _columns = {
+    'date_order': fields.datetime('Date', required=True, readonly=True, select=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]}),
     'discount_percentage':fields.float('Discount %',digits_compute=dp.get_precision('Account'),readonly=True, states={'draft':[('readonly',False)]}),
     'discount_amount':fields.float('Absolute Discount Amount',digits_compute=dp.get_precision('Account'),readonly=True, states={'draft':[('readonly',False)]}),
     'round_off':fields.float('Amount Round off',digits_compute=dp.get_precision('Account'),readonly=True, states={'draft':[('readonly',False)]}),
@@ -438,16 +432,8 @@ class sale_order(osv.osv):
     }
 
     _defaults = {
-        'date_order': fields.date.context_today,
-        'order_policy': 'manual',
-        'state': 'draft',
-        'user_id': lambda obj, cr, uid, context: uid,
-        'name': lambda obj, cr, uid, context: '/',
-        'invoice_quantity': 'order',
-        'shop_id': _get_default_shop,
-        'partner_invoice_id': lambda self, cr, uid, context: context.get('partner_id', False) and self.pool.get('res.partner').address_get(cr, uid, [context['partner_id']], ['invoice'])['invoice'],
-        'partner_shipping_id': lambda self, cr, uid, context: context.get('partner_id', False) and self.pool.get('res.partner').address_get(cr, uid, [context['partner_id']], ['delivery'])['delivery'],
-#        'partner_village': _get_partner_village,
+        'date_order': lambda self,cr,uid, context=None: str(fields.datetime.context_timestamp(cr, uid, datetime.now().replace(microsecond=0), context=context)),
+        # 'partner_village': _get_partner_village,
         }
 
 
