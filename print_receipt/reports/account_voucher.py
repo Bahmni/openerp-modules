@@ -35,18 +35,28 @@ class account_voucher(report_sxw.rml_parse):
         return invoice_lines
 
     def _invoice_discount_get(self, voucher):
-        invoice = self._invoice_get(voucher.invoice_id.id)
-        return invoice.discount
+        discount = 0.0
+        if(voucher.invoice_id):
+            invoice = self._invoice_get(voucher.invoice_id.id)
+            discount = invoice.discount
+        return discount
 
     def _invoice_discount_head_get(self, voucher):
-        invoice = self._invoice_get(voucher.invoice_id.id)
-        disc_account_obj = pooler.get_pool(self.cr.dbname).get('account.account')
-        disc_account_obj = disc_account_obj.browse(self.cr,self.uid,invoice.discount_acc_id.id)
-        return disc_account_obj.name
+        disc_head = ''
+        if(voucher.invoice_id):
+            invoice = self._invoice_get(voucher.invoice_id.id)
+            disc_account_obj = pooler.get_pool(self.cr.dbname).get('account.account')
+            if(invoice.discount_acc_id):
+                disc_account = disc_account_obj.browse(self.cr,self.uid,invoice.discount_acc_id.id)
+                disc_head = disc_account.name
+        return disc_head
 
     def _invoice_roundoff_get(self, voucher):
-        invoice = self._invoice_get(voucher.invoice_id.id)
-        return invoice.round_off
+        round_off = 0.0
+        if(voucher.invoice_id):
+            invoice = self._invoice_get(voucher.invoice_id.id)
+            round_off = invoice.round_off
+        return round_off
 
     def _remove_internal_ref(self, name):
         name = re.sub(r"\[.*\]", "", name)
