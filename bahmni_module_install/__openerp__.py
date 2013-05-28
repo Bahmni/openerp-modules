@@ -1,7 +1,9 @@
 {
     "name": "Bahmni Module Install",
     "version": "6.0",
-    "depends": ["base",
+    "depends": [
+                "bahmni_logger",
+                "base",
                 "auth_crypt",
                 "product",
                 "account",
@@ -21,7 +23,7 @@
                 ],
     "author": "ThoughtWorks Technologies Pvt. Ltd.",
     "category": "Setup",
-	"summary": "Install Module",
+    "summary": "Install Module",
     "description": """
     """,
     'data': [],
