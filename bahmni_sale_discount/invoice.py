@@ -46,8 +46,12 @@ class account_invoice(osv.osv):
 
         total -= inv.discount
         total += inv.round_off
+        total+= self._round_off_amount_for_nearest_five(total)
         return total, total_currency, invoice_move_lines
 
+    def _round_off_amount_for_nearest_five(self, value):
+        remainder = value % 5
+        return  -remainder if remainder < 2.5 else 5 - remainder
 
     def action_move_create(self, cr, uid, ids, context=None):
         """Creates invoice related analytics and financial move lines"""
