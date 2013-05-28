@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
-    <data noupdate="1">
+    <data noupdate="0">
 
         <record model="product.category" id="product_category_ayurvedic">
             <field name="name">Ayurvedic</field>
@@ -9,6 +9,11 @@
 
         <record model="product.category" id="product_category_equipment">
             <field name="name">Equipment</field>
+            <field name="parent_id" search="[('name', '=', 'Saleable')]"></field>
+        </record>
+
+        <record model="product.category" id="product_category_food_supplement">
+            <field name="name">Food Supplement</field>
             <field name="parent_id" search="[('name', '=', 'Saleable')]"></field>
         </record>
 
