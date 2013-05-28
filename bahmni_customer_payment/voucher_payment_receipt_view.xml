@@ -17,6 +17,12 @@
                            string="Payment Method"/>
                 </xpath>
 
+                <field name="amount" class="oe_inline"
+                       string="Paid Amount"
+                       widget="monetary" position="before">
+                    <field name="balance_amount" widget="monetary"  class="oe_bold"  options="{'currency_field': 'currency_id'}"/>
+                </field>
+
                 <field name="reference" string="Payment Ref" placeholder="e.g. 003/10" position="attributes" >
                     <attribute name="invisible">1</attribute>/>
                 </field>
@@ -33,10 +39,7 @@
                     <attribute name="invisible">1</attribute>/>
                 </field>
 
-
-
                 <xpath expr="/form/sheet/notebook/page/group//field[@name='writeoff_amount']" position="before" >
-                    <field name="balance_amount" widget="monetary"  class="oe_bold"  options="{'currency_field': 'currency_id'}"/>
                     <field name="bill_amount" widget="monetary" options="{'currency_field': 'currency_id'}" invisible="1"/>
                     <!--<field name="invoice_id" />-->
                 </xpath>

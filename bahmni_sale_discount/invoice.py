@@ -279,7 +279,9 @@ class account_invoice(osv.osv):
                 res[invoice.id]['amount_tax'] += line.amount
             #jss apply discount
             res[invoice.id]['discount']= invoice.discount
-            res[invoice.id]['amount_total'] = res[invoice.id]['amount_tax'] + res[invoice.id]['amount_untaxed'] - invoice.discount + invoice.round_off
+            amount_total = res[invoice.id]['amount_tax'] + res[invoice.id]['amount_untaxed'] - invoice.discount + invoice.round_off
+            amount_total += self._round_off_amount_for_nearest_five(amount_total)
+            res[invoice.id]['amount_total'] = amount_total
         return res
 
     def _get_invoice_tax(self, cr, uid, ids, context=None):
