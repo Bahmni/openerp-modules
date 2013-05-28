@@ -7,7 +7,7 @@
         <!-- IPD services -->
         <record model="product.product" id="product_service_ipd_admission_charges">
             <field name="name">Admission Charges</field>
-            <field name="list_price">0.0</field>
+            <field name="list_price">50.0</field>
             <field name="standard_price">0.0</field>
             <field name="uom_id" ref="product.product_uom_unit"/>
             <field name="uom_po_id" ref="product.product_uom_unit"/>
@@ -25,6 +25,15 @@
         </record>
         <record model="product.product" id="product_service_ipd_charges">
             <field name="name">IPD Charges</field>
+            <field name="list_price">0.0</field>
+            <field name="standard_price">0.0</field>
+            <field name="uom_id" ref="product.product_uom_unit"/>
+            <field name="uom_po_id" ref="product.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_services_ipd"/>
+            <field name="type">service</field>
+        </record>
+        <record model="product.product" id="product_service_ipd_delivery_charges">
+            <field name="name">Delivery Charges</field>
             <field name="list_price">0.0</field>
             <field name="standard_price">0.0</field>
             <field name="uom_id" ref="product.product_uom_unit"/>
@@ -74,6 +83,24 @@
             <field name="categ_id" ref="product_category_services_radiology"/>
             <field name="type">service</field>
         </record>
+        <record model="product.product" id="product_service_radiology_echo">
+            <field name="name">ECHO</field>
+            <field name="list_price">0.0</field>
+            <field name="standard_price">0.0</field>
+            <field name="uom_id" ref="product.product_uom_unit"/>
+            <field name="uom_po_id" ref="product.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_services_radiology"/>
+            <field name="type">service</field>
+        </record>
+        <record model="product.product" id="product_service_radiology_ecg">
+            <field name="name">ECG</field>
+            <field name="list_price">0.0</field>
+            <field name="standard_price">0.0</field>
+            <field name="uom_id" ref="product.product_uom_unit"/>
+            <field name="uom_po_id" ref="product.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_services_radiology"/>
+            <field name="type">service</field>
+        </record>
 
         <record model="product.product" id="product_service_other">
             <field name="name">Other</field>
@@ -85,7 +112,7 @@
             <field name="type">service</field>
         </record>
         <record model="product.product" id="product_service_registration_charges">
-            <field name="name">Registration charges</field>
+            <field name="name">Registration Fee</field>
             <field name="list_price">0.0</field>
             <field name="standard_price">0.0</field>
             <field name="uom_id" ref="product.product_uom_unit"/>
