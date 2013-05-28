@@ -68,7 +68,6 @@ class sale_order(osv.osv):
                 res[order.id]['calculated_discount'] = total_amount * order.discount_percentage / 100
             else:
                 res[order.id]['calculated_discount'] = order.discount_amount
-
             amount_total_before_round_off = res[order.id]['amount_untaxed'] + res[order.id]['amount_tax'] - res[order.id]['calculated_discount']
             round_off_amount = self._round_off_amount_for_nearest_five(amount_total_before_round_off)
             res[order.id]['discount'] = res[order.id]['calculated_discount']
@@ -373,9 +372,26 @@ class sale_order(osv.osv):
                 return False
         return True
 
+#    def _get_partner_village(self, cr, uid, context=None):
+#        partner_obj = self.pool.get("res.partner")
+#        _logger.info("partner id")
+#        _logger.info(context['partner_id'])
+#        partner = partner_obj.browse(cr,uid,context['partner_id'])
+#        _logger.info("partner name")
+#        _logger.info("Hello" + partner.name)
+#        _logger.info(partner.village)
+#        return partner.village
+
     _constraints = [
         (_check_discount_range, 'Error!\nDiscount percentage should be between 0-100%.', ['discount_percentage']),
     ]
+
+    def _get_default_shop(self, cr, uid, context=None):
+        company_id = self.pool.get('res.users').browse(cr, uid, uid, context=context).company_id.id
+        shop_ids = self.pool.get('sale.shop').search(cr, uid, [('company_id','=',company_id)], context=context)
+        if not shop_ids:
+            raise osv.except_osv(_('Error!'), _('There is no default shop for the current user\'s company!'))
+        return shop_ids[0]
 
     _columns = {
     'discount_percentage':fields.float('Discount %',digits_compute=dp.get_precision('Account'),readonly=True, states={'draft':[('readonly',False)]}),
@@ -416,7 +432,23 @@ class sale_order(osv.osv):
              help="The Previous Outstanding amount.",multi="all"),
     'total_outstanding': fields.function(_calculate_balance, digits_compute=dp.get_precision('Account'), string='Total Outstanding',
              help="The Total Outstanding amount at the time of sale order creation.",multi="all"),
+    'partner_village': fields.char(string='Village',
+             help="Patient Village."),
 
     }
+
+    _defaults = {
+        'date_order': fields.date.context_today,
+        'order_policy': 'manual',
+        'state': 'draft',
+        'user_id': lambda obj, cr, uid, context: uid,
+        'name': lambda obj, cr, uid, context: '/',
+        'invoice_quantity': 'order',
+        'shop_id': _get_default_shop,
+        'partner_invoice_id': lambda self, cr, uid, context: context.get('partner_id', False) and self.pool.get('res.partner').address_get(cr, uid, [context['partner_id']], ['invoice'])['invoice'],
+        'partner_shipping_id': lambda self, cr, uid, context: context.get('partner_id', False) and self.pool.get('res.partner').address_get(cr, uid, [context['partner_id']], ['delivery'])['delivery'],
+#        'partner_village': _get_partner_village,
+        }
+
 
 sale_order()
