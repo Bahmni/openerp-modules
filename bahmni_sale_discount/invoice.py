@@ -43,8 +43,10 @@ class account_invoice(osv.osv):
             else:
                 total -= i['price']
                 total_currency -= i['amount_currency'] or i['price']
-
-        total -= inv.discount
+        if inv.type in ( 'out_refund'):
+            total += inv.discount
+        else :
+            total -= inv.discount
         total += inv.round_off
         total+= self._round_off_amount_for_nearest_five(total)
         return total, total_currency, invoice_move_lines
