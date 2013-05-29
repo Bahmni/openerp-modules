@@ -372,15 +372,14 @@ class sale_order(osv.osv):
                 return False
         return True
 
-#    def _get_partner_village(self, cr, uid, context=None):
-#        partner_obj = self.pool.get("res.partner")
-#        _logger.info("partner id")
-#        _logger.info(context['partner_id'])
-#        partner = partner_obj.browse(cr,uid,context['partner_id'])
-#        _logger.info("partner name")
-#        _logger.info("Hello" + partner.name)
-#        _logger.info(partner.village)
-#        return partner.village
+    def _get_partner_village(self, cr, uid, ids, name, args, context=None):
+        res = {}
+        for order in self.browse(cr, uid, ids, context=context):
+            partner_obj = self.pool.get("res.partner")
+            partner = partner_obj.browse(cr,uid,order.partner_id.id)
+            res[order.id]= partner.village
+        return res
+
 
     _constraints = [
         (_check_discount_range, 'Error!\nDiscount percentage should be between 0-100%.', ['discount_percentage']),
@@ -426,8 +425,7 @@ class sale_order(osv.osv):
              help="The Previous Outstanding amount.",multi="all"),
     'total_outstanding': fields.function(_calculate_balance, digits_compute=dp.get_precision('Account'), string='Total Outstanding',
              help="The Total Outstanding amount at the time of sale order creation.",multi="all"),
-    'partner_village': fields.char(string='Village',
-             help="Patient Village."),
+    'partner_village': fields.function(_get_partner_village,type='char',string ="Village",readonly=True),
 
     }
 
