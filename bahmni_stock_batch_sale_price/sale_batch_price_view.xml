@@ -12,9 +12,6 @@
                     <field name="batch_name" readonly="1"/>
                     <field name="batch_id" invisible="True"/>
                 </xpath>
-                <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree//field[@name='product_uom']" position="replace" >
-                    <field  name="product_uom" groups="product.group_uom" class="oe_inline oe_no_button" readonly="1"/>
-                </xpath>
             </field>
         </record>
     </data>
