@@ -198,7 +198,7 @@
         </td>
       </tr>
     </blockTable>
-    <blockTable colWidths="172.0,162.0,70.0" style="Table5">
+    <!--blockTable colWidths="172.0,162.0,70.0" style="Table5">
       <tr>
         <td>
           <para style="P11NB">
@@ -212,7 +212,7 @@
           <para style="P14NB">[[ getInvoiceDiscountHead(voucher) ]] </para>
         </td>
       </tr>
-     </blockTable>
+     </blockTable-->
     <blockTable colWidths="172.0,162.0,70.0" style="Table6">
       <tr>
         <td>
@@ -221,7 +221,7 @@
           </para>
         </td>
         <td>
-          <para style="P11NB">Discount:</para>
+          <para style="P11NB">Discount [[getInvoiceDiscountHead(voucher) ]]:</para>
         </td>
         <td>
           <para style="P14NB">[[ formatLang(getInvoiceDiscount(voucher),2) ]] </para>
