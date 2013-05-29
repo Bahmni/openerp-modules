@@ -221,7 +221,7 @@
           </para>
         </td>
         <td>
-          <para style="P11NB">Discount [[getInvoiceDiscountHead(voucher) ]]:</para>
+          <para style="P11NB">Discount:</para>
         </td>
         <td>
           <para style="P14NB">[[ formatLang(getInvoiceDiscount(voucher),2) ]] </para>
