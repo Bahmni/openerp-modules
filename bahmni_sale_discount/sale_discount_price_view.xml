@@ -26,9 +26,9 @@
                     <attribute name="invisible">1</attribute>
                 </xpath>
 
-                <field name="client_order_ref" position="replace"/>
-                    <!--<field name="partner_village"/>-->
-                <!--</field>-->
+                <field name="client_order_ref" position="replace">
+                    <field name="partner_village"/>
+                </field>
 
                 <button name="action_quotation_send" string="Send by Email" type="object" position="attributes" >
                     <attribute name="invisible">1</attribute>/>
