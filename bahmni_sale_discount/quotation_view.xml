@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="sale_form_add_village" model="ir.ui.view">
+            <field name="name">sale.order.tree</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_quotation_tree"/>
+
+            <field name="arch" type="xml">
+                <xpath expr="/tree/field[@name='partner_id']" position="after" >
+                    <field name="partner_village"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>
