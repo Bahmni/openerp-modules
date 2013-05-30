@@ -22,13 +22,14 @@ class account_voucher(osv.osv):
                               'bill_amount':0.0}
             line_ids = sorted(voucher.line_ids, key=lambda v: v.id,reverse=True)
             invoice = None
-            if(line_ids and len(line_ids) > 0):
-                voucher_line = line_ids[0]
-                inv_no = voucher_line.name
-                inv_ids = self.pool.get("account.invoice").search(cr, uid,[('number','=',inv_no)])
-                if(inv_ids and len(inv_ids) > 0):
-                    inv_id = inv_ids[0]
-                    invoice = self.pool.get("account.invoice").browse(cr,uid,inv_id,context=context)
+            for voucher_line in line_ids:
+                if(voucher_line.type == 'cr'):
+                    inv_no = voucher_line.name
+                    inv_ids = self.pool.get("account.invoice").search(cr, uid,[('number','=',inv_no)])
+                    if(inv_ids and len(inv_ids) > 0):
+                        inv_id = inv_ids[0]
+                        invoice = self.pool.get("account.invoice").browse(cr,uid,inv_id,context=context)
+                    break
             if(invoice):
                 voucher.invoice_id = invoice.id
                 res[voucher.id]['bill_amount'] =   invoice.amount_total
