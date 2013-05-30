@@ -17,15 +17,10 @@
                            string="Payment Method"/>
                 </xpath>
 
-                <!--<field name="amount" class="oe_inline" string="Paid Amount" position="attributes">-->
-                    <!--<attribute name="class">custom_oe_field_big</attribute>/>-->
-                <!--</field>-->
-                <field name="amount" class="oe_inline" string="Paid Amount" widget="monetary" position="replace">
-                    <field name="amount" string="Paid Amount" class="custom_oe_field_medium" widget="monetary"    options="{'currency_field': 'currency_id'}"/>
-                </field>
-
-                <field name="amount" class="oe_inline" string="Paid Amount" widget="monetary" position="before">
-                    <field name="balance_amount" widget="monetary"  class="custom_oe_field_big"  options="{'currency_field': 'currency_id'}"/>
+                <field name="amount" class="oe_inline"
+                       string="Paid Amount"
+                       widget="monetary" position="before">
+                        <field name="balance_amount" widget="monetary"  class="custom_oe_field_big"  options="{'currency_field': 'currency_id'}"/>
                 </field>
 
                 <field name="reference" string="Payment Ref" placeholder="e.g. 003/10" position="attributes" >
