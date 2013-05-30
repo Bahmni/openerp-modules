@@ -1,0 +1,7 @@
+@charset "utf-8";
+
+.custom_oe_field_big {
+    width: 108px;
+    font-weight: bold;
+    font-size: 18px;
+}

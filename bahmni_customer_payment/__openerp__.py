@@ -14,6 +14,10 @@
                 "customer_invoice_show_partner_reference.xml",
             ],
     'demo': [],
+    'css' : [
+        "static/src/css/voucher.css",
+        ],
+
     'auto_install': False,
     'application': True,
     'installable': True,

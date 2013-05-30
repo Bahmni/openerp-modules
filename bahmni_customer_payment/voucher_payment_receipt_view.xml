@@ -20,7 +20,7 @@
                 <field name="amount" class="oe_inline"
                        string="Paid Amount"
                        widget="monetary" position="before">
-                    <field name="balance_amount" widget="monetary"  class="oe_bold"  options="{'currency_field': 'currency_id'}"/>
+                        <field name="balance_amount" widget="monetary"  class="custom_oe_field_big"  options="{'currency_field': 'currency_id'}"/>
                 </field>
 
                 <field name="reference" string="Payment Ref" placeholder="e.g. 003/10" position="attributes" >
