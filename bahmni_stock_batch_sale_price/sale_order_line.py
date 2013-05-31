@@ -156,10 +156,22 @@ class sale_order_line(osv.osv):
             }
         return {'value': result, 'domain': domain, 'warning': warning}
 
+    def onchange_product_dosage(self, cr, uid, ids, product_dosage, product_number_of_days, context=None):
+        for sale_order_line in self.browse(cr, uid, ids, context):
+            qty = product_dosage*product_number_of_days
+            self.write(cr, uid, sale_order_line.id, {'product_uom_qty': qty})
+        return {'value': {'product_uom_qty': qty}}
 
     _columns = {
         'batch_id': fields.many2one('stock.production.lot', 'Batch No'),
         'batch_name': fields.char('Batch No'),
+        'product_dosage': fields.float('Dosage', digits_compute=dp.get_precision('Account')),
+        'product_number_of_days': fields.integer('No. Days'),
+    }
+
+    _defaults = {
+        'product_dosage': 1,
+        'product_number_of_days': 1,
     }
 
 sale_order_line()
