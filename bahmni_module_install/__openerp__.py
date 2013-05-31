@@ -2,7 +2,6 @@
     "name": "Bahmni Module Install",
     "version": "6.0",
     "depends": [
-                "bahmni_logger",
                 "base",
                 "auth_crypt",
                 "product",
