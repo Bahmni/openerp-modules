@@ -280,6 +280,30 @@ class sale_order(osv.osv):
     def button_dummy(self, cr, uid, ids, context=None):
         return True
 
+    def save_create(self, cr, uid, ids, context=None):
+
+        dummy, view_id = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'sale', 'view_order_form')
+
+        return {
+            'name':_("Quotation"),
+            'view_mode': 'form',
+            'view_id': view_id,
+            'view_type': 'form',
+            'res_model': 'sale.order',
+            'type': 'ir.actions.act_window',
+            'nodestroy': False,
+            'target': 'current',
+            'create':True,
+            'edit':False,
+            'domain': '[]',
+            'context': {
+                'close_after_process': True,
+                'create':False,
+                'edit':False,
+                }
+        }
+
+
     def _inv_get(self, cr, uid, order, context=None):
         return {}
 
