@@ -7,54 +7,96 @@
     </span>
 
     <div t-name="Bill" t-attf-class="base" class="oe_web_example">
-        <div style="margin-top: 10px">
-            <div>Jan Swasthya Sahyog</div>
-            <div>Ganiyari, Bilaspur (C.G) 495112</div>
-        </div>
-        <div style="margin-top: 20px">
-            <div>Phone: 07753-244819</div>
-            <div>Email: janswasthya@gmail.com</div>
-        </div>
-        <div><h2>Receipt</h2></div>
-
-        <div style="margin-top: 20px">
-            <div style="width: 40%; float: left">
-                <div>Patient: <t t-esc="partner_name"/></div>
-                <div>Patient ID: <t t-esc="partner_ref"/></div>
+        <div id="printBill" style='font-family: "Courier New", Courier, monospace;font-size:12pt'>
+            <style>
+                .totalLabel {
+                    width: 70%;
+                    text-align: right;
+                }
+                .totalValue {
+                    width: 30%;
+                    text-align: right;
+                }
+                .right {
+                    text-align: right;
+                }
+            </style>
+            <div style="margin-top: 10px">
+                <div style="width: 50%; float: left">
+                    <div>Jan Swasthya Sahyog</div>
+                    <div>Ganiyari, Bilaspur (C.G) 495112</div>
+                    <div>Phone: 07753-244819</div>
+                </div>
             </div>
-            <div style="width: 40%; float: right">
-                <div>Bill Number: <t t-esc="voucher_number"/></div>
-                <div>Date: <t t-esc="voucher_date"/></div>
+
+            <div style="width:100%;text-align:center;clear:both;margin-top:10px"><h2>Receipt</h2></div>
+
+            <div style="margin-top: 10px;">
+                <div style="width: 50%; float: left">
+                    <div>Name: <t t-esc="partner_name"/></div>
+                    <div>ID: <t t-esc="partner_ref"/></div>
+                </div>
+                <div style="width: 50%; float: right">
+                    <div>Date: <t t-esc="voucher_date"/></div>
+                    <div>Bill Number: <t t-esc="voucher_number"/></div>
+                </div>
             </div>
-        </div>
 
-        <table>
-            <tr>
-                <th style="text-align:left">Product</th>
-                <th>Unit Price</th>
-                <th>Quantity</th>
-                <th>SubTotal</th>
-            </tr>
-            <tr t-foreach="invoice_line_items" t-as="invoice_line_item">
-                <td><t t-esc="invoice_line_item.product_name"/></td>
-                <td><t t-esc="invoice_line_item.unit_price"/></td>
-                <td><t t-esc="invoice_line_item.quantity"/></td>
-                <td><t t-esc="invoice_line_item.subtotal"/></td>
-            </tr>
-        </table>
+            <div style="clear:both; padding-top: 20px;"><hr/></div>
 
-        <div style="width:50%;float:right">
-            <div>New Charges: <t t-esc="new_charges"/></div>
-            <div>Discount Head: <t t-esc="discount_head"/></div>
-            <div>Discount: <t t-esc="discount"/></div>
-            <div><hr/></div>
-            <div>Net Amount: <t t-esc="net_amount"/></div>
-            <div>Previous Balance: <t t-esc="previous_balance"/></div>
-            <div><hr/></div>
-            <div>Bill Amount: <t t-esc="bill_amount"/></div>
-            <div>Paid Amount: <t t-esc="paid_amount"/></div>
-            <div><hr/></div>
-            <div>Outstanding Balance: <t t-esc="balance_amount"/></div>
+            <table style="clear:both;width:100%">
+                <tr>
+                    <th style="text-align:left;width:50%">Product</th>
+                    <th style="text-align:right">Quantity</th>
+                    <th style="text-align:right">Unit Price</th>
+                    <th style="text-align:right">SubTotal</th>
+                </tr>
+                <tr t-foreach="invoice_line_items" t-as="invoice_line_item">
+                    <td><t t-esc="invoice_line_item.product_name"/></td>
+                    <td class="right"><t t-esc="invoice_line_item.unit_price"/></td>
+                    <td class="right"><t t-esc="invoice_line_item.quantity"/></td>
+                    <td class="right"><t t-esc="invoice_line_item.subtotal"/></td>
+                </tr>
+            </table>
+
+            <hr/>
+
+            <div style="width:50%;float:right;margin-top:10px">
+                <table style="width:100%">
+                    <tr>
+                        <td class="totalLabel">New Charges</td>
+                        <td class="totalValue"><t t-esc="new_charges"/></td>
+                    </tr>
+                    <tr>
+                        <td class="totalLabel">Discount</td>
+                        <td class="totalValue"><t t-esc="discount"/></td>
+                    </tr>
+                    <tr><td><hr/></td><td><hr/></td></tr>
+                    <tr>
+                        <td class="totalLabel">Net Amount</td>
+                        <td class="totalValue"><t t-esc="net_amount"/></td>
+                    </tr>
+                    <tr>
+                        <td class="totalLabel">Previous Balance</td>
+                        <td class="totalValue"><t t-esc="previous_balance"/></td>
+                    </tr>
+                    <tr><td><hr/></td><td><hr/></td></tr>
+                    <tr>
+                        <td class="totalLabel">Bill Amount</td>
+                        <td class="totalValue"><t t-esc="bill_amount"/></td>
+                    </tr>
+                    <tr>
+                        <td class="totalLabel">Paid Amount</td>
+                        <td class="totalValue"><t t-esc="paid_amount"/></td>
+                    </tr>
+                    <tr><td><hr/></td><td><hr/></td></tr>
+                    <tr>
+                        <td class="totalLabel">Outstanding Balance</td>
+                        <td class="totalValue"><t t-esc="balance_amount"/></td>
+                    </tr>
+
+                </table>
+            </div>
         </div>
     </div>
 </templates>

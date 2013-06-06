@@ -18,8 +18,9 @@ openerp.bahmni_sale_discount = function(instance) {
             this.rpc('/invoice/bill', {voucher_id: this.parent.datarecord.id}).done(function(bill) {self.printReceipt(bill)})
         },
 
-        printReceipt: function(context) {
-            var $ht = $(QWeb.render("Bill", context))[0];
+        printReceipt: function(bill) {
+            this.transform(bill);
+            var $ht = $(QWeb.render("Bill", bill))[0];
             var hiddenFrame = $("#printBillFrame")[0]
     
             var doc = hiddenFrame.contentWindow.document.open("text/html", "replace");
@@ -32,6 +33,9 @@ openerp.bahmni_sale_discount = function(instance) {
 
             // $ht.print();
         },
+        transform: function(bill) {
+            bill.voucher_date = $.datepicker.formatDate('dd/mm/yy', new Date(bill.voucher_date));
+        }
     });
 
     instance.web.form.widgets.add('print', 'instance.bahmni_sale_discount.print');
