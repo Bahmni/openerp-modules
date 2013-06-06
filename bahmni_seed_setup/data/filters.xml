@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
-    <data noupdate="0">
+    <data noupdate="1">
         <!-- For warehouse > serial numbers -->
         <record model="ir.filters" id="stock_prouduction_lot_expired_today">
             <field name="name">Batches that Expired Today</field>
@@ -44,16 +44,22 @@
             <field name="domain">[['create_uid', '=', uid], ['date', '=', context_today().strftime('%Y-%m-%d')]]</field>
         </record>
         <record model="ir.filters" id="all_customer_payments_today">
-            <field name="name">Today's Payments</field>
+            <field name="name">Today's Collection</field>
             <field name="model_id">account.voucher</field>
             <field name="user_id"></field>
-            <field name="domain">[['date', '=', context_today().strftime('%Y-%m-%d')]]</field>
+            <field name="domain">
+                [['date', '=', context_today().strftime('%Y-%m-%d')],
+                ['journal_id', 'ilike', 'CASH']]
+            </field>
         </record>
         <record model="ir.filters" id="all_customer_payments_yesterday">
-            <field name="name">Yesterdays's Payments</field>
+            <field name="name">Yesterdays's Collections</field>
             <field name="model_id">account.voucher</field>
             <field name="user_id"></field>
-            <field name="domain">[['date', '=', (context_today() - datetime.timedelta(1)).strftime('%Y-%m-%d')]]</field>
+            <field name="domain">
+                [['date', '=', (context_today() - datetime.timedelta(1)).strftime('%Y-%m-%d')],
+                ['journal_id', 'ilike', 'CASH']]
+            </field>
         </record>
 
 
