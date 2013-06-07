@@ -426,7 +426,7 @@ class account_voucher(osv.osv):
 
     _columns={
 
-        'balance_amount': fields.function(_get_balance_amount, string='Total Balance', type='float', readonly=True, help="Total Receivables"),
+        'balance_amount': fields.function(_get_balance_amount, string='Total Balance', type='float', readonly=True,store=True, help="Total Receivables"),
         'create_uid':  fields.many2one('res.users', 'Cashier', readonly=True),
         'invoice_id':fields.many2one('account.invoice', 'Invoice'),
         'bill_amount':fields.function(_calculate_balances, digits_compute=dp.get_precision('Account'), string='Current Bill Amount', multi='all'),
