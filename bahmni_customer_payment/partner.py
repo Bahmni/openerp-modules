@@ -10,6 +10,9 @@ from openerp import pooler, tools
 from openerp.osv import osv, fields
 from openerp.tools.translate import _
 
+import logging
+_logger = logging.getLogger(__name__)
+
 class format_address(object):
     def fields_view_get_address(self, cr, uid, arch, context={}):
         user_obj = self.pool.get('res.users')
@@ -68,14 +71,14 @@ class res_partner(osv.osv, format_address):
             name = record.name
             if record.parent_id:
                 name =  "%s (%s)" % (name, record.parent_id.name)
+            if(record.ref) :
+                name = name+" ["+record.ref+"]"
             if context.get('show_address'):
                 name = name + "\n" + self._display_address(cr, uid, record, without_company=True, context=context)
                 name = name.replace('\n\n','\n')
                 name = name.replace('\n\n','\n')
             if context.get('show_email') and record.email:
                 name = "%s <%s>" % (name, record.email)
-            if(record.ref) :
-                name = name+" ["+record.ref+"]"
             res.append((record.id, name))
         return res
     def name_search(self, cr, uid, name, args=None, operator='ilike', context=None, limit=100):
