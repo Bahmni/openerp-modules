@@ -2,7 +2,7 @@ openerp.bahmni_sale_discount = function(instance) {
 
     var QWeb = instance.web.qweb;
     instance.bahmni_sale_discount.print = instance.web.form.FieldChar.extend({
-        template: "test_button",
+        template: "print_button",
         init: function(parent, action) {
             this._super.apply(this, arguments);
             this._start = null;

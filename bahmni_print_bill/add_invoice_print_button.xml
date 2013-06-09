@@ -10,7 +10,7 @@
 
             <field name="arch" type="xml">
                 <xpath expr="/form/header/button" position="before" >
-                    <field name="state" widget="print" string="Please print"/>
+                    <field name="state" widget="print"/>
                 </xpath>
             </field>
         </record>

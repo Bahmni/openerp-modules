@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <templates>
-    <span t-name="test_button" t-attf-class="base" class="oe_web_example">  
+    <span t-name="print_button" t-attf-class="base" class="oe_web_example">  
         <button name="print" type="object" id="bstart">Print</button>
         <iframe id="printBillFrame" style="display:none"/>
     </span>
