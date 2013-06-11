@@ -14,6 +14,7 @@
                 "sale_stock",
                 "purchase",
                 "product_expiry",
+                "bahmni_web_extensions",
                 "bahmni_pharmacy_product",
                 "bahmni_stock_batch_sale_price",
                 "bahmni_sale_discount",
