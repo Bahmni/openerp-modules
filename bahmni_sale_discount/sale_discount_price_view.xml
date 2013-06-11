@@ -46,7 +46,10 @@
                 <xpath expr="/form/sheet/notebook/page/group[@name='sale_total']" position="replace" >
                     <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
                         <field name="amount_untaxed" widget='monetary' options="{'currency_field': 'currency_id'}"/>
-                        <field  name="discount_acc_id" attrs="{'required':['|', ('discount_percentage','>','0'), ('calculated_discount', '>', '0')]}"/>
+                        <field  name="discount_acc_id"
+                            accesskey="A"
+                            string="Discount [A]ccount Head"
+                            attrs="{'required':['|', ('discount_percentage','>','0'), ('calculated_discount', '>', '0')]}"/>
                         <field  name="discount_percentage"/>
                         <field  name="discount_amount" invisible="True"/>
                         <field  name="calculated_discount" />
@@ -55,7 +58,8 @@
                         <div class="oe_subtotal_footer_separator oe_inline">
                             <label for="amount_total" />
                             <button name="button_dummy"
-                                    states="draft,sent" string="(update)" type="object" class="oe_edit_only oe_link"/>
+                                    states="draft,sent" string="(update)" type="object" class="oe_edit_only oe_link"
+                                    accesskey="U"/>
                         </div>
                         <field name="amount_total"  nolabel="1" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}"/>
                         <field name="prev_amount_outstanding"  attrs="{'invisible':['|',('state', '!=', 'draft')]}" widget='monetary' options="{'currency_field': 'currency_id'}"/>
