@@ -7,8 +7,9 @@ import re
 import openerp
 from openerp import SUPERUSER_ID
 from openerp import pooler, tools
-from openerp.osv import osv, fields
+from openerp.osv import osv, fields, expression
 from openerp.tools.translate import _
+
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -84,6 +85,10 @@ class res_partner(osv.osv, format_address):
     def name_search(self, cr, uid, name, args=None, operator='ilike', context=None, limit=100):
         if not args:
             args = []
+        domain_expression = expression.expression(cr, uid, args, self, context)
+        args_query_clause, args_query_params = domain_expression.to_sql()
+        args_query_string = args_query_clause % tuple(args_query_params)
+
         if name and operator in ('=', 'ilike', '=ilike', 'like', '=like'):
             # search on the name of the contacts and of its company
             search_name = name
@@ -96,12 +101,13 @@ class res_partner(osv.osv, format_address):
             if limit:
                 limit_str = ' limit %(limit)s'
                 query_args['limit'] = limit
-            cr.execute('''SELECT partner.id FROM res_partner partner
-                          LEFT JOIN res_partner company ON partner.parent_id = company.id
-                          WHERE partner.email ''' + operator +''' %(name)s
-                          OR partner.ref ''' + operator +''' %(name)s
-                             OR partner.name || ' (' || COALESCE(company.name,'') || ')'
-                          ''' + operator + ' %(name)s  order by char_length(partner.ref) ' + limit_str, query_args)
+
+            cr.execute('''SELECT res_partner.id FROM res_partner
+                          LEFT JOIN res_partner company ON res_partner.parent_id = company.id
+                          WHERE (res_partner.email ''' + operator +''' %(name)s
+                          OR res_partner.ref ''' + operator +''' %(name)s
+                             OR res_partner.name || ' (' || COALESCE(company.name,'') || ')'
+                          ''' + operator + ' %(name)s ) and ' + args_query_string + ' order by char_length(res_partner.ref) ' + limit_str, query_args)
             ids = map(lambda x: x[0], cr.fetchall())
             if ids:
                 return self.name_get(cr, uid, ids, context)
