@@ -35,18 +35,20 @@ class account_voucher(osv.osv):
                 res[voucher.id]['bill_amount'] =   invoice.amount_total
                 self.write(cr, uid, voucher.id, {'invoice_id': invoice.id})
 
+            if(voucher.state != 'posted'):
+                res[voucher.id]['balance_amount'] =   self._get_balance_amount(cr,uid,ids,None,None,context) - voucher.amount
+                self.write(cr, uid, voucher.id, {'balance_amount': res[voucher.id]['balance_amount']})
+
         return res
 
 
     def _get_balance_amount(self, cr, uid, ids, name, args, context=None):
         if not ids: return {}
-        currency_obj = self.pool.get('res.currency')
-        res = {}
-        amount_unreconciled = 0.0
+        balance = 0.0
         for voucher in self.browse(cr, uid, ids, context=context):
             partner = voucher.partner_id
-            res[voucher.id] = partner.credit
-        return res
+            balance = partner.credit
+        return balance
 
     def _compute_writeoff_amount(self, cr, uid, line_dr_ids, line_cr_ids, amount, type):
         debit = credit = 0.0
@@ -426,7 +428,7 @@ class account_voucher(osv.osv):
 
     _columns={
 
-        'balance_amount': fields.function(_get_balance_amount, string='Total Balance', type='float', readonly=True,store=True, help="Total Receivables"),
+        'balance_amount': fields.float( string='Total Balance',digits=(4,2),readonly=True),
         'create_uid':  fields.many2one('res.users', 'Cashier', readonly=True),
         'invoice_id':fields.many2one('account.invoice', 'Invoice'),
         'bill_amount':fields.function(_calculate_balances, digits_compute=dp.get_precision('Account'), string='Current Bill Amount', multi='all'),
