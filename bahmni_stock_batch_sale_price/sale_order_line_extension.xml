@@ -15,8 +15,10 @@
                 <field name="product_dosage" on_change="onchange_product_dosage(product_dosage, product_number_of_days)"/>
                 <field name="product_number_of_days" on_change="onchange_product_dosage(product_dosage, product_number_of_days)"/>
             </xpath>
-            <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='product_uom']" position="attributes" >
-                <attribute name="string">Unit</attribute>
+            <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='product_uom']" position="replace" >
+                <field name="product_uom" groups="product.group_uom" class="oe_inline oe_no_button" string="Unit"
+                    context="{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'shop':parent.shop_id, 'uom':product_uom}"
+                    on_change="product_uom_change(parent.pricelist_id,product_id,product_uom_qty,product_uom,product_uos_qty,product_uos,name,parent.partner_id, False, False, parent.date_order, context)"/>
             </xpath>
         </field>
     </record>

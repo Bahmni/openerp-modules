@@ -23,11 +23,14 @@ class sale_order_line(osv.osv):
         else:
             return unit_price
 
-    def _get_prodlot_context(self, cr, uid, context):
+    def _get_prodlot_context(self, cr, uid, context=None):
+        context = context or {}
         shop_id = context.get('shop', False)
         shop_obj = self.pool.get('sale.shop')
         shop = shop_obj.browse(cr, uid, shop_id)
         prodlot_context = {}
+        if(not shop_id):
+            return {}
         if shop:
             location_id = shop.warehouse_id and shop.warehouse_id.lot_stock_id.id
             if location_id:
@@ -38,6 +41,7 @@ class sale_order_line(osv.osv):
                           uom=False, qty_uos=0, uos=False, name='', partner_id=False,
                           lang=False, update_tax=True, date_order=False, packaging=False, fiscal_position=False, flag=False, context=None):
         context = context or {}
+
         lang = lang or context.get('lang',False)
         if not  partner_id:
             raise osv.except_osv(_('No Customer Defined !'), _('Before choosing a product,\n select a customer in the sales form.'))
@@ -67,14 +71,15 @@ class sale_order_line(osv.osv):
         result['batch_id'] = None
 
         for prodlot_id in stock_prod_lot.search(cr, uid,[('product_id','=',product_obj.id)]):
-            prodlot = stock_prod_lot.browse(cr, uid, prodlot_id, context=self._get_prodlot_context(cr, uid, context))
+            prodlot_context = self._get_prodlot_context(cr, uid, context=context)
+            prodlot = stock_prod_lot.browse(cr, uid, prodlot_id, context=prodlot_context)
             if(prodlot.life_date and datetime.strptime(prodlot.life_date, tools.DEFAULT_SERVER_DATE_FORMAT) < datetime.today()):
-                continue;
+                continue
             if qty <= prodlot.stock_available:
                 sale_price = prodlot.sale_price
                 result['batch_name'] = prodlot.name
                 result['batch_id'] = prodlot.id
-                break;
+                break
         #-----------------------------------------------------------------
 
         uom2 = False
@@ -158,7 +163,7 @@ class sale_order_line(osv.osv):
 
     def onchange_product_dosage(self, cr, uid, ids, product_dosage, product_number_of_days, context=None):
         qty = product_dosage*product_number_of_days
-        for sale_order_line in self.browse(cr, uid, ids, context):
+        for sale_order_line in self.browse(cr, uid, ids, context=context):
             self.write(cr, uid, sale_order_line.id, {'product_uom_qty': qty})
         return {'value': {'product_uom_qty': qty}}
 
