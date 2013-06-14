@@ -11,8 +11,7 @@ import openerp.addons.web.http as openerpweb
 
 
 import logging
-
-l = logging.getLogger(__name__)
+_logger = logging.getLogger(__name__)
 
 class InvoiceController(openerp.addons.web.http.Controller):
     _cp_path = '/invoice'

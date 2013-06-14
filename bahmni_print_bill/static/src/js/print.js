@@ -1,7 +1,7 @@
-openerp.bahmni_sale_discount = function(instance) {
+openerp.bahmni_print_bill = function(instance) {
 
     var QWeb = instance.web.qweb;
-    instance.bahmni_sale_discount.print = instance.web.form.FieldChar.extend({
+    instance.bahmni_print_bill.print = instance.web.form.FieldChar.extend({
         template: "print_button",
         init: function(parent, action) {
             this._super.apply(this, arguments);
@@ -38,8 +38,5 @@ openerp.bahmni_sale_discount = function(instance) {
         }
     });
 
-    instance.web.form.widgets.add('print', 'instance.bahmni_sale_discount.print');
+    instance.web.form.widgets.add('print-bill', 'instance.bahmni_print_bill.print');
 }
-
-
-

@@ -1,7 +1,7 @@
 {
     "name": "Bahmni Print Bill",
     "version": "1.0",
-    "depends": ["base","stock","bahmni_sale_discount"],
+    "depends": ["base","stock","bahmni_sale_discount", "bahmni_customer_payment"],
     "author": "ThoughtWorks Technologies Pvt. Ltd.",
     "category": "Sale",
     "summary": "Bahmni Batch Sale Price",

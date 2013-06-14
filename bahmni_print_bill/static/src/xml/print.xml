@@ -2,25 +2,19 @@
 
 <templates>
     <span t-name="print_button" t-attf-class="base" class="oe_web_example">  
-        <button name="print" type="object" id="bstart">Print</button>
+        <button name="print" type="object" class="oe_highlight" id="bstart">Print</button>
         <iframe id="printBillFrame" style="display:none"/>
     </span>
 
     <div t-name="Bill" t-attf-class="base" class="oe_web_example">
+        <style>
+            #printBill {margin: 10px;}
+            .totalLabel {width: 70%; text-align: right;}
+            .totalValue {width: 30%; text-align: right;}
+            .right {text-align: right;}
+        </style>
+
         <div id="printBill" style='font-family: "Courier New", Courier, monospace;font-size:12pt'>
-            <style>
-                .totalLabel {
-                    width: 70%;
-                    text-align: right;
-                }
-                .totalValue {
-                    width: 30%;
-                    text-align: right;
-                }
-                .right {
-                    text-align: right;
-                }
-            </style>
             <div style="margin-top: 10px">
                 <div style="width: 50%; float: left">
                     <div>Jan Swasthya Sahyog</div>
