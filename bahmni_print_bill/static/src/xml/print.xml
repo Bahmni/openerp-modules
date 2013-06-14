@@ -1,20 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <templates>
-    <span t-name="print_button" t-attf-class="base" class="oe_web_example">  
+    <span t-name="print_button" t-attf-class="base" class="oe_web_example">
+
         <button name="print" type="object" class="oe_highlight" id="bstart">Print</button>
         <iframe id="printBillFrame" style="display:none"/>
     </span>
 
     <div t-name="Bill" t-attf-class="base" class="oe_web_example">
         <style>
-            #printBill {margin: 10px;}
-            .totalLabel {width: 70%; text-align: right;}
-            .totalValue {width: 30%; text-align: right;}
-            .right {text-align: right;}
+            @page { size: 18cm 22cm; margin: 1cm;}
+            table { font-family: Roman, San-Serif, Draft;font-size:10pt;}
+            table tr th { font-weight: normal;}
+            #printBill { font-family: Roman, San-Serif, Draft;font-size:10pt; }
+            #lineItems { border-bottom: 1px dashed; border-top: 1px dashed;}
+            .totalLabel { width: 60%; text-align: right;}
+            .totalValue { width: 40%; text-align: right;}
+            .right { text-align: right;}
+            hr.dashed {border-top: 1px dashed #000; color: #fff; background-color: #fff; height: 1px; }
         </style>
 
-        <div id="printBill" style='font-family: "Courier New", Courier, monospace;font-size:12pt'>
+        <div id="printBill">
             <div style="margin-top: 10px">
                 <div style="width: 50%; float: left">
                     <div>Jan Swasthya Sahyog</div>
@@ -23,7 +29,7 @@
                 </div>
             </div>
 
-            <div style="width:100%;text-align:center;clear:both;margin-top:10px"><h2>Receipt</h2></div>
+            <div style="width:100%;text-align:center;clear:both;margin-top:10px">Receipt</div>
 
             <div style="margin-top: 10px;">
                 <div style="width: 50%; float: left">
@@ -36,26 +42,28 @@
                 </div>
             </div>
 
-            <div style="clear:both; padding-top: 20px;"><hr/></div>
+            <div style="clear:both; padding-top: 10px;"></div>
 
-            <table style="clear:both;width:100%">
-                <tr>
-                    <th style="text-align:left;width:50%">Product</th>
-                    <th style="text-align:right">Quantity</th>
-                    <th style="text-align:right">Unit Price</th>
-                    <th style="text-align:right">SubTotal</th>
-                </tr>
-                <tr t-foreach="invoice_line_items" t-as="invoice_line_item">
-                    <td><t t-esc="invoice_line_item.product_name"/></td>
-                    <td class="right"><t t-esc="invoice_line_item.unit_price"/></td>
-                    <td class="right"><t t-esc="invoice_line_item.quantity"/></td>
-                    <td class="right"><t t-esc="invoice_line_item.subtotal"/></td>
-                </tr>
+            <table style="clear:both;width:100%" id="lineItems">
+                <thead>
+                    <tr>
+                        <th style="text-align:left;width:50%">Product</th>
+                        <th style="text-align:right">Quantity</th>
+                        <th style="text-align:right">Unit Price</th>
+                        <th style="text-align:right">SubTotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr t-foreach="invoice_line_items" t-as="invoice_line_item">
+                        <td><t t-esc="invoice_line_item.product_name"/></td>
+                        <td class="right"><t t-esc="invoice_line_item.quantity"/></td>
+                        <td class="right"><t t-esc="invoice_line_item.unit_price"/></td>
+                        <td class="right"><t t-esc="invoice_line_item.subtotal"/></td>
+                    </tr>
+                </tbody>
             </table>
 
-            <hr/>
-
-            <div style="width:50%;float:right;margin-top:10px">
+            <div style="width:30%;float:right">
                 <table style="width:100%">
                     <tr>
                         <td class="totalLabel">New Charges</td>
@@ -65,7 +73,7 @@
                         <td class="totalLabel">Discount</td>
                         <td class="totalValue"><t t-esc="discount"/></td>
                     </tr>
-                    <tr><td><hr/></td><td><hr/></td></tr>
+                    <tr><td><hr class="dashed"/></td><td><hr class="dashed"/></td></tr>
                     <tr>
                         <td class="totalLabel">Net Amount</td>
                         <td class="totalValue"><t t-esc="net_amount"/></td>
@@ -74,7 +82,7 @@
                         <td class="totalLabel">Previous Balance</td>
                         <td class="totalValue"><t t-esc="previous_balance"/></td>
                     </tr>
-                    <tr><td><hr/></td><td><hr/></td></tr>
+                    <tr><td><hr class="dashed"/></td><td><hr class="dashed"/></td></tr>
                     <tr>
                         <td class="totalLabel">Bill Amount</td>
                         <td class="totalValue"><t t-esc="bill_amount"/></td>
@@ -83,7 +91,7 @@
                         <td class="totalLabel">Paid Amount</td>
                         <td class="totalValue"><t t-esc="paid_amount"/></td>
                     </tr>
-                    <tr><td><hr/></td><td><hr/></td></tr>
+                    <tr><td><hr class="dashed"/></td><td><hr class="dashed"/></td></tr>
                     <tr>
                         <td class="totalLabel">Outstanding Balance</td>
                         <td class="totalValue"><t t-esc="balance_amount"/></td>

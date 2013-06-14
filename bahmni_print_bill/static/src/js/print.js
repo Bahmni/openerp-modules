@@ -30,11 +30,22 @@ openerp.bahmni_print_bill = function(instance) {
             hiddenFrame.contentWindow.print();
 
             window.location = "/?ts=1370260915528#page=0&limit=80&view_type=list&model=sale.order&menu_id=296&action=373"
-
-            // $ht.print();
         },
         transform: function(bill) {
             bill.voucher_date = $.datepicker.formatDate('dd/mm/yy', new Date(bill.voucher_date));
+            bill.new_charges = bill.new_charges.toFixed(2);
+            bill.discount = bill.discount.toFixed(2);
+            bill.net_amount = bill.net_amount.toFixed(2);
+            bill.previous_balance = bill.previous_balance.toFixed(2);
+            bill.bill_amount = bill.bill_amount.toFixed(2);
+            bill.paid_amount = bill.paid_amount.toFixed(2);
+            bill.balance_amount = bill.balance_amount.toFixed(2);
+
+            bill.invoice_line_items.forEach(function(invoice_line_item) {
+                invoice_line_item.unit_price = invoice_line_item.unit_price.toFixed(2);
+                invoice_line_item.quantity = invoice_line_item.quantity.toFixed(3);
+                invoice_line_item.subtotal = invoice_line_item.subtotal.toFixed(2);
+            });
         }
     });
 
