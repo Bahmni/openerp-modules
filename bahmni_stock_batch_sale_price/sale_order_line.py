@@ -75,7 +75,7 @@ class sale_order_line(osv.osv):
             prodlot = stock_prod_lot.browse(cr, uid, prodlot_id, context=prodlot_context)
             if(prodlot.life_date and datetime.strptime(prodlot.life_date, tools.DEFAULT_SERVER_DATE_FORMAT) < datetime.today()):
                 continue
-            if qty <= prodlot.stock_available:
+            if qty <= prodlot.future_stock_forecast:
                 sale_price = prodlot.sale_price
                 result['batch_name'] = prodlot.name
                 result['batch_id'] = prodlot.id

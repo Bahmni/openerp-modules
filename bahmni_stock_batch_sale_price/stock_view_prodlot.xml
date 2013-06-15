@@ -11,6 +11,7 @@
                     <field name="name"/>
                     <field name="product_id"/>
                     <field name="stock_available"/>
+                    <field name="future_stock_forecast"/>
                     <field name="sale_price"/>
                     <field name="life_date"/>
                     <field name="date"/>
