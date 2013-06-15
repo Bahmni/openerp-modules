@@ -6,11 +6,12 @@ openerp.bahmni_print_bill = function(instance) {
         init: function(parent, action) {
             this._super.apply(this, arguments);
             this._start = null;
-            this.parent = parent
+            this.parent = parent;
        },
 
        start: function() {
-            $('button#bstart').click($.proxy(this.fetchAndPrint, this));  //link button to function
+            this._super.apply(this, arguments);
+            $('button#print-bill-button').click($.proxy(this.fetchAndPrint, this));  //link button to function
         },
 
         fetchAndPrint: function() {

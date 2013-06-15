@@ -10,7 +10,7 @@
 
             <field name="arch" type="xml">
                 <xpath expr="/form/header/button" position="before" >
-                    <field name="state" widget="print-bill"/>
+                    <field name="state" widget="print-bill" attrs="{'invisible': [('state', '!=', 'posted')]}"/>
                 </xpath>
             </field>
         </record>
