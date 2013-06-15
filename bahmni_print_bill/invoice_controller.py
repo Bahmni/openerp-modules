@@ -49,7 +49,7 @@ class InvoiceController(openerp.addons.web.http.Controller):
                 'voucher_number': voucher.number,
                 'voucher_date': voucher.date,
                 'invoice_line_items': invoice_line_items,
-                'new_charges': invoice.amount_total,
+                'new_charges': voucher.bill_amount + invoice.discount,
                 'discount_head': invoice.discount_acc_id and invoice.discount_acc_id.name or None,
                 'discount': invoice.discount,
                 'net_amount': voucher.bill_amount,
