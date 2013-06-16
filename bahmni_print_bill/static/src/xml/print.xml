@@ -65,7 +65,7 @@
             </table>
             <div>
                 <div style="width: 40%; float: left; padding-top: 20px">
-                    <div style="font-style: italic">This is a computer generated Bill and it does not require a signature</div>
+                    <div style="font-style: italic">This is a computer generated receipt and does not require a signature.</div>
                     <!-- <div>Cashier: <t t-esc="create_initials"/></div> -->
                 </div>
 
