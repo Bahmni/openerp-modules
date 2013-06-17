@@ -8,6 +8,7 @@ from tools.translate import _
 import decimal_precision as dp
 import netsvc
 import logging
+import uuid
 
 _logger = logging.getLogger(__name__)
 
@@ -196,9 +197,38 @@ class product_product(osv.osv):
             ctx.update({'compute_child': False})
         return self.get_product_available(cr, uid, ids, context=ctx)
 
+    def create(self, cr, uid, data, context=None):
+        prod_id = super(product_product, self).create(cr, uid, data, context)
+        _logger.info(data)
+        data_to_be_published = {
+            'name':data['name'],
+            'list_price':data['list_price'] ,
+            'standard_price':data['standard_price'] ,
+            'life_time':data['life_time'],
+            'drug':data['drug'],
+            'default_code':data['default_code'],
+            'manufacturer':data['manufacturer'],
+            }
+        self.raise_event(cr, uid,data_to_be_published, prod_id)
+        return prod_id
+
+    def write(self, cr, uid, ids, vals, context=None):
+        status = super(product_product, self).write(cr, uid, ids, vals, context=context)
+        if (len(vals)==1) and (("message_follower_ids" in vals) or "image" in vals) :
+            return status
+        self.raise_event(cr, uid,vals, ids[0])
+        return status
+
+    def raise_event(self, cr,uid, data, prod_id):
+        data['id'] = prod_id
+        event_publisher_obj = self.pool.get('event.publisher')
+        event_publisher_obj.publish_event(cr, uid, data)
+
     _columns = {
         'drug':fields.char('Drug Name', size=64),
         'manufacturer':fields.char('Manufacturer', size=64),
         'low_stock': fields.function(_check_low_stock, type="boolean", string="Low Stock", fnct_search=_search_low_stock),
         'actual_stock': fields.function(_get_actual_stock, type="float", string="Actual Stock"),
     }
+
+

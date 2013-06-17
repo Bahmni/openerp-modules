@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data noupdate="1">
+        <!--
+        Sequences types for vouchers
+        -->
+        <record model="ir.sequence.type" id="event_records_id_seq">
+            <field name="name">Atom Event</field>
+            <field name="code">rec_event_records</field>
+        </record>
+        
+
+    </data>
+</openerp>
+
