@@ -62,6 +62,10 @@ class res_partner(osv.osv, format_address):
     _name = "res.partner"
     _inherit = "res.partner"
 
+    _sql_constraints = [
+        ('unique_ref', 'unique(ref)', 'The reference must be unique'),
+    ]
+
     def name_get(self, cr, uid, ids, context=None):
         if context is None:
             context = {}
@@ -129,3 +133,4 @@ class res_partner(osv.osv, format_address):
             name = email
         rec_id = self.create(cr, uid, {self._rec_name: name or email, 'email': email or False}, context=context)
         return self.name_get(cr, uid, [rec_id], context)[0]
+res_partner()
