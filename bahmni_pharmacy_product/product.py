@@ -199,15 +199,16 @@ class product_product(osv.osv):
 
     def create(self, cr, uid, data, context=None):
         prod_id = super(product_product, self).create(cr, uid, data, context)
-        _logger.info(data)
+
         data_to_be_published = {
-            'name':data['name'],
-            'list_price':data['list_price'] ,
-            'standard_price':data['standard_price'] ,
-            'life_time':data['life_time'],
-            'drug':data['drug'],
-            'default_code':data['default_code'],
-            'manufacturer':data['manufacturer'],
+            'name':data.get('name',''),
+            'list_price':data.get('list_price' ,0.0),
+            'standard_price':data.get('standard_price',0.0) ,
+            'life_time':data.get('life_time',None),
+            'drug':data.get('drug',''),
+            'default_code':data.get('default_code',''),
+            'manufacturer':data.get('manufacturer',''),
+            'state':data.get('state',''),
             }
         self.raise_event(cr, uid,data_to_be_published, prod_id)
         return prod_id
@@ -221,6 +222,15 @@ class product_product(osv.osv):
 
     def raise_event(self, cr,uid, data, prod_id):
         data['id'] = prod_id
+
+        prod_obj = self.pool.get('product.product')
+        prod = prod_obj.browse(cr,uid,prod_id)
+        category = prod.categ_id.name
+
+        data['category'] = category
+        prod_category_obj = self.pool.get('product.category')
+        prod_category_obj.browse(cr,uid,prod_id)
+
         event_publisher_obj = self.pool.get('event.publisher')
         event_publisher_obj.publish_event(cr, uid, data)
 

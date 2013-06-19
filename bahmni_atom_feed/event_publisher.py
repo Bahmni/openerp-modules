@@ -17,9 +17,9 @@ class atom_event_publisher(osv.osv):
         event_vals = {
             'uuid': uuid.uuid4(),
             'category': 'Product',
-            'title': obj['name'] or '',
+            'title': obj.get('id','Null'),
             'timestamp': datetime.now(),
-            'uri': '',
+            'uri': None,
             'object': serializedContents,
         }
         event_obj = self.pool.get('event.records')
@@ -35,7 +35,7 @@ class atom_event(osv.osv):
         'uuid':fields.char("uuid", size=250, translate=True, required=True),
         'title':fields.char("Title", size=250, translate=True, required=True),
         'category':fields.char("Category", size=100, translate=True, required=True),
-        'timestamp':fields.datetime("Time of event creation"),
-        'uri':fields.char("URI", size=250, translate=True, required=True),
+        'timestamp':fields.datetime("Time of event creation", required=True),
+        'uri':fields.char("URI", size=250, translate=True,),
         'object':fields.text("serializedContents", required=True),
     }
