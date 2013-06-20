@@ -225,6 +225,8 @@ class product_product(osv.osv):
 
     def raise_event(self, cr,uid, data, prod_id):
         data['id'] = prod_id
+        if(data.get('active','') == 1):
+            data['active'] = True
         categ_id = data.get('categ_id',None)
         if(categ_id) :
             categ_obj = self.pool.get('product.category')
