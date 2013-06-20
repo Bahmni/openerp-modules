@@ -7,7 +7,7 @@
     "summary": "Bahmni Batch Sale Price",
     "description": """
     """,
-    'data': ["add_invoice_print_button.xml"],
+    'data': ["add_invoice_print_button.xml", "add_initials_to_res_users.xml"],
     'demo': [],
     'js': ['static/src/js/*.js'],
     'qweb': ['static/src/xml/*.xml'],
