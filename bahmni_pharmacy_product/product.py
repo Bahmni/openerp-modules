@@ -212,6 +212,7 @@ class product_product(osv.osv):
             'description':data.get('description',''),
             'active':data.get('active',''),
             'category':data.get('category',''),
+            'categ_id':data.get('categ_id',''),
             }
         self.raise_event(cr, uid,data_to_be_published, prod_id)
         return prod_id
@@ -232,12 +233,12 @@ class product_product(osv.osv):
             categ_obj = self.pool.get('product.category')
             category = categ_obj.browse(cr,uid,categ_id).name
             data.pop('categ_id',None)
-        else :
-            prod_obj = self.pool.get('product.product')
-            prod = prod_obj.browse(cr,uid,prod_id)
-            category = prod.categ_id.name
+            data['category'] = category
+#        else :
+#            prod_obj = self.pool.get('product.product')
+#            prod = prod_obj.browse(cr,uid,prod_id)
+#            category = prod.categ_id.name
 
-        data['category'] = category
         prod_category_obj = self.pool.get('product.category')
         prod_category_obj.browse(cr,uid,prod_id)
 
