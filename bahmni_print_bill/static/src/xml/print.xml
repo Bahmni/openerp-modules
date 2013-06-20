@@ -13,6 +13,7 @@
             #printBill { font-family: Roman, San-Serif, Draft;font-size:10pt; }
             #lineItems { clear:both; width:100%; border-top: 1px dashed;}
             #receipt_heading {width:100%;text-align:center;clear:both;margin-top:10px; font-weight: bold}
+            #cashier-initials {margin-top: 75px; font-size: 8pt;}
             table.bottom-border {border-bottom: 1px dashed;}
             .totalLabel { width: 60%; text-align: right;}
             .totalValue { width: 40%; text-align: right;}
@@ -66,7 +67,7 @@
             <div>
                 <div style="width: 40%; float: left; padding-top: 20px">
                     <div style="font-style: italic">This is a computer generated receipt and does not require a signature.</div>
-                    <!-- <div>Cashier: <t t-esc="create_initials"/></div> -->
+                    <div t-if="user_initials" id="cashier-initials"><t t-esc="user_initials"/></div>
                 </div>
 
                 <div style="width:40%;float:right">
