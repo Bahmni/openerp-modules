@@ -67,7 +67,7 @@
             <div>
                 <div style="width: 40%; float: left; padding-top: 20px">
                     <div style="font-style: italic">This is a computer generated receipt and does not require a signature.</div>
-                    <div t-if="user_initials" id="cashier-initials"><t t-esc="user_initials"/></div>
+                    <div t-if="cashier_initials" id="cashier-initials"><t t-esc="cashier_initials"/></div>
                 </div>
 
                 <div style="width:40%;float:right">
