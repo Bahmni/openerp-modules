@@ -12,11 +12,11 @@
                 <xpath expr="/form/sheet/group" position="after" >
                     <group>
                         <group>
-                            <field name="location_id" context="{'stock_picking_location_id': location_id}" string="Source Location"
+                            <field name="location_id" context="{'short_name': True}" string="Source Location"
                                    on_change="onchange_location(location_id, location_dest_id, move_lines)"/>
                         </group>
                         <group>
-                            <field name="location_dest_id" context="{'stock_picking_location_dest_id': location_dest_id}"
+                            <field name="location_dest_id" context="{'short_name': True}"
                                    on_change="onchange_location(location_id, location_dest_id, move_lines)"/>
                         </group>
                     </group>
