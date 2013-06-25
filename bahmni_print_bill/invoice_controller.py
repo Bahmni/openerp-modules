@@ -27,8 +27,6 @@ class InvoiceController(openerp.addons.web.http.Controller):
             pool = pooler.get_pool(dbname)
             account_voucher_obj = registry.get('account.voucher')
             voucher = account_voucher_obj.browse(cr, uid, voucher_id, context=context)
-            res_user_obj = registry.get('res.users')
-            user = res_user_obj.browse(cr, uid, uid, context=context)
 
             voucher_line_ids = sorted(voucher.line_ids, key=lambda v: v.id,reverse=True)
             invoice = None
@@ -62,7 +60,7 @@ class InvoiceController(openerp.addons.web.http.Controller):
                 'balance_amount': voucher.balance_amount,
                 'partner_name': voucher.partner_id.name,
                 'partner_ref': voucher.partner_id.ref,
-                'user_initials': user.initials,
+                'cashier_initials': voucher.create_uid.initials,
             }
             return bill
         return {}
