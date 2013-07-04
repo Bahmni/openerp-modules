@@ -37,12 +37,11 @@ class account_voucher(osv.osv):
                 self.write(cr, uid, voucher.id, {'invoice_id': invoice.id})
 
             if(voucher.state != 'posted'):
-                if(voucher.amount == 0):
-                    raise openerp.exceptions.Warning(_('Validation Error - Vocher amount cannot be 0'))
                 res[voucher.id]['balance_before_pay'] =  self._get_balance_amount(cr,uid,ids,None,None,context)
                 res[voucher.id]['balance_amount'] =   self._get_balance_amount(cr,uid,ids,None,None,context) - voucher.amount
                 self.write(cr, uid, voucher.id, {'balance_before_pay': res[voucher.id]['balance_before_pay']})
                 self.write(cr, uid, voucher.id, {'balance_amount': res[voucher.id]['balance_amount']})
+
         return res
 
 
@@ -63,23 +62,29 @@ class account_voucher(osv.osv):
             credit += l['amount']
         return amount - sign * (credit - debit)
 
+    def convert_to_float(self, amount):
+        if(amount == ''):
+            return 0
+        return float(amount)
+
     def _compute_total_balance(self, cr, uid, partner_id,amount):
+        amount = self.convert_to_float(amount)
         partner_obj = self.pool.get('res.partner')
         partner = partner_obj.browse(cr,uid,partner_id)
         return partner.credit - amount
 
     def _compute_balance_before_pay(self, cr, uid, partner_id,amount):
-        partner_obj = self.pool.get('res.partner')
+        amount = self.convert_to_float(amount)
+        partner_obj = self.pool.get('re s.partner')
         partner = partner_obj.browse(cr,uid,partner_id)
         return partner.credit - amount
 
     def onchange_line_ids(self, cr, uid, ids, line_dr_ids, line_cr_ids, amount, voucher_currency, type, context=None):
+        amount = self.convert_to_float(amount)
         context = context or {}
         if not line_dr_ids and not line_cr_ids:
             return {'value':{}}
         partner_id = context['partner_id']
-        _logger.info("partner_id")
-        _logger.info(partner_id)
         line_osv = self.pool.get("account.voucher.line")
         line_dr_ids = resolve_o2m_operations(cr, uid, line_osv, line_dr_ids, ['amount'], context)
         line_cr_ids = resolve_o2m_operations(cr, uid, line_osv, line_cr_ids, ['amount'], context)
@@ -101,10 +106,16 @@ class account_voucher(osv.osv):
         balance_before_pay = balance + amount
         warning = {}
         warning_msg = None
-        if(balance < 0): warning_msg = "Warning!! Balance amount is negative"
+        if (balance < 0):
+            if(amount != 0):
+                warning_msg = " Amount Paid is more than the Amount Due. Are you sure you want to continue?"
+                _logger.info("warning")
+                _logger.info(warning_msg)
+#        if(amount == 0):
+#            warning_msg = " Amount Paid is 0. Are you sure you want to continue?"
         if(warning_msg):
             warning = {
-                'title': _('Validation Error!'),
+                'title': _('Warning!!'),
                 'message' : warning_msg
             }
         return {'value': {'writeoff_amount': self._compute_writeoff_amount(cr, uid, line_dr_ids, line_cr_ids, amount, type),'balance_amount': balance,'balance_before_pay':balance_before_pay, 'is_multi_currency': is_multi_currency}, 'warning': warning}
@@ -158,9 +169,10 @@ class account_voucher(osv.osv):
         return res
 
     def recompute_voucher_lines(self, cr, uid, ids, partner_id, journal_id, price, currency_id, ttype, date, context=None):
-            default = super(account_voucher, self).recompute_voucher_lines(cr, uid, ids, partner_id, journal_id, price, currency_id, ttype, date)
+            amount = self.convert_to_float(price)
+            default = super(account_voucher, self).recompute_voucher_lines(cr, uid, ids, partner_id, journal_id, amount, currency_id, ttype, date)
             #jss add balance amount
-            default['value']['balance_amount'] = self._compute_balance_amount(cr, uid, default['value']['line_dr_ids'], default['value']['line_cr_ids'], price, ttype)
+            default['value']['balance_amount'] = self._compute_balance_amount(cr, uid, default['value']['line_dr_ids'], default['value']['line_cr_ids'], amount, ttype)
             return default
 
     def _compute_balance_amount(self, cr, uid, line_dr_ids, line_cr_ids, amount, type):
@@ -172,9 +184,17 @@ class account_voucher(osv.osv):
         return amount_unreconciled - amount
 
     def onchange_amount(self, cr, uid, ids, amount, rate, partner_id, journal_id, currency_id, ttype, date, payment_rate_currency_id, company_id, context=None):
+        amount = self.convert_to_float(amount)
         if context is None:
             context = {}
         res = self.recompute_voucher_lines(cr, uid, ids, partner_id, journal_id, amount, currency_id, ttype, date, context=context)
+#        if(amount == 0):
+#            warning = {
+#                'title': _('Warning!!'),
+#                'message' : "Vocher amount is 0. Are you sure you want to continue?"
+#            }
+#            res['warning'] = warning
+
         ctx = context.copy()
         ctx.update({'date': date})
         vals = self.onchange_rate(cr, uid, ids, rate, amount, currency_id, payment_rate_currency_id, company_id, context=ctx)
@@ -202,9 +222,9 @@ class account_voucher(osv.osv):
         return res and res[0] or False
 
 
-    _columns={
 
-        'balance_before_pay': fields.float( string='Initial Balance',digits=(4,2),readonly=True),
+    _columns={
+        'balance_before_pay': fields.float( string='Amount Due',digits=(4,2),readonly=True),
         'balance_amount': fields.float( string='Total Balance',digits=(4,2),readonly=True),
         'create_uid':  fields.many2one('res.users', 'Cashier', readonly=True),
         'invoice_id':fields.many2one('account.invoice', 'Invoice'),
@@ -215,6 +235,7 @@ class account_voucher(osv.osv):
         'active': True,
         'journal_id':_get_journal,
         'state': 'draft',
+        'amount': -999999,
         'pay_now': 'pay_now',
         'name': '',
         'date': lambda *a: time.strftime('%Y-%m-%d'),
