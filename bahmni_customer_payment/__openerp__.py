@@ -17,7 +17,7 @@
     'css' : [
         "static/src/css/voucher.css",
         ],
-    'js': ['static/src/js/payment.js'],
+
     'auto_install': False,
     'application': True,
     'installable': True,

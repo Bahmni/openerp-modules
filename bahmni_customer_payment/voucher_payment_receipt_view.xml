@@ -23,21 +23,20 @@
                 <field name="amount" class="oe_inline" string="Paid Amount" widget="monetary" position="replace">
                      <field name="amount" class="custom_oe_field_big"
                        string="Paid Amount" default_focus="1"
-                       widget="validatePay"
-                       options="{'currency_field': 'currency_id'}"
+                       widget="monetary" options="{'currency_field': 'currency_id'}"
                        on_change="onchange_amount(amount, payment_rate, partner_id, journal_id, currency_id, type, date, payment_rate_currency_id, company_id, context)"/>
                 </field>
 
 
                 <field name="amount" class="oe_inline"
                        string="Paid Amount"
-                        position="before">
+                       widget="monetary" position="before">
                         <field name="balance_before_pay" widget="monetary"  class="custom_oe_field_big"  options="{'currency_field': 'currency_id'}"/>
 
                 </field>
                <field name="amount" class="oe_inline"
                    string="Paid Amount"
-                    position="after">
+                   widget="monetary" position="after">
                    <field name="balance_amount" widget="monetary"  class="custom_oe_field_big"  options="{'currency_field': 'currency_id'}"/>
                    <button name="proforma_voucher" widget="monetary" string="Validate"   states="draft" class="oe_highlight"/>
                    <button name="proforma_voucher" widget="monetary" string="Validate" invisible="1" states="draft" class="oe_highlight"/>
