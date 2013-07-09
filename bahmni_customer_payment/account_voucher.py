@@ -37,8 +37,6 @@ class account_voucher(osv.osv):
                 self.write(cr, uid, voucher.id, {'invoice_id': invoice.id})
 
             if(voucher.state != 'posted'):
-                if(voucher.amount == 0):
-                    raise openerp.exceptions.Warning(_('Validation Error - Vocher amount cannot be 0'))
                 res[voucher.id]['balance_before_pay'] =  self._get_balance_amount(cr,uid,ids,None,None,context)
                 res[voucher.id]['balance_amount'] =   self._get_balance_amount(cr,uid,ids,None,None,context) - voucher.amount
                 self.write(cr, uid, voucher.id, {'balance_before_pay': res[voucher.id]['balance_before_pay']})
@@ -63,6 +61,12 @@ class account_voucher(osv.osv):
             credit += l['amount']
         return amount - sign * (credit - debit)
 
+    def _convert_to_float(self, amount):
+        return amount;
+#        if (amount == '' or amount == False):
+#            return 0
+#        return float(amount)
+
     def _compute_total_balance(self, cr, uid, partner_id,amount):
         partner_obj = self.pool.get('res.partner')
         partner = partner_obj.browse(cr,uid,partner_id)
@@ -78,8 +82,6 @@ class account_voucher(osv.osv):
         if not line_dr_ids and not line_cr_ids:
             return {'value':{}}
         partner_id = context['partner_id']
-        _logger.info("partner_id")
-        _logger.info(partner_id)
         line_osv = self.pool.get("account.voucher.line")
         line_dr_ids = resolve_o2m_operations(cr, uid, line_osv, line_dr_ids, ['amount'], context)
         line_cr_ids = resolve_o2m_operations(cr, uid, line_osv, line_cr_ids, ['amount'], context)
@@ -99,15 +101,7 @@ class account_voucher(osv.osv):
                     break
         balance = self._compute_total_balance(cr, uid, partner_id, amount)
         balance_before_pay = balance + amount
-        warning = {}
-        warning_msg = None
-        if(balance < 0): warning_msg = "Warning!! Balance amount is negative"
-        if(warning_msg):
-            warning = {
-                'title': _('Validation Error!'),
-                'message' : warning_msg
-            }
-        return {'value': {'writeoff_amount': self._compute_writeoff_amount(cr, uid, line_dr_ids, line_cr_ids, amount, type),'balance_amount': balance,'balance_before_pay':balance_before_pay, 'is_multi_currency': is_multi_currency}, 'warning': warning}
+        return {'value': {'writeoff_amount': self._compute_writeoff_amount(cr, uid, line_dr_ids, line_cr_ids, amount, type),'balance_amount': balance,'balance_before_pay':balance_before_pay, 'is_multi_currency': is_multi_currency}}
 
     def _get_writeoff_amount(self, cr, uid, ids, name, args, context=None):
         if not ids: return {}
@@ -161,6 +155,17 @@ class account_voucher(osv.osv):
             default = super(account_voucher, self).recompute_voucher_lines(cr, uid, ids, partner_id, journal_id, price, currency_id, ttype, date)
             #jss add balance amount
             default['value']['balance_amount'] = self._compute_balance_amount(cr, uid, default['value']['line_dr_ids'], default['value']['line_cr_ids'], price, ttype)
+            warning_msg = None
+            warning ={}
+            _logger.info("balance amount")
+            _logger.info(default['value']['balance_amount'])
+            if(default['value']['balance_amount'] < 0): warning_msg = "Warning !! Balance amount is negative"
+            if(warning_msg):
+                warning = {
+                    'title': _('Validation Error!'),
+                    'message' : warning_msg
+                }
+                default['warning']= warning
             return default
 
     def _compute_balance_amount(self, cr, uid, line_dr_ids, line_cr_ids, amount, type):
@@ -214,6 +219,7 @@ class account_voucher(osv.osv):
     _defaults = {
         'active': True,
         'journal_id':_get_journal,
+        'amount':None,
         'state': 'draft',
         'pay_now': 'pay_now',
         'name': '',

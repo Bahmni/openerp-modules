@@ -20,6 +20,9 @@
                            on_change="onchange_journal(journal_id, line_cr_ids, False, partner_id, date, amount, type, company_id, context)"
                            string="Payment Method"/>
                 </xpath>
+                <field name="partner_id" domain="[('customer','=',True)]"  string="Customer" position="replace">
+                   <field name="partner_id" domain="[('customer','=',True)]" required="1" on_change="onchange_partner_id(partner_id, journal_id, amount, currency_id, type, date, context)" string="Customer" context="{'search_default_customer': 1}"/>
+                </field>
                 <field name="amount" class="oe_inline" string="Paid Amount" widget="monetary" position="replace">
                      <field name="amount" class="custom_oe_field_big"
                        string="Paid Amount" default_focus="1"
@@ -41,6 +44,7 @@
                    <button name="proforma_voucher" widget="monetary" string="Validate"   states="draft" class="oe_highlight"/>
                    <button name="proforma_voucher" widget="monetary" string="Validate" invisible="1" states="draft" class="oe_highlight"/>
                </field>
+
 
                 <field name="reference" string="Payment Ref" placeholder="e.g. 003/10" position="attributes" >
                     <attribute name="invisible">1</attribute>/>
