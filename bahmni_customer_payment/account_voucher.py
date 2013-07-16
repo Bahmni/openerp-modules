@@ -63,9 +63,6 @@ class account_voucher(osv.osv):
 
     def _convert_to_float(self, amount):
         return amount;
-#        if (amount == '' or amount == False):
-#            return 0
-#        return float(amount)
 
     def _compute_total_balance(self, cr, uid, partner_id,amount):
         partner_obj = self.pool.get('res.partner')
@@ -157,9 +154,8 @@ class account_voucher(osv.osv):
             default['value']['balance_amount'] = self._compute_balance_amount(cr, uid, default['value']['line_dr_ids'], default['value']['line_cr_ids'], price, ttype)
             warning_msg = None
             warning ={}
-            _logger.info("balance amount")
-            _logger.info(default['value']['balance_amount'])
-            if(default['value']['balance_amount'] < 0): warning_msg = "Warning !! Balance amount is negative"
+#            if(price == 0): warning_msg = "Warning!! Amount Paid is 0. Do you want to continue?"
+            if(default['value']['balance_amount'] < 0): warning_msg = "Warning!! Amount Paid is more than the Amount Due. Do you want to continue?"
             if(warning_msg):
                 warning = {
                     'title': _('Validation Error!'),
@@ -209,7 +205,7 @@ class account_voucher(osv.osv):
 
     _columns={
 
-        'balance_before_pay': fields.float( string='Initial Balance',digits=(4,2),readonly=True),
+        'balance_before_pay': fields.float( string='Amount Due',digits=(4,2),readonly=True),
         'balance_amount': fields.float( string='Total Balance',digits=(4,2),readonly=True),
         'create_uid':  fields.many2one('res.users', 'Cashier', readonly=True),
         'invoice_id':fields.many2one('account.invoice', 'Invoice'),
