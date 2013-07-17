@@ -229,6 +229,13 @@ class product_product(osv.osv):
         if(data.get('active','') == 1):
             data['active'] = True
         categ_id = data.get('categ_id',None)
+        description = data.get('description',None)
+        _logger.info("description")
+        _logger.info(description)
+        if(description == False):
+            data.pop('desription',None)
+            data['desription'] = ""
+
         if(categ_id) :
             categ_obj = self.pool.get('product.category')
             category = categ_obj.browse(cr,uid,categ_id).name
