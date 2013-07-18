@@ -230,24 +230,19 @@ class product_product(osv.osv):
             data['active'] = True
         categ_id = data.get('categ_id',None)
         description = data.get('description',None)
-        _logger.info("description")
-        _logger.info(description)
         if(description == False):
-            data.pop('desription',None)
-            data['desription'] = ""
+            data['description'] = ""
 
         if(categ_id) :
             categ_obj = self.pool.get('product.category')
             category = categ_obj.browse(cr,uid,categ_id).name
             data.pop('categ_id',None)
             data['category'] = category
-#        else :
-#            prod_obj = self.pool.get('product.product')
-#            prod = prod_obj.browse(cr,uid,prod_id)
-#            category = prod.categ_id.name
-
-        prod_category_obj = self.pool.get('product.category')
-        prod_category_obj.browse(cr,uid,prod_id)
+        else :
+            prod_obj = self.pool.get('product.product')
+            prod = prod_obj.browse(cr,uid,prod_id)
+            category = prod.categ_id.name
+            data['category'] = category
 
         event_publisher_obj = self.pool.get('event.publisher')
         event_publisher_obj.publish_event(cr, uid, data)
