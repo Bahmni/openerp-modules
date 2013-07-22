@@ -10,6 +10,7 @@
     'data': [],
     'demo': [],
     'qweb': ['static/src/xml/*.xml'],
+    'js': ['static/src/js/*.js'],
     'auto_install': False,
     'application': True,
     'installable': True,
