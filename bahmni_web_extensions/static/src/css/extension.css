@@ -1,0 +1,13 @@
+.accesskey-char {
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+.openerp .oe_form .oe_form_label[for][accesskey] span {
+  font-size: 100%;
+  color: inherit;
+  vertical-align: inherit;
+  position: inherit;
+  top: inherit;
+  padding: 0 0px;
+}

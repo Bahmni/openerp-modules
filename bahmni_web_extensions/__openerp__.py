@@ -10,7 +10,12 @@
     'data': [],
     'demo': [],
     'qweb': ['static/src/xml/*.xml'],
-    'js': ['static/src/js/*.js'],
+    'css': ['static/src/css/extension.css'],
+    'js': [
+        'static/src/js/init.js',
+        'static/src/js/addingAccessKeyToOne2ManyList.js',
+        'static/src/js/accesskeyHighlight.js',
+    ],
     'auto_install': False,
     'application': True,
     'installable': True,

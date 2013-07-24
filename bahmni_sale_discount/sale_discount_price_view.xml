@@ -48,7 +48,7 @@
                         <field name="amount_untaxed" widget='monetary' options="{'currency_field': 'currency_id'}"/>
                         <field  name="discount_acc_id"
                             accesskey="A"
-                            string="Discount [A]ccount Head"
+                            string="Discount Account Head"
                             attrs="{'required':['|', ('discount_percentage','>','0'), ('calculated_discount', '>', '0')]}"/>
                         <field  name="discount_percentage"/>
                         <field  name="discount_amount" invisible="True"/>

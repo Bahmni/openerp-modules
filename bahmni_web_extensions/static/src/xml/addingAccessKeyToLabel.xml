@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- vim:fdl=1:
+-->
+<templates id="template" xml:space="preserve">
+    <t t-name="FormRenderingLabel">
+        <label  t-att-for="_for"
+                t-att-title="help"
+                t-attf-class="#{classnames} oe_form_label#{help ? '_help' : ''} oe_align_#{align}"
+                t-att-accesskey="accesskey">
+            <t t-esc="string"/>
+        </label>
+    </t>
+</templates>
