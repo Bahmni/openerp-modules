@@ -1,0 +1,8 @@
+openerp.bahmni_web_extensions = function(session) {
+    var files = ["addingAccessKeyToOne2ManyList", "accesskeyHighlight"];
+    for(var i=0; i<files.length; i++) {
+        if(openerp.bahmni_web_extensions[files[i]]) {
+            openerp.bahmni_web_extensions[files[i]](session);
+        }
+    }
+};
