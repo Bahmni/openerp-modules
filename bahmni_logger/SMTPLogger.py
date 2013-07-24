@@ -1,16 +1,18 @@
 import logging
 import nonblockingloghandler
 import logging.handlers
+import socket
 
-class OpenerpSMTPLogHabdler(logging.handlers.SMTPHandler):
+class OpenerpSMTPLogHandler(logging.handlers.SMTPHandler):
     def emit(self, record):
         logging.handlers.SMTPHandler.emit(self, record)
 
-smtpHandler = OpenerpSMTPLogHabdler(
+hostname = socket.gethostname()
+smtpHandler = OpenerpSMTPLogHandler(
     mailhost="gmail-smtp-in.l.google.com",
     fromaddr="jss.bahmni@gmail.com",
     toaddrs=["bahmni-jss-support@googlegroups.com"],
-    subject=u"Bahmni OpenERP Error"
+    subject=u"Bahmni OpenERP Error [{0}]".format(hostname)
 )
 
 nonblocking_email_handler = nonblockingloghandler.NonblockingLogHandler(smtpHandler)
