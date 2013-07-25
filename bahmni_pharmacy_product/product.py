@@ -211,7 +211,7 @@ class product_product(osv.osv):
             'default_code':data.get('default_code',''),
             'manufacturer':data.get('manufacturer',''),
             'state':data.get('state',''),
-            'description':data.get('description',''),
+            'description':data.get('description',False),
             'active':data.get('active',''),
             'category':data.get('category',''),
             'categ_id':data.get('categ_id',''),
@@ -237,10 +237,11 @@ class product_product(osv.osv):
         if(data.get('uuid',None) == None):
             data['uuid'] = prod.uuid
 
-        description = data.get('description',None)
+        description = data.get('description',False)
         if(description == False):
-            data['description'] = ""
+            data.pop('description',None)
 
+        data.pop('categ_id',None)
         category = prod.categ_id.name
         data['category'] = category
 
