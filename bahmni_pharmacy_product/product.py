@@ -198,9 +198,11 @@ class product_product(osv.osv):
         return self.get_product_available(cr, uid, ids, context=ctx)
 
     def create(self, cr, uid, data, context=None):
+        data['uuid'] = str(uuid.uuid4())
         prod_id = super(product_product, self).create(cr, uid, data, context)
 
         data_to_be_published = {
+            'uuid':data.get('uuid',''),
             'name':data.get('name',''),
             'list_price':data.get('list_price' ,0.0),
             'standard_price':data.get('standard_price',0.0) ,
@@ -228,26 +230,25 @@ class product_product(osv.osv):
         data['id'] = prod_id
         if(data.get('active','') == 1):
             data['active'] = True
-        categ_id = data.get('categ_id',None)
+
+        prod_obj = self.pool.get('product.product')
+        prod = prod_obj.browse(cr,uid,prod_id)
+
+        if(data.get('uuid',None) == None):
+            data['uuid'] = prod.uuid
+
         description = data.get('description',None)
         if(description == False):
             data['description'] = ""
 
-        if(categ_id) :
-            categ_obj = self.pool.get('product.category')
-            category = categ_obj.browse(cr,uid,categ_id).name
-            data.pop('categ_id',None)
-            data['category'] = category
-        else :
-            prod_obj = self.pool.get('product.product')
-            prod = prod_obj.browse(cr,uid,prod_id)
-            category = prod.categ_id.name
-            data['category'] = category
+        category = prod.categ_id.name
+        data['category'] = category
 
         event_publisher_obj = self.pool.get('event.publisher')
         event_publisher_obj.publish_event(cr, uid, data)
 
     _columns = {
+        'uuid': fields.char('UUID', size=64),
         'drug':fields.char('Drug Name', size=64),
         'manufacturer':fields.char('Manufacturer', size=64),
         'low_stock': fields.function(_check_low_stock, type="boolean", string="Low Stock", fnct_search=_search_low_stock),
