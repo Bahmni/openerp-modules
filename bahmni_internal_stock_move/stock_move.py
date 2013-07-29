@@ -6,6 +6,9 @@ from tools.translate import _
 import decimal_precision as dp
 from openerp import netsvc
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT, DATETIME_FORMATS_MAP, float_compare
+import logging
+_logger = logging.getLogger(__name__)
+
 
 class stock_move(osv.osv):
     _name = "stock.move"
@@ -32,6 +35,14 @@ class stock_move(osv.osv):
         location = self.pool.get('stock.location').browse(cr, uid, loc_id, context=ctx)
         uom = uom_obj.browse(cr, uid, uom_id, context=ctx)
         amount_actual = uom_obj._compute_qty_obj(cr, uid, product_uom, prodlot.stock_available, uom, context=ctx)
+        stock_available = prodlot.stock_available
+        if(product_qty):
+            stock_available -= product_qty
+        result={
+            "stock_available":stock_available,
+            "expiry_date":prodlot.life_date
+        }
+
         warning = {}
         if (location.usage == 'internal') and (product_qty > (amount_actual or 0.0)):
             warning = {
@@ -45,7 +56,107 @@ class stock_move(osv.osv):
                 'message': _('This product is expired on %s') % (prodlot.life_date)
             }
 
-        return {'warning': warning}
+        return {'warning': warning,'value':result}
+
+    def _get_stock_for_location(self, cr, loc_id, prod_id):
+        cr.execute(
+            "select product_id,qty from stock_report_prodlots where  location_id = %s and product_id = %s ",
+            (loc_id, prod_id))
+        qty = 0.0
+        for row in cr.dictfetchall():
+            qty += row['qty']
+        return qty
+
+    def onchange_product_id(self, cr, uid, ids, prod_id=False, loc_id=False,
+                            loc_dest_id=False, partner_id=False):
+        """ On change of product id, if finds UoM, UoS, quantity and UoS quantity.
+        @param prod_id: Changed Product id
+        @param loc_id: Source location id
+        @param loc_dest_id: Destination location id
+        @param partner_id: Address id of partner
+        @return: Dictionary of values
+        """
+        if not prod_id:
+            return {}
+        lang = False
+        if partner_id:
+            addr_rec = self.pool.get('res.partner').browse(cr, uid, partner_id)
+            if addr_rec:
+                lang = addr_rec and addr_rec.lang or False
+        ctx = {'lang': lang}
+
+        product = self.pool.get('product.product').browse(cr, uid, [prod_id], context=ctx)[0]
+        uos_id  = product.uos_id and product.uos_id.id or False
+        qty =0.0
+        if(loc_id):
+            qty = self._get_stock_for_location(cr, loc_id, prod_id)
+
+        result = {
+            'product_uom': product.uom_id.id,
+            'product_uos': uos_id,
+            'product_qty': qty,
+            'product_uos_qty' : self.pool.get('stock.move').onchange_quantity(cr, uid, ids, prod_id, 1.00, product.uom_id.id, uos_id)['value']['product_uos_qty'],
+            'prodlot_id' : False,
+            'stock_available':qty
+            }
+        if not ids:
+            result['name'] = product.partner_ref
+        if loc_id:
+            result['location_id'] = loc_id
+        if loc_dest_id:
+            result['location_dest_id'] = loc_dest_id
+        return {'value': result}
+
+
+    def onchange_quantity(self, cr, uid, ids, product_id, product_qty,
+                          product_uom, product_uos,loc_id=False):
+        """ On change of product quantity finds UoM and UoS quantities
+        @param product_id: Product id
+        @param product_qty: Changed Quantity of product
+        @param product_uom: Unit of measure of product
+        @param product_uos: Unit of sale of product
+        @return: Dictionary of values
+        """
+        result = {
+            'product_uos_qty': 0.00
+        }
+        warning = {}
+
+        if (not product_id) or (product_qty <=0.0):
+            result['product_qty'] = 0.0
+            return {'value': result}
+
+        product_obj = self.pool.get('product.product')
+        uos_coeff = product_obj.read(cr, uid, product_id, ['uos_coeff'])
+
+        # Warn if the quantity was decreased
+        if ids:
+            for move in self.read(cr, uid, ids, ['product_qty']):
+                if product_qty < move['product_qty']:
+                    warning.update({
+                        'title': _('Information'),
+                        'message': _("By changing this quantity here, you accept the "
+                                     "new quantity as complete: OpenERP will not "
+                                     "automatically generate a back order.") })
+                break
+
+        if product_uos and product_uom and (product_uom != product_uos):
+            result['product_uos_qty'] = product_qty * uos_coeff['uos_coeff']
+        else:
+            result['product_uos_qty'] = product_qty
+
+        qty = 0.0
+        if(loc_id):
+            qty = self._get_stock_for_location(cr, loc_id, product_id) - product_qty
+        result['stock_available'] = qty
+
+        return {'value': result, 'warning': warning,'stock_available':qty}
+
+
+    _columns={
+        'stock_available': fields.float("Balance",digits_compute=dp.get_precision('Account'),),
+        'expiry_date': fields.date('Expiry Date',),
+        }
 
 class split_in_production_lot(osv.osv_memory):
     _name = "stock.move.split"

@@ -1,6 +1,7 @@
 from osv import fields, osv
 from tools.translate import _
 import decimal_precision as dp
+import datetime
 import netsvc
 
 class stock_production_lot(osv.osv):
@@ -44,8 +45,12 @@ class stock_production_lot(osv.osv):
         res = []
         for record in self.browse(cr, uid, ids, context=context):
             name = record.name
+            expiry_date = datetime.datetime.strptime(record.life_date, '%Y-%m-%d')
+            expiry = expiry_date.strftime("%b,%Y")
+
+            name = "%s[ %s ]" % (name,expiry)
             if(context.get('show_future_forcast', False)):
-                name =  "%s [%s]" % (name, record.future_stock_forecast)
+                name =  "%s-%s" % (name, record.future_stock_forecast)
             res.append((record.id, name))
         return res
 
