@@ -35,13 +35,6 @@ class stock_move(osv.osv):
         location = self.pool.get('stock.location').browse(cr, uid, loc_id, context=ctx)
         uom = uom_obj.browse(cr, uid, uom_id, context=ctx)
         amount_actual = uom_obj._compute_qty_obj(cr, uid, product_uom, prodlot.stock_available, uom, context=ctx)
-        stock_available = prodlot.stock_available
-        if(product_qty):
-            stock_available -= product_qty
-        result={
-            "stock_available":stock_available,
-            "expiry_date":prodlot.life_date
-        }
 
         warning = {}
         if (location.usage == 'internal') and (product_qty > (amount_actual or 0.0)):
@@ -56,7 +49,7 @@ class stock_move(osv.osv):
                 'message': _('This product is expired on %s') % (prodlot.life_date)
             }
 
-        return {'warning': warning,'value':result}
+        return {'warning': warning}
 
     def _get_stock_for_location(self, cr, loc_id, prod_id):
         cr.execute(
@@ -94,7 +87,7 @@ class stock_move(osv.osv):
         result = {
             'product_uom': product.uom_id.id,
             'product_uos': uos_id,
-            'product_qty': qty,
+            'product_qty': 0.00,
             'product_uos_qty' : self.pool.get('stock.move').onchange_quantity(cr, uid, ids, prod_id, 1.00, product.uom_id.id, uos_id)['value']['product_uos_qty'],
             'prodlot_id' : False,
             'stock_available':qty
@@ -109,7 +102,7 @@ class stock_move(osv.osv):
 
 
     def onchange_quantity(self, cr, uid, ids, product_id, product_qty,
-                          product_uom, product_uos,loc_id=False):
+                          product_uom, product_uos,loc_id=False,move_lines=None):
         """ On change of product quantity finds UoM and UoS quantities
         @param product_id: Product id
         @param product_qty: Changed Quantity of product
@@ -117,6 +110,8 @@ class stock_move(osv.osv):
         @param product_uos: Unit of sale of product
         @return: Dictionary of values
         """
+        _logger.info("Move lines")
+        _logger.info(move_lines)
         result = {
             'product_uos_qty': 0.00
         }
@@ -148,6 +143,14 @@ class stock_move(osv.osv):
         qty = 0.0
         if(loc_id):
             qty = self._get_stock_for_location(cr, loc_id, product_id) - product_qty
+
+        if(move_lines):
+            for move in move_lines:
+                move_line = move[2]
+                if(move_line['product_id'] == product_id):
+                    _logger.info(move_line)
+                    qty -= move_line['product_qty']
+
         result['stock_available'] = qty
 
         return {'value': result, 'warning': warning,'stock_available':qty}
@@ -155,7 +158,6 @@ class stock_move(osv.osv):
 
     _columns={
         'stock_available': fields.float("Balance",digits_compute=dp.get_precision('Account'),),
-        'expiry_date': fields.date('Expiry Date',),
         }
 
 class split_in_production_lot(osv.osv_memory):
