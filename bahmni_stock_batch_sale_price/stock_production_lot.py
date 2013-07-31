@@ -3,6 +3,9 @@ from datetime import datetime
 from tools.translate import _
 import decimal_precision as dp
 import netsvc
+import logging
+_logger = logging.getLogger(__name__)
+
 
 class stock_production_lot(osv.osv):
 

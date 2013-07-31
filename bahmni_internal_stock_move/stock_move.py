@@ -13,6 +13,7 @@ _logger = logging.getLogger(__name__)
 class stock_move(osv.osv):
     _name = "stock.move"
     _inherit = "stock.move"
+    _order = "product_id ,stock_available desc"
 
     def onchange_lot_id(self, cr, uid, ids, prodlot_id=False, product_qty=False,
                         loc_id=False, product_id=False, uom_id=False, context=None):
@@ -51,13 +52,24 @@ class stock_move(osv.osv):
 
         return {'warning': warning}
 
-    def _get_stock_for_location(self, cr, loc_id, prod_id):
-        cr.execute(
-            "select product_id,qty from stock_report_prodlots where  location_id = %s and product_id = %s ",
-            (loc_id, prod_id))
-        qty = 0.0
+    def _get_stock_for_location(self, cr, uid,loc_id, prod_id):
+#        loc_obj = self.pool.get("stock.location")
+#        context ={"product_id":prod_id,}
+#        ids =[loc_id]
+#        field_names =['stock_virtual']
+#        result = loc_obj._product_value(cr,uid,ids,field_names,None,context)
+#        qty = result[loc_id]['stock_virtual']
+
+        cr.execute('''select
+                    product_id,
+                    sum(qty) as qty
+                from
+                    batch_stock_future_forecast
+                where
+                    location_id = %s and product_id = %s group by product_id''',(loc_id,prod_id,))
         for row in cr.dictfetchall():
-            qty += row['qty']
+            qty = row['qty']
+
         return qty
 
     def onchange_product_id(self, cr, uid, ids, prod_id=False, loc_id=False,
@@ -82,7 +94,7 @@ class stock_move(osv.osv):
         uos_id  = product.uos_id and product.uos_id.id or False
         qty =0.0
         if(loc_id):
-            qty = self._get_stock_for_location(cr, loc_id, prod_id)
+            qty = self._get_stock_for_location(cr, uid,loc_id, prod_id)
 
         result = {
             'product_uom': product.uom_id.id,
@@ -147,11 +159,16 @@ class stock_move(osv.osv):
         if(move_lines):
             for move in move_lines:
                 move_line = move[2]
-                if(move_line['product_id'] == product_id):
-                    _logger.info(move_line)
+                if(move_line['product_id'] & move_line['product_id'] == product_id):
                     qty -= move_line['product_qty']
+            for move in move_lines:
+                move_line = move[2]
+                if(move_line['product_id'] & move_line['product_id'] == product_id):
+                    move_line['product_qty'] = qty
+
 
         result['stock_available'] = qty
+        result['move_lines'] = move_lines
 
         return {'value': result, 'warning': warning,'stock_available':qty}
 
