@@ -95,5 +95,19 @@
                 </xpath>
             </field>
         </record>
+
+
+        <record id="view_move_tree" model="ir.ui.view">
+            <field name="name">stock.move.tree</field>
+            <field name="model">stock.move</field>
+            <field eval="8" name="priority"/>
+            <field name="inherit_id" ref="stock.view_move_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='date_expected']" position="replace">
+                    <field name="date_expected" invisible="1"/>
+                    <field name="stock_picking_time"/>
+                </xpath>
+            </field>
+        </record>
     </data>
 </openerp>

@@ -52,24 +52,17 @@ class stock_move(osv.osv):
 
         return {'warning': warning}
 
-    def _get_stock_for_location(self, cr, uid,loc_id, prod_id):
-#        loc_obj = self.pool.get("stock.location")
-#        context ={"product_id":prod_id,}
-#        ids =[loc_id]
-#        field_names =['stock_virtual']
-#        result = loc_obj._product_value(cr,uid,ids,field_names,None,context)
-#        qty = result[loc_id]['stock_virtual']
-
+    def _get_stock_for_location(self, cr, uid, loc_id, prod_id):
+        qty = 0
         cr.execute('''select
                     product_id,
                     sum(qty) as qty
                 from
                     batch_stock_future_forecast
                 where
-                    location_id = %s and product_id = %s group by product_id''',(loc_id,prod_id,))
+                    location_id = %s and product_id = %s group by product_id''',(loc_id, prod_id,))
         for row in cr.dictfetchall():
             qty = row['qty']
-
         return qty
 
     def onchange_product_id(self, cr, uid, ids, prod_id=False, loc_id=False,
@@ -94,7 +87,7 @@ class stock_move(osv.osv):
         uos_id  = product.uos_id and product.uos_id.id or False
         qty =0.0
         if(loc_id):
-            qty = self._get_stock_for_location(cr, uid,loc_id, prod_id)
+            qty = self._get_stock_for_location(cr, uid, loc_id, prod_id)
 
         result = {
             'product_uom': product.uom_id.id,
@@ -154,7 +147,7 @@ class stock_move(osv.osv):
 
         qty = 0.0
         if(loc_id):
-            qty = self._get_stock_for_location(cr, loc_id, product_id) - product_qty
+            qty = self._get_stock_for_location(cr, uid, loc_id, product_id) - product_qty
 
         if(move_lines):
             for move in move_lines:
@@ -172,10 +165,16 @@ class stock_move(osv.osv):
 
         return {'value': result, 'warning': warning,'stock_available':qty}
 
+    def _get_picking_time(self, cr, uid, ids, name, args, context=None):
+        res = {}
+        for stock_move in self.browse(cr, uid, ids):
+            res[stock_move.id] = stock_move.picking_id.date
+        return res
 
     _columns={
         'stock_available': fields.float("Balance",digits_compute=dp.get_precision('Account'),),
-        }
+        'stock_picking_time': fields.function(_get_picking_time, type='datetime', string='Move Date', store=True),
+    }
 
 class split_in_production_lot(osv.osv_memory):
     _name = "stock.move.split"
