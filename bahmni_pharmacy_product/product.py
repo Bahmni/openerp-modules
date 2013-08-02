@@ -197,6 +197,12 @@ class product_product(osv.osv):
             ctx.update({'compute_child': False})
         return self.get_product_available(cr, uid, ids, context=ctx)
 
+    def unlink(self, cr, uid, ids, context=None):
+        self.raise_event(cr, uid,{'isDeleted' : True}, ids[0])
+        res = super(product_product, self).unlink(cr,uid,ids,context)
+        return res
+
+
     def create(self, cr, uid, data, context=None):
         data['uuid'] = str(uuid.uuid4())
         prod_id = super(product_product, self).create(cr, uid, data, context)
@@ -210,9 +216,7 @@ class product_product(osv.osv):
             'drug':data.get('drug',''),
             'default_code':data.get('default_code',''),
             'manufacturer':data.get('manufacturer',''),
-            'state':data.get('state',''),
             'description':data.get('description',False),
-            'active':data.get('active',''),
             'category':data.get('category',''),
             'categ_id':data.get('categ_id',''),
             }
@@ -228,9 +232,6 @@ class product_product(osv.osv):
 
     def raise_event(self, cr,uid, data, prod_id):
         data['id'] = prod_id
-        if(data.get('active','') == 1):
-            data['active'] = True
-
         prod_obj = self.pool.get('product.product')
         prod = prod_obj.browse(cr,uid,prod_id)
 
@@ -244,6 +245,16 @@ class product_product(osv.osv):
         data.pop('categ_id',None)
         category = prod.categ_id.name
         data['category'] = category
+
+        data.pop('active', None)
+        if(prod.active):
+            data['status'] = 'active'
+        else:
+            data['status'] = 'inactive'
+
+        if(data['isDeleted']):
+            data.pop('isDeleted', None)
+            data['status'] = 'deleted'
 
         event_publisher_obj = self.pool.get('event.publisher')
         event_publisher_obj.publish_event(cr, uid, data)
