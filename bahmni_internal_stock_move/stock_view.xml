@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <act_window
+                context="{'location': active_id}"
+                id="act_product_lot_location_open"
+                name="Product Lots By Location"
+                res_model="stock.report.prodlots"
+                src_model="stock.location"/>
+
+
+        <record id="ir_act_product_lot_location_open" model="ir.values">
+            <field name="key2">tree_but_open</field>
+            <field name="model">stock.report.prodlots</field>
+            <field name="name">Products1</field>
+            <!--<field name="inherit_id" ref="stock.ir_act_product_location_open"/>-->
+            <field eval="'ir.actions.act_window,%d'%act_product_lot_location_open" name="value"/>
+        </record>
+
+
+        <!--<record id="ir_act_product_lot_location_open" model="ir.values">-->
+            <!--<field name="key2">tree_but_open</field>-->
+            <!--<field name="model">stock.report.prodlots</field>-->
+            <!--<field name="name">Open Products1</field>-->
+            <!--&lt;!&ndash;<field name="inherit_id" ref="stock.ir_act_product_location_open"/>&ndash;&gt;-->
+            <!--<field eval="'ir.actions.act_window,%d'%action_view_stock_location_product_lot" name="value"/>-->
+        <!--</record>-->
+    </data>
+</openerp>

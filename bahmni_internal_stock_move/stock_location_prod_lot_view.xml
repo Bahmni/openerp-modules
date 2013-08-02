@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="view_stock_location_prod_lot" model="ir.ui.view">
+            <field name="name">Product lots by Location</field>
+            <field name="model">stock.report.prodlots</field>
+            <field name="arch" type="xml">
+               <form string="View Stock of Product Lots" version="7.0">
+                    <group>
+                        <!--<field name="type"/>-->
+                    </group>
+                    <!--<group attrs="{'invisible':[('type', '!=', 'period')], 'required':[('type', '=', 'period')]}">-->
+                        <!--<field name="from_date"/>-->
+                        <!--<field name="to_date"/>-->
+                    <!--</group>-->
+                    <footer>
+                        <button name="action_open_window" string="View Product Lots Inventory" type="object" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="stock_product_lot_tree_view" model="ir.ui.view">
+            <field name="name">stock.product.lot.tree</field>
+            <field name="model">stock.report.prodlots</field>
+            <field eval="7" name="priority"/>
+            <field name="arch" type="xml">
+                <tree colors="red:virtual_available&lt;0;blue:virtual_available&gt;=0 and state in ('draft', 'end', 'obsolete');black:virtual_available&gt;=0 and state not in ('draft', 'end', 'obsolete')" string="Products">
+                    <field name="location_id"/>
+                    <field name="product_id"/>
+                    <field name="prodlot_id" />
+                    <field name="qty" />
+                </tree>
+            </field>
+        </record>
+
+        <record id="stock_product_lot_tree_view" model="ir.ui.view">
+            <field name="name">stock.product.lot.tree</field>
+            <field name="model">stock.report.prodlots</field>
+            <field eval="7" name="priority"/>
+            <field name="arch" type="xml">
+                <tree  string="Product Lots">
+                    <field name="location_id"/>
+                    <field name="product_id"/>
+                    <field name="prodlot_id" />
+                    <field name="qty" />
+                </tree>
+            </field>
+        </record>
+
+        <record id="product_normal_form_view" model="ir.ui.view">
+            <field name="name">prodlots.normal.form</field>
+            <field name="model">stock.report.prodlots</field>
+            <field eval="7" name="priority"/>
+            <field name="arch" type="xml">
+                 <form string="Product" version="7.0">
+                     <sheet>
+                         <field name="location_id"/>
+                         <field name="product_id"/>
+                         <field name="prodlot_id" />
+                         <field name="qty" />
+                     </sheet>
+                    </form>
+            </field>
+        </record>
+
+        <!--<act_window name="Products by Location"-->
+            <!--res_model="stock.report.prodlots"-->
+            <!--src_model="stock.location"-->
+            <!--view_mode="form"-->
+            <!--target="new"-->
+            <!--key2="client_action_multi"-->
+            <!--id="action_view_stock_location_product_lot"/>-->
+    </data>
+</openerp>
