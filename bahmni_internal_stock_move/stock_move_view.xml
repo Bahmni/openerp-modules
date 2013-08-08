@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<openerp>
+    <data>
+        <record id="view_move_search_extension" model="ir.ui.view">
+            <field name="name">stock.move.search</field>
+            <field name="model">stock.move</field>
+            <field name="inherit_id" ref="stock.view_move_search"/>
+            <field eval="3" name="priority"/>
+            <field name="arch" type="xml">
+                <xpath expr="/search[@string='Stock Moves']//filter[@string='Scheduled']" position="replace">
+                        <filter string="Move Date" name="groupby_move_date" icon="terp-go-month" domain="[]" context="{'group_by':'stock_picking_time'}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_move_tree_extension" model="ir.ui.view">
+            <field name="name">stock.move.tree</field>
+            <field name="model">stock.move</field>
+            <field eval="8" name="priority"/>
+            <field name="inherit_id" ref="stock.view_move_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='date_expected']" position="replace">
+                    <field name="date_expected" invisible="1"/>
+                    <field name="stock_picking_time"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>
+

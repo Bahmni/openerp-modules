@@ -7,7 +7,12 @@
     "summary": "Stock internal move",
     "description": """
     """,
-    'data': ['stock_internal_move_view.xml','stock_location_prod_lot_view.xml','stock_view.xml'],
+    'data': [
+        'stock_internal_move_view.xml',
+        'stock_location_prod_lot_view.xml',
+        'stock_view.xml',
+        'stock_move_view.xml'
+    ],
     'demo': [],
     'auto_install': False,
     'application': True,
