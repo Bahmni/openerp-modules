@@ -252,7 +252,7 @@ class product_product(osv.osv):
         else:
             data['status'] = 'inactive'
 
-        if(data['isDeleted']):
+        if(data.get('isDeleted', False)):
             data.pop('isDeleted', None)
             data['status'] = 'deleted'
 
@@ -266,5 +266,3 @@ class product_product(osv.osv):
         'low_stock': fields.function(_check_low_stock, type="boolean", string="Low Stock", fnct_search=_search_low_stock),
         'actual_stock': fields.function(_get_actual_stock, type="float", string="Actual Stock"),
     }
-
-
