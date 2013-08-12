@@ -18,10 +18,11 @@
                         <field name="location_id" invisible="1"/>
                         <field name="use_exist"/>
                     </group>
-                    <field name="line_ids" attrs="{'invisible':[('use_exist','=',True)]}">
+                    <field name="line_ids" attrs="{'invisible':[('use_exist','=',True)]}" context="{'product_uom': product_uom}">
                         <tree string="Serial Numbers" editable="bottom">
                             <field name="name"/>
                             <field name="quantity" />
+                            <field name="product_uom" htmlreadonly="1"/> <!-- Openerp readonly doesnot show value !! Weird !!-->
                             <field name="cost_price" />
                             <field name="sale_price" />
                             <field name="mrp" />
@@ -31,6 +32,7 @@
                             <group>
                                 <field name="name"/>
                                 <field name="quantity" />
+                                <field name="product_uom" htmlreadonly="1"/> <!-- Openerp readonly doesnot show value !! Weird !!-->
                                 <field name="cost_price" />
                                 <field name="sale_price" />
                                 <field name="mrp" />

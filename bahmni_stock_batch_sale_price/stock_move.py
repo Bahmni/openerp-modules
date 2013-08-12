@@ -124,11 +124,24 @@ class stock_move_split_lines_exist_with_price(osv.osv_memory):
     _description = "Stock move Split lines"
     _inherit = "stock.move.split.lines"
 
+    def _get_product_uom_name(self, cr, uid, context=None):
+        context = context or {}
+        product_uom_obj = self.pool.get('product.uom')
+        product_uom_id = context.get('product_uom', None)
+        if(product_uom_id is not None):
+            product_uom = product_uom_obj.browse(cr, uid, product_uom_id, context=context)
+            return product_uom.name
+
     _columns = {
         'cost_price': fields.float('Cost Price', digits_compute=dp.get_precision('Product Price')),
         'sale_price': fields.float('Sale Price', digits_compute=dp.get_precision('Product Price')),
         'mrp': fields.float('MRP', digits_compute=dp.get_precision('Product Price')),
         'expiry_date': fields.date('Life Date'),
+        'product_uom': fields.char("Unit", store=False),
+    }
+
+    _defaults = {
+        'product_uom': _get_product_uom_name,
     }
 
 stock_move_split_lines_exist_with_price()
