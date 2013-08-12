@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<openerp>
+    <data>
+        <record id="purchase_order_form_extension" model="ir.ui.view">
+            <field name="name">purchase.order.form</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="/form/sheet/notebook/page[@string='Purchase Order']//field[@name='order_line']/tree//field[@name='name']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="/form/sheet/notebook/page[@string='Purchase Order']//field[@name='order_line']/tree//field[@name='product_uom']" position="attributes">
+                    <attribute name="string">Unit</attribute>
+                </xpath>
+                <xpath expr="/form/sheet/notebook/page[@string='Purchase Order']//button[@string='(update)']" position="attributes">
+                    <attribute name="accesskey">U</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>

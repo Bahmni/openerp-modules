@@ -22,6 +22,9 @@
 from openerp.osv import fields, osv
 from openerp.tools.translate import _
 import openerp.addons.decimal_precision as dp
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class split_in_production_lot_with_price(osv.osv_memory):
@@ -72,6 +75,7 @@ class split_in_production_lot_with_price(osv.osv_memory):
                     quantity_rest -= quantity
                     uos_qty = quantity / move_qty * move.product_uos_qty
                     uos_qty_rest = quantity_rest / move_qty * move.product_uos_qty
+
                     if quantity_rest < 0:
                         quantity_rest = quantity
                         self.pool.get('stock.move').log(cr, uid, move.id, _('Unable to assign all lots to this move!'))
@@ -95,10 +99,10 @@ class split_in_production_lot_with_price(osv.osv_memory):
                     if not prodlot_id:
                         prodlot_id = prodlot_obj.create(cr, uid, {
                             'name': line.name,
-                            'sale_price':line.sale_price,
-                            'cost_price':line.cost_price,
+                            'sale_price':line.sale_price * move.product_uom.factor,
+                            'cost_price':line.cost_price * move.product_uom.factor,
+                            'mrp':line.mrp * move.product_uom.factor,
                             'life_date':line.expiry_date,
-                            'mrp':line.mrp,
                             'product_id': move.product_id.id},
                         context=context)
 
@@ -116,16 +120,16 @@ class split_in_production_lot_with_price(osv.osv_memory):
 split_in_production_lot_with_price()
 
 class stock_move_split_lines_exist_with_price(osv.osv_memory):
-    _columns = {
-        'cost_price': fields.float('Cost Price', digits_compute=dp.get_precision('Product Unit of Measure')),
-        'sale_price': fields.float('Sale Price', digits_compute=dp.get_precision('Product Unit of Measure')),
-        'mrp': fields.float('MRP', digits_compute=dp.get_precision('Product Unit of Measure')),
-        'expiry_date': fields.date('Life Date'),
-        }
     _name = "stock.move.split.lines"
     _description = "Stock move Split lines"
     _inherit = "stock.move.split.lines"
 
+    _columns = {
+        'cost_price': fields.float('Cost Price', digits_compute=dp.get_precision('Product Price')),
+        'sale_price': fields.float('Sale Price', digits_compute=dp.get_precision('Product Price')),
+        'mrp': fields.float('MRP', digits_compute=dp.get_precision('Product Price')),
+        'expiry_date': fields.date('Life Date'),
+    }
 
 stock_move_split_lines_exist_with_price()
 
