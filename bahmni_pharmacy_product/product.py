@@ -252,7 +252,7 @@ class product_product(osv.osv):
         else:
             data['status'] = 'inactive'
 
-        if(data.get('isDeleted', False)):
+        if(data.get('isDeleted',False)):
             data.pop('isDeleted', None)
             data['status'] = 'deleted'
 
