@@ -180,6 +180,10 @@ class split_in_production_lot(osv.osv_memory):
     _name = "stock.move.split"
     _inherit = "stock.move.split"
 
+    _columns = {
+        'stock_move': fields.many2one('stock.move', 'Stock Move', required=False)
+    }
+
     def default_get(self, cr, uid, fields, context=None):
         if context is None:
             context = {}
@@ -196,4 +200,6 @@ class split_in_production_lot(osv.osv_memory):
                 res.update({'use_exist': (move.picking_id and (move.picking_id.type=='out' or move.picking_id.type=='internal') and True) or False})
             if 'location_id' in fields:
                 res.update({'location_id': move.location_id.id})
+            if 'stock_move' in fields:
+                res.update({'stock_move': move.id})
         return res

@@ -132,6 +132,12 @@ class stock_move_split_lines_exist_with_price(osv.osv_memory):
             product_uom = product_uom_obj.browse(cr, uid, product_uom_id, context=context)
             return product_uom.name
 
+    def _get_default_cost_price(self, cr, uid, context=None):
+        context = context or {}
+        stock_move_id = context.get('stock_move', None)
+        stock_move = stock_move_id and self.pool.get('stock.move').browse(cr, uid, stock_move_id, context=context)
+        return (stock_move and stock_move.price_unit) or 0.0
+
     _columns = {
         'cost_price': fields.float('Cost Price', digits_compute=dp.get_precision('Product Price')),
         'sale_price': fields.float('Sale Price', digits_compute=dp.get_precision('Product Price')),
@@ -142,6 +148,7 @@ class stock_move_split_lines_exist_with_price(osv.osv_memory):
 
     _defaults = {
         'product_uom': _get_product_uom_name,
+        'cost_price': _get_default_cost_price,
     }
 
 stock_move_split_lines_exist_with_price()
