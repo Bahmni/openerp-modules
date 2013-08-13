@@ -16,7 +16,7 @@ class atom_event_publisher(osv.osv):
         serializedContents = json.dumps(obj)
         event_vals = {
             'uuid': uuid.uuid4(),
-            'category': 'Product',
+            'category': 'product',
             'title': obj.get('id','Null'),
             'timestamp': datetime.now(),
             'uri': None,
