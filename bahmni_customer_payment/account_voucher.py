@@ -41,6 +41,15 @@ class account_voucher(osv.osv):
                 res[voucher.id]['balance_amount'] =   self._get_balance_amount(cr,uid,ids,None,None,context) - voucher.amount
                 self.write(cr, uid, voucher.id, {'balance_before_pay': res[voucher.id]['balance_before_pay']})
                 self.write(cr, uid, voucher.id, {'balance_amount': res[voucher.id]['balance_amount']})
+
+            if(voucher.state == 'posted'):
+                #wierd workaround to throw validation error the first time.openerp doesnt support non-blocking messages unless its in on_change
+                validation_counter()
+                counter = validation_counter.counter
+                if(counter%2 !=0):
+                    validation_counter.counter
+                    raise osv.except_osv(_('Warning!'), _('Amount Paid is 0. Do you want to continue?'))
+
         return res
 
 
@@ -243,4 +252,9 @@ def resolve_o2m_operations(cr, uid, target_osv, operations, fields, context):
         if result != None:
             results.append(result)
     return results
+
+def validation_counter():
+    if not hasattr(validation_counter, 'counter'):
+        validation_counter.counter = 0  # it doesn't exist yet, so initialize it
+    validation_counter.counter += 1
 
