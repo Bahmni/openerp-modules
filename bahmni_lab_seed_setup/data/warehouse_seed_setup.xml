@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <record model="stock.location" id="stock.stock_location_company">
+            <field name="name">JSS</field>
+        </record>
+
+        <record id="stock_location_stock_lab" model="stock.location">
+            <field name="name">Laboratory</field>
+            <field name="usage">internal</field>
+            <field name="location_id" search="[('name', '=', 'Stock')]"/>
+        </record>
+
+        <record id="stock_location_lab_working" model="stock.location">
+            <field name="name">Working</field>
+            <field name="usage">internal</field>
+            <field name="location_id" search="[('name', '=', 'Laboratory')]"/>
+        </record>
+
+        <record id="stock_location_stock_lab_stock_room" model="stock.location">
+            <field name="name">Stock Room</field>
+            <field name="usage">internal</field>
+            <field name="location_id" ref="stock_location_stock_lab"/>
+        </record>
+
+        <record id="stock_location_bahmni_mob_clinic" model="stock.location">
+            <field name="name">Bahmni Mobile Clinic</field>
+            <field name="usage">inventory</field>
+            <field name="location_id" search="[('name', '=', 'Virtual Locations')]"/>
+            <field name="valuation_in_account_id" search="[('name', '=', 'Mobile Clinic')]"/>
+            <field name="valuation_out_account_id" search="[('name', '=', 'Mobile Clinic')]"/>
+
+        </record>
+        <record id="stock_location_semariya_mob_clinic" model="stock.location">
+            <field name="name">Semariya Mobile Clinic</field>
+            <field name="usage">inventory</field>
+            <field name="location_id" search="[('name', '=', 'Virtual Locations')]"/>
+            <field name="valuation_in_account_id" search="[('name', '=', 'Mobile Clinic')]"/>
+            <field name="valuation_out_account_id" search="[('name', '=', 'Mobile Clinic')]"/>
+        </record>
+        <record id="stock_location_shivtarai_mob_clinic" model="stock.location">
+            <field name="name">Shivtarai Mobile Clinic</field>
+            <field name="usage">inventory</field>
+            <field name="location_id" search="[('name', '=', 'Virtual Locations')]"/>
+            <field name="valuation_in_account_id" search="[('name', '=', 'Mobile Clinic')]"/>
+            <field name="valuation_out_account_id" search="[('name', '=', 'Mobile Clinic')]"/>
+        </record>
+        <record id="stock_location_village_building" model="stock.location">
+            <field name="name">Village Building</field>
+            <field name="usage">inventory</field>
+            <field name="location_id" search="[('name', '=', 'Virtual Locations')]"/>
+            <field name="valuation_in_account_id" search="[('name', '=', 'Village Building')]"/>
+            <field name="valuation_out_account_id" search="[('name', '=', 'Village Building')]"/>
+        </record>
+        <record id="stock_location_health_worker" model="stock.location">
+            <field name="name">Health Worker (VHW)</field>
+            <field name="usage">inventory</field>
+            <field name="location_id" search="[('name', '=', 'Virtual Locations')]"/>
+            <field name="valuation_in_account_id" search="[('name', '=', 'VHW')]"/>
+            <field name="valuation_out_account_id" search="[('name', '=', 'VHW')]"/>
+        </record>
+        <record id="stock_location_ot" model="stock.location">
+            <field name="name">OT</field>
+            <field name="usage">inventory</field>
+            <field name="location_id" search="[('name', '=', 'Virtual Locations')]"/>
+            <field name="valuation_in_account_id" search="[('name', '=', 'OT/Ward/OPD')]"/>
+            <field name="valuation_out_account_id" search="[('name', '=', 'OT/Ward/OPD')]"/>
+        </record>
+        <record id="stock_location_ipd" model="stock.location">
+            <field name="name">IPD</field>
+            <field name="usage">inventory</field>
+            <field name="location_id" search="[('name', '=', 'Virtual Locations')]"/>
+            <field name="valuation_in_account_id" search="[('name', '=', 'OT/Ward/OPD')]"/>
+            <field name="valuation_out_account_id" search="[('name', '=', 'OT/Ward/OPD')]"/>
+        </record>
+        <record id="stock_location_0pd" model="stock.location">
+            <field name="name">OPD</field>
+            <field name="usage">inventory</field>
+            <field name="location_id" search="[('name', '=', 'Virtual Locations')]"/>
+            <field name="valuation_in_account_id" search="[('name', '=', 'OT/Ward/OPD')]"/>
+            <field name="valuation_out_account_id" search="[('name', '=', 'OT/Ward/OPD')]"/>
+        </record>
+        <record id="stock_location_chp" model="stock.location">
+            <field name="name">Community Health Programs</field>
+            <field name="usage">inventory</field>
+            <field name="location_id" search="[('name', '=', 'Virtual Locations')]"/>
+            <field name="valuation_in_account_id" search="[('name', '=', 'CHP')]"/>
+            <field name="valuation_out_account_id" search="[('name', '=', 'CHP')]"/>
+        </record>
+        <record id="stock_location_anc_vlocation" model="stock.location">
+            <field name="name">ANC	Virtual Locations</field>
+            <field name="usage">inventory</field>
+            <field name="location_id" search="[('name', '=', 'Virtual Locations')]"/>
+            <field name="valuation_in_account_id" search="[('name', '=', 'ANC')]"/>
+            <field name="valuation_out_account_id" search="[('name', '=', 'ANC')]"/>
+        </record>
+        <record id="stock_location_anm_school" model="stock.location">
+            <field name="name">ANM School</field>
+            <field name="usage">inventory</field>
+            <field name="location_id" search="[('name', '=', 'Virtual Locations')]"/>
+            <field name="valuation_in_account_id" search="[('name', '=', 'ANM/GNM School')]"/>
+            <field name="valuation_out_account_id" search="[('name', '=', 'ANM/GNM School')]"/>
+        </record>
+        <record id="stock_location_gnm_school" model="stock.location">
+            <field name="name">GNM School</field>
+            <field name="usage">inventory</field>
+            <field name="location_id" search="[('name', '=', 'Virtual Locations')]"/>
+            <field name="valuation_in_account_id" search="[('name', '=', 'ANM/GNM School')]"/>
+            <field name="valuation_out_account_id" search="[('name', '=', 'ANM/GNM School')]"/>
+        </record>
+        <record id="stock_location_pharmacy" model="stock.location">
+            <field name="name">Pharmacy</field>
+            <field name="usage">inventory</field>
+            <field name="location_id" search="[('name', '=', 'Virtual Locations')]"/>
+            <field name="valuation_in_account_id" search="[('name', '=', 'Pharmacy')]"/>
+            <field name="valuation_out_account_id" search="[('name', '=', 'Pharmacy')]"/>
+        </record>
+
+        <!-- Warehouse -->
+        <record id="warehouse_lab_stock_room" model="stock.warehouse">
+            <field name="name">Lab</field>
+            <field name="lot_input_id" ref="stock_location_stock_lab_stock_room"/>
+            <field name="lot_stock_id" ref="stock_location_stock_lab_stock_room"/>
+            <field name="lot_output_id" search="[('name', '=', 'Output')]"/>
+        </record>
+    </data>
+</openerp>

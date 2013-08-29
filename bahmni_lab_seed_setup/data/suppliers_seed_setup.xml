@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <record model="res.partner" id="res_partner_1">
+            <field name="name">Standard Scientific Company,Nagpur </field>
+            <field name="supplier">1</field>
+            <field name="customer" eval="0"/>
+            <field name="is_company">1</field>
+        </record>
+        <record model="res.partner" id="res_partner_2">
+            <field name="name">Mahakaushal Scientific Works - Bilaspur</field>
+            <field name="supplier">1</field>
+            <field name="customer" eval="0"/>
+            <field name="is_company">1</field>
+        </record>
+        <record model="res.partner" id="res_partner_3">
+            <field name="name">Scientific Traders - Bilaspur</field>
+            <field name="supplier">1</field>
+            <field name="customer" eval="0"/>
+            <field name="is_company">1</field>
+        </record>
+        <record model="res.partner" id="res_partner_4">
+            <field name="name">Matrushri Traders - Bilaspur</field>
+            <field name="supplier">1</field>
+            <field name="customer" eval="0"/>
+            <field name="is_company">1</field>
+        </record>
+        <record model="res.partner" id="res_partner_5">
+            <field name="name">Shivam Medico and Surgico - Bilaspur</field>
+            <field name="supplier">1</field>
+            <field name="customer" eval="0"/>
+            <field name="is_company">1</field>
+        </record>
+        <record model="res.partner" id="res_partner_6">
+            <field name="name">Lakshmi Scientific - Raipur</field>
+            <field name="supplier">1</field>
+            <field name="customer" eval="0"/>
+            <field name="is_company">1</field>
+        </record>
+    </data>
+</openerp>

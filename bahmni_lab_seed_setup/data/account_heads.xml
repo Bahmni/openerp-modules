@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <!-- Discount Heads -->
+        <record model="account.account" id="stock_purchases">
+            <field name="code">222000</field>
+            <field name="name">Stock Purchases</field>
+            <field name="parent_id" ref="account.conf_ovr"/>
+            <field name="type">other</field>
+            <field name="user_type" ref="account.data_account_type_expense"/>
+        </record>
+        <record model="account.account" id="stock_consumption">
+            <field name="code">223000</field>
+            <field name="name">Stock Consumption</field>
+            <field name="parent_id" ref="account.conf_ovr"/>
+            <field name="type">view</field>
+            <field name="user_type" ref="account.account_type_expense_view1"/>
+        </record>
+        <record model="account.account" id="anc">
+            <field name="code">223001</field>
+            <field name="name">ANC</field>
+            <field name="parent_id" ref="stock_consumption"/>
+            <field name="type">other</field>
+            <field name="user_type" ref="account.data_account_type_expense"/>
+        </record>
+        <record model="account.account" id="anm_gnm_school">
+            <field name="code">223002</field>
+            <field name="name">ANM/GNM School</field>
+            <field name="parent_id" ref="stock_consumption"/>
+            <field name="type">other</field>
+            <field name="user_type" ref="account.data_account_type_expense"/>
+        </record>
+        <record model="account.account" id="chp">
+            <field name="code">223003</field>
+            <field name="name">CHP</field>
+            <field name="parent_id" ref="stock_consumption"/>
+            <field name="type">other</field>
+            <field name="user_type" ref="account.data_account_type_expense"/>
+        </record>
+        <record model="account.account" id="inv_loss">
+            <field name="code">223004</field>
+            <field name="name">Inventory Loss</field>
+            <field name="parent_id" ref="stock_consumption"/>
+            <field name="type">other</field>
+            <field name="user_type" ref="account.data_account_type_expense"/>
+        </record>
+        <!--<record model="account.account" id="laboratory">-->
+            <!--<field name="code">223005</field>-->
+            <!--<field name="name">Laboratory</field>-->
+            <!--<field name="parent_id" ref="stock_consumption"/>-->
+            <!--<field name="type">other</field>-->
+            <!--<field name="user_type" ref="account.data_account_type_expense"/>-->
+        <!--</record>-->
+        <record model="account.account" id="manufacturing">
+            <field name="code">223005</field>
+            <field name="name">Manufacturing</field>
+            <field name="parent_id" ref="stock_consumption"/>
+            <field name="type">other</field>
+            <field name="user_type" ref="account.data_account_type_expense"/>
+        </record>
+        <record model="account.account" id="mobile_clinic">
+            <field name="code">223006</field>
+            <field name="name">Mobile Clinic</field>
+            <field name="parent_id" ref="stock_consumption"/>
+            <field name="type">other</field>
+            <field name="user_type" ref="account.data_account_type_expense"/>
+        </record>
+        <record model="account.account" id="ot_ward_opd">
+            <field name="code">223007</field>
+            <field name="name">OT/Ward/OPD</field>
+            <field name="parent_id" ref="stock_consumption"/>
+            <field name="type">other</field>
+            <field name="user_type" ref="account.data_account_type_expense"/>
+        </record>
+        <record model="account.account" id="pharmacy">
+            <field name="code">223008</field>
+            <field name="name">Pharmacy</field>
+            <field name="parent_id" ref="stock_consumption"/>
+            <field name="type">other</field>
+            <field name="user_type" ref="account.data_account_type_expense"/>
+        </record>
+        <record model="account.account" id="village_building">
+            <field name="code">223009</field>
+            <field name="name">Village Building</field>
+            <field name="parent_id" ref="stock_consumption"/>
+            <field name="type">other</field>
+            <field name="user_type" ref="account.data_account_type_expense"/>
+        </record>
+        <record model="account.account" id="vhw">
+            <field name="code">223010</field>
+            <field name="name">VHW</field>
+            <field name="parent_id" ref="stock_consumption"/>
+            <field name="type">other</field>
+            <field name="user_type" ref="account.data_account_type_expense"/>
+        </record>
+
+    </data>
+</openerp>

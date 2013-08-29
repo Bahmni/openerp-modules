@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+       <record id="product_uom_pack_of_ten" model="product.uom">
+            <field name="category_id" ref="product.product_uom_categ_unit"/>
+            <field name="name">Pack Of 10</field>
+            <field name="factor_inv" eval="10"/>
+            <field name="uom_type">bigger</field>
+        </record>
+       <record id="product_uom_pack_of_five" model="product.uom">
+            <field name="category_id" ref="product.product_uom_categ_unit"/>
+            <field name="name">Pack Of 5</field>
+            <field name="factor_inv" eval="5"/>
+            <field name="uom_type">bigger</field>
+        </record>
+       <record id="product_uom_pack_of_hundred" model="product.uom">
+            <field name="category_id" ref="product.product_uom_categ_unit"/>
+            <field name="name">Pack Of 100</field>
+            <field name="factor_inv" eval="100"/>
+            <field name="uom_type">bigger</field>
+        </record>
+       <record id="product_uom_pack_of_three" model="product.uom">
+            <field name="category_id" ref="product.product_uom_categ_unit"/>
+            <field name="name">Pack Of 3</field>
+            <field name="factor_inv" eval="3"/>
+            <field name="uom_type">bigger</field>
+        </record>
+       <record id="product_uom_pack_of_fourteen" model="product.uom">
+            <field name="category_id" ref="product.product_uom_categ_unit"/>
+            <field name="name">Pack Of 14</field>
+            <field name="factor_inv" eval="14"/>
+            <field name="uom_type">bigger</field>
+        </record>
+       <record id="product_uom_pack_of_two" model="product.uom">
+            <field name="category_id" ref="product.product_uom_categ_unit"/>
+            <field name="name">Pack Of 2</field>
+            <field name="factor_inv" eval="2"/>
+            <field name="uom_type">bigger</field>
+        </record>
+       <record id="product_uom_pack_of_six" model="product.uom">
+            <field name="category_id" ref="product.product_uom_categ_unit"/>
+            <field name="name">Pack Of 6</field>
+            <field name="factor_inv" eval="6"/>
+            <field name="uom_type">bigger</field>
+        </record>
+       <record id="product_uom_pack_of_thousand" model="product.uom">
+            <field name="category_id" ref="product.product_uom_categ_unit"/>
+            <field name="name">Pack Of 1000</field>
+            <field name="factor_inv" eval="1000"/>
+            <field name="uom_type">bigger</field>
+        </record>
+       <record id="product_uom_pack_of_thirty" model="product.uom">
+            <field name="category_id" ref="product.product_uom_categ_unit"/>
+            <field name="name">Pack Of 30</field>
+            <field name="factor_inv" eval="30"/>
+            <field name="uom_type">bigger</field>
+        </record>
+       <record id="product_uom_pack_of_fifteen" model="product.uom">
+            <field name="category_id" ref="product.product_uom_categ_unit"/>
+            <field name="name">Pack Of 15</field>
+            <field name="factor_inv" eval="15"/>
+            <field name="uom_type">bigger</field>
+        </record>
+       <record id="product_uom_pack_of_four" model="product.uom">
+            <field name="category_id" ref="product.product_uom_categ_unit"/>
+            <field name="name">Pack Of 4</field>
+            <field name="factor_inv" eval="4"/>
+            <field name="uom_type">bigger</field>
+        </record>
+       <record id="product_uom_pack_of_four_fifty" model="product.uom">
+            <field name="category_id" ref="product.product_uom_categ_unit"/>
+            <field name="name">Pack Of 450</field>
+            <field name="factor_inv" eval="450"/>
+            <field name="uom_type">bigger</field>
+        </record>
+       <record id="product_uom_pack_of_two_hundred" model="product.uom">
+            <field name="category_id" ref="product.product_uom_categ_unit"/>
+            <field name="name">Pack Of 200</field>
+            <field name="factor_inv" eval="200"/>
+            <field name="uom_type">bigger</field>
+        </record>
+       <record id="product_uom_pack_of_fifty" model="product.uom">
+            <field name="category_id" ref="product.product_uom_categ_unit"/>
+            <field name="name">Pack Of 50</field>
+            <field name="factor_inv" eval="50"/>
+            <field name="uom_type">bigger</field>
+        </record>
+       <record id="product_uom_pack_of_forty" model="product.uom">
+            <field name="category_id" ref="product.product_uom_categ_unit"/>
+            <field name="name">Pack Of 40</field>
+            <field name="factor_inv" eval="40"/>
+            <field name="uom_type">bigger</field>
+        </record>
+       <record id="product_uom_pack_of_two_fifty" model="product.uom">
+            <field name="category_id" ref="product.product_uom_categ_unit"/>
+            <field name="name">Pack Of 250</field>
+            <field name="factor_inv" eval="250"/>
+            <field name="uom_type">bigger</field>
+        </record>
+       <record id="product_uom_pack_of_two_sixty" model="product.uom">
+            <field name="category_id" ref="product.product_uom_categ_unit"/>
+            <field name="name">Pack Of 60</field>
+            <field name="factor_inv" eval="60"/>
+            <field name="uom_type">bigger</field>
+        </record>
+       <record id="product_uom_ml" model="product.uom">
+            <field name="category_id" ref="product.product_uom_categ_vol"/>
+            <field name="name">ml</field>
+            <field name="factor" eval="1000"/>
+            <field name="uom_type">smaller</field>
+        </record>
+       <!--<record id="product_uom_bottle_of_2.5L" model="product.uom">-->
+            <!--<field name="category_id" ref="product.product_uom_categ_vol"/>-->
+            <!--<field name="name">Bottle of 2.5L</field>-->
+            <!--<field name="factor" eval="2.5"/>-->
+            <!--<field name="uom_type">bigger</field>-->
+        <!--</record>-->
+       <record id="product_uom_bottle_of_25l" model="product.uom">
+            <field name="category_id" ref="product.product_uom_categ_vol"/>
+            <field name="name">Bottle of 25L</field>
+            <field name="factor" eval="25"/>
+            <field name="uom_type">bigger</field>
+        </record>
+       <record id="product_uom_bottle_of_500ml" model="product.uom">
+            <field name="category_id" ref="product.product_uom_categ_vol"/>
+            <field name="name">Bottle of 500ml</field>
+            <field name="factor" eval=".5"/>
+            <field name="uom_type">smaller</field>
+        </record>
+       <record id="product_uom_bottle_of_5L" model="product.uom">
+            <field name="category_id" ref="product.product_uom_categ_vol"/>
+            <field name="name">Bottle of 5L</field>
+            <field name="factor" eval="5"/>
+            <field name="uom_type">bigger</field>
+        </record>
+       <record id="product_uom_pack_of_10" model="product.uom">
+            <field name="category_id" ref="product.product_uom_categ_unit"/>
+            <field name="name">Pack of 10</field>
+            <field name="factor" eval="10"/>
+            <field name="uom_type">bigger</field>
+        </record>
+       <record id="product_uom_pack_of_100" model="product.uom">
+            <field name="category_id" ref="product.product_uom_categ_unit"/>
+            <field name="name">Pack of 100</field>
+            <field name="factor" eval="100"/>
+            <field name="uom_type">bigger</field>
+        </record>
+       <record id="product_uom_pack_of_40" model="product.uom">
+            <field name="category_id" ref="product.product_uom_categ_unit"/>
+            <field name="name">Pack of 40</field>
+            <field name="factor" eval="40"/>
+            <field name="uom_type">bigger</field>
+        </record>
+       <record id="product_uom_pack_of_5" model="product.uom">
+            <field name="category_id" ref="product.product_uom_categ_unit"/>
+            <field name="name">Pack of 5</field>
+            <field name="factor" eval="5"/>
+            <field name="uom_type">bigger</field>
+        </record>
+       <record id="product_uom_pack_of_50" model="product.uom">
+            <field name="category_id" ref="product.product_uom_categ_unit"/>
+            <field name="name">Pack of 50</field>
+            <field name="factor" eval="50"/>
+            <field name="uom_type">bigger</field>
+        </record>
+       <record id="product_uom_pack_of_500g" model="product.uom">
+            <field name="category_id" ref="product.product_uom_categ_unit"/>
+            <field name="name">Pack of 500g</field>
+            <field name="factor" eval=".5"/>
+            <field name="uom_type">smaller</field>
+        </record>
+       <record id="product_uom_pack_of_50Kgs" model="product.uom">
+            <field name="category_id" ref="product.product_uom_categ_unit"/>
+            <field name="name">Pack of 50kgs</field>
+            <field name="factor" eval="50"/>
+            <field name="uom_type">bigger</field>
+        </record>
+       <record id="product_uom_strip_of_10" model="product.uom">
+            <field name="category_id" ref="product.product_uom_categ_unit"/>
+            <field name="name">Strip of 10</field>
+            <field name="factor" eval="10"/>
+            <field name="uom_type">bigger</field>
+        </record>
+    </data>
+</openerp>
