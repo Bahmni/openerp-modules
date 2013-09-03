@@ -114,8 +114,6 @@ class stock_move(osv.osv):
         @param product_uos: Unit of sale of product
         @return: Dictionary of values
         """
-        _logger.info("Move lines")
-        _logger.info(move_lines)
         result = {
             'product_uos_qty': 0.00
         }

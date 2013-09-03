@@ -1,7 +1,7 @@
 {
     "name": "Bhamni Purchase flow Enhancements",
     "version": "1.0",
-    "depends": ["base","purchase"],
+    "depends": ["base","purchase", "bahmni_stock_batch_sale_price"],
     "author": "ThoughtWorks tecnologies Pvt. Ltd.",
     "category": "Purchase",
 	"summary": "Purchase flow Enhancements",

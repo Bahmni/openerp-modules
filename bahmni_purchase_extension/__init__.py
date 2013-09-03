@@ -1,1 +1,1 @@
-
+import sale_price_autocalculator
