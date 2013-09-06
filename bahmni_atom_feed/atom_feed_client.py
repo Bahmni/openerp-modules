@@ -29,9 +29,13 @@ class atom_event_worker(osv.osv):
         self.pool.get('atom.feed.marker').create(cr, uid, marker)
 
     def _create_or_update_marker(self, cr, uid, vals):
+        is_failed_event = vals.get('is_failed_event',False)
+        if(is_failed_event): return
+
         last_read_entry_id = vals.get('last_read_entry_id')
         feed_uri_for_last_read_entry = vals.get('feed_uri_for_last_read_entry')
         feed_uri = vals.get('feed_uri')
+
         marker_ids = self.pool.get('atom.feed.marker').search(cr, uid, [('feed_uri', '=', feed_uri)], limit=1)
         if len(marker_ids) > 0:
             self._update_marker(cr, feed_uri_for_last_read_entry, last_read_entry_id, marker_ids, uid)
