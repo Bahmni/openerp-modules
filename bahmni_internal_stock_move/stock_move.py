@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
+import datetime
 import time
 from osv import fields, osv
 from tools.translate import _
@@ -54,15 +55,28 @@ class stock_move(osv.osv):
     def _get_stock_for_location(self, cr, uid, loc_id, prod_id):
         qty = 0
         cr.execute('''select
-                    product_id,
-                    sum(qty) as qty
+                    prodlot_id,
+                    qty
                 from
                     batch_stock_future_forecast
                 where
-                    location_id = %s and product_id = %s group by product_id''',(loc_id, prod_id,))
+                    location_id = %s and product_id = %s ''',(loc_id, prod_id,))
+        sum_qty = 0.0
+        prodlot_qty_map = {}
         for row in cr.dictfetchall():
-            qty = row['qty']
-        return qty
+            if((row['prodlot_id'] != None) ):
+                prodlot_qty_map[row['prodlot_id']] = row['qty']
+            else :
+                if(row['qty'] > 0):
+                    sum_qty += row['qty']
+        for lot_id, qty in prodlot_qty_map.iteritems():
+            if(qty >=0 ):
+                prod_lot = self.pool.get('stock.production.lot').browse(cr, uid, lot_id)
+                if(prod_lot):
+                    if(datetime.datetime.today() <= datetime.datetime.strptime(prod_lot.life_date, '%Y-%m-%d')):
+                        sum_qty += qty
+
+        return sum_qty
 
     def onchange_product_id(self, cr, uid, ids, prod_id=False, loc_id=False,
                             loc_dest_id=False, partner_id=False):
@@ -136,15 +150,29 @@ class stock_move(osv.osv):
                                      "new quantity as complete: OpenERP will not "
                                      "automatically generate a back order.") })
                 break
+        _logger.info("product_uom")
+        _logger.info(product_uom)
+        _logger.info("product_uos")
+        _logger.info(product_uos)
 
+        prod_uom_obj = None
+        factor = 1
         if product_uos and product_uom and (product_uom != product_uos):
+            _logger.info("uos_coeff")
+            _logger.info(uos_coeff['uos_coeff'])
             result['product_uos_qty'] = product_qty * uos_coeff['uos_coeff']
         else:
             result['product_uos_qty'] = product_qty
 
+        if(product_uom):
+            prod_uom_obj = self.pool.get('product.uom').browse(cr,uid,product_uom)
+            factor = prod_uom_obj.factor
+            _logger.info("factor")
+            _logger.info(factor)
+
         qty = 0.0
         if(loc_id):
-            qty = self._get_stock_for_location(cr, uid, loc_id, product_id) - product_qty
+            qty = self._get_stock_for_location(cr, uid, loc_id, product_id) * factor - product_qty
 
         if(move_lines):
             for move in move_lines:
@@ -155,7 +183,6 @@ class stock_move(osv.osv):
                 move_line = move[2]
                 if(move_line['product_id'] & move_line['product_id'] == product_id):
                     move_line['product_qty'] = qty
-
 
         result['stock_available'] = qty
         result['move_lines'] = move_lines
