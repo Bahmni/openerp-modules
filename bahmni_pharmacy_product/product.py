@@ -198,10 +198,10 @@ class product_product(osv.osv):
         return self.get_product_available(cr, uid, ids, context=ctx)
 
     def unlink(self, cr, uid, ids, context=None):
-        self.raise_event(cr, uid,{'isDeleted' : True}, ids[0])
+        for id in ids:
+            self.raise_event(cr, uid,{'isDeleted' : True}, id)
         res = super(product_product, self).unlink(cr,uid,ids,context)
         return res
-
 
     def create(self, cr, uid, data, context=None):
         data['uuid'] = str(uuid.uuid4())
