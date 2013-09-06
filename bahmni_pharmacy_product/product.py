@@ -239,18 +239,15 @@ class product_product(osv.osv):
             data['uuid'] = prod.uuid
 
         description = data.get('description',False)
-        if(description == False):
-            data.pop('description',None)
+
+        data.pop('description',None) if(description == False) else None
 
         data.pop('categ_id',None)
         category = prod.categ_id.name
         data['category'] = category
 
         data.pop('active', None)
-        if(prod.active):
-            data['status'] = 'active'
-        else:
-            data['status'] = 'inactive'
+        data['status'] = 'active' if(prod.active) else 'inactive'
 
         if(data.get('isDeleted',False)):
             data.pop('isDeleted', None)
