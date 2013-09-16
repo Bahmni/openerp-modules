@@ -44,9 +44,14 @@ class atom_event_worker(osv.osv):
 
     def process_event(self, cr, uid, vals,context=None):
         category = vals.get("category")
+        patient_ref = vals.get("ref")
         if(category == "create.customer"):
             customer = self._create_customer(vals)
-            self.pool.get('res.partner').create(cr, uid, customer, context=context)
+            existing_customer_ids = self.pool.get('res.partner').search(cr, uid,[('ref','=',patient_ref)])
+            if len(existing_customer_ids) > 0:
+                self.pool.get('res.partner').write(cr, uid, existing_customer_ids[0], customer, context=context)
+            else:
+                self.pool.get('res.partner').create(cr, uid, customer, context=context)                
             self._create_or_update_marker(cr, uid, vals)
 
 
