@@ -24,7 +24,7 @@
                         <field name="name"/>
                         <field name="quantity" />
                         <field name="product_uom" htmlreadonly="1"/> <!-- Openerp readonly doesnot show value !! Weird !!-->
-                        <field name="cost_price" on_change="onchange_cost_price(cost_price)"/>
+                        <field name="cost_price" on_change="onchange_cost_price(cost_price, context)" context="{'product_uom': parent.product_uom}"/>
                         <field name="sale_price" />
                         <field name="mrp" />
                         <field name="expiry_date" />
@@ -34,7 +34,7 @@
                             <field name="name"/>
                             <field name="quantity" />
                             <field name="product_uom" htmlreadonly="1"/> <!-- Openerp readonly doesnot show value !! Weird !!-->
-                            <field name="cost_price" on_change="onchange_cost_price(cost_price)"/>
+                            <field name="cost_price" on_change="onchange_cost_price(cost_price, context)" context="{'product_uom': parent.product_uom}"/>
                             <field name="sale_price" />
                             <field name="mrp" />
                             <field name="expiry_date" />
