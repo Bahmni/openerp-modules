@@ -3,7 +3,9 @@ openerp.bahmni_web_extensions.accesskeyHighlight = function(instance) {
         start: function() {
             this._super.apply(this, arguments);
             var createUnderlinedAccessKeyElem = function(text, accesskey) {
-                if(accesskey == null || accesskey == "") {
+                if(text == null) {
+                    return null;
+                } else if(accesskey == null || accesskey == "") {
                     return text;
                 }
                 var i = text.toLowerCase().indexOf(accesskey.toLowerCase());
@@ -12,7 +14,9 @@ openerp.bahmni_web_extensions.accesskeyHighlight = function(instance) {
 
             $("[accesskey]").each(function(index, elem) {
                 var newInnerHtml = createUnderlinedAccessKeyElem(elem.innerText, elem.accessKey);
-                elem.innerHTML = newInnerHtml;
+                if(newInnerHtml != null) {
+                    elem.innerHTML = newInnerHtml;
+                }
             });
         },
 

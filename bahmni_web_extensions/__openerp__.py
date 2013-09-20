@@ -13,6 +13,7 @@
     'css': ['static/src/css/extension.css'],
     'js': [
         'static/src/js/init.js',
+        'static/src/js/fixingErrorInCancelEdition.js',
         'static/src/js/addingAccessKeyToOne2ManyList.js',
         'static/src/js/accesskeyHighlight.js',
     ],
