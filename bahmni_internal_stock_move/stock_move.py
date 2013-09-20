@@ -79,7 +79,7 @@ class stock_move(osv.osv):
         return sum_qty
 
     def onchange_product_id(self, cr, uid, ids, prod_id=False, loc_id=False,
-                            loc_dest_id=False, partner_id=False):
+                            loc_dest_id=False, partner_id=False, context=None):
         """ On change of product id, if finds UoM, UoS, quantity and UoS quantity.
         @param prod_id: Changed Product id
         @param loc_id: Source location id
@@ -120,7 +120,7 @@ class stock_move(osv.osv):
 
 
     def onchange_quantity(self, cr, uid, ids, product_id, product_qty,
-                          product_uom, product_uos,loc_id=False,move_lines=None):
+                          product_uom, product_uos,loc_id=False,move_lines=None, context=None):
         """ On change of product quantity finds UoM and UoS quantities
         @param product_id: Product id
         @param product_qty: Changed Quantity of product
@@ -150,16 +150,10 @@ class stock_move(osv.osv):
                                      "new quantity as complete: OpenERP will not "
                                      "automatically generate a back order.") })
                 break
-        _logger.info("product_uom")
-        _logger.info(product_uom)
-        _logger.info("product_uos")
-        _logger.info(product_uos)
 
         prod_uom_obj = None
         factor = 1
         if product_uos and product_uom and (product_uom != product_uos):
-            _logger.info("uos_coeff")
-            _logger.info(uos_coeff['uos_coeff'])
             result['product_uos_qty'] = product_qty * uos_coeff['uos_coeff']
         else:
             result['product_uos_qty'] = product_qty
@@ -167,8 +161,6 @@ class stock_move(osv.osv):
         if(product_uom):
             prod_uom_obj = self.pool.get('product.uom').browse(cr,uid,product_uom)
             factor = prod_uom_obj.factor
-            _logger.info("factor")
-            _logger.info(factor)
 
         qty = 0.0
         if(loc_id):
@@ -177,11 +169,11 @@ class stock_move(osv.osv):
         if(move_lines):
             for move in move_lines:
                 move_line = move[2]
-                if(move_line['product_id'] & move_line['product_id'] == product_id):
+                if(move_line and move_line['product_id'] and move_line['product_id'] == product_id):
                     qty -= move_line['product_qty']
             for move in move_lines:
                 move_line = move[2]
-                if(move_line['product_id'] & move_line['product_id'] == product_id):
+                if(move_line and move_line['product_id'] and move_line['product_id'] == product_id):
                     move_line['product_qty'] = qty
 
         result['stock_available'] = qty
