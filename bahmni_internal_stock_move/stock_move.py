@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
-import datetime
 import time
 from osv import fields, osv
 from tools.translate import _
@@ -73,7 +72,7 @@ class stock_move(osv.osv):
             if(qty >=0 ):
                 prod_lot = self.pool.get('stock.production.lot').browse(cr, uid, lot_id)
                 if(prod_lot):
-                    if(datetime.datetime.today() <= datetime.datetime.strptime(prod_lot.life_date, '%Y-%m-%d')):
+                    if(datetime.today() <= datetime.strptime(prod_lot.life_date, '%Y-%m-%d')):
                         sum_qty += qty
 
         return sum_qty
