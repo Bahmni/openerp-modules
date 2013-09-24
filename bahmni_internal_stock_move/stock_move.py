@@ -71,7 +71,7 @@ class stock_move(osv.osv):
         for lot_id, qty in prodlot_qty_map.iteritems():
             if(qty >=0 ):
                 prod_lot = self.pool.get('stock.production.lot').browse(cr, uid, lot_id)
-                if(prod_lot):
+                if(prod_lot and prod_lot.life_date):
                     if(datetime.today() <= datetime.strptime(prod_lot.life_date, '%Y-%m-%d')):
                         sum_qty += qty
 
