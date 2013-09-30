@@ -235,8 +235,8 @@ class product_product(osv.osv):
         prod_obj = self.pool.get('product.product')
         prod = prod_obj.browse(cr,uid,prod_id)
 
-        if((data.get('uuid',None) == None) or (data.get('uuid',None) == False)):
-            data['uuid'] = prod.uuid
+#        if((data.get('uuid',None) == None) or (data.get('uuid',None) == False)):
+        data['uuid'] = prod.uuid
 
         description = data.get('description',False)
 
