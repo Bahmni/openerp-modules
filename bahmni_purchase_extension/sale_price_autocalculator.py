@@ -18,20 +18,22 @@ class stock_move_split_lines_exist_with_price(osv.osv_memory):
         product_uom_factor = product_uom.factor if(product_uom is not None) else 1.0
         cost_price_per_unit = cost_price * product_uom_factor
         markup_percentage = 1.0
-        if(cost_price_per_unit < 10):
-            markup_percentage = 10.0
-        elif(cost_price_per_unit < 20):
-            markup_percentage = 9.0
-        elif(cost_price_per_unit < 30):
-            markup_percentage = 7.0
-        elif(cost_price_per_unit < 60):
-            markup_percentage = 5.0
-        elif(cost_price_per_unit < 300):
-            markup_percentage = 4.0
-        elif(cost_price_per_unit < 400):
-            markup_percentage = 3.0
-        elif(cost_price_per_unit < 1000):
-            markup_percentage = 2.0
+        price_markup_table = [
+            [0.0,   1.0,    10.0],
+            [1.0,   3.0,    9.0],
+            [3.0,   6.0,    8.0],
+            [6.0,   15.0,   7.0],
+            [15.0,  35.0,   6.0],
+            [35.0,  100.0,  5.0],
+            [100.0, 250.0,  4.0],
+            [250.0, 600.0,  3.0],
+            [600.0, 1000.0, 2.0],
+            [1000.0,None,   1.0],
+        ]
+        for (lower, higher, markup_per) in price_markup_table:
+            if ((cost_price_per_unit > lower and cost_price_per_unit <= higher) or
+                (cost_price_per_unit > lower and higher is None)):
+                markup_percentage = markup_per
         return cost_price + (cost_price * markup_percentage / 100)
 
     def _calculate_default_sale_price(self, cr, uid, context=None):
