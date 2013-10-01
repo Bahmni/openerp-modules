@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
+    <!-- noupdate = 1 fails!! -->
     <data noupdate="0">
 
+        <!-- Have to add an UUID to service before deleting, so that atom feed has uuid -->
+        <record id="product.product_product_consultant" model="product.product">
+            <field name="name">Service</field>
+            <field name="uuid">db4558dd-8ae2-4dcd-813c-d7cc33a6fe86</field>
+        </record>
         <delete model="product.product" id="product.product_product_consultant"/> <!-- Removing default service product -->
 
         <!-- IPD services -->
@@ -12,6 +18,7 @@
             <field name="uom_id" ref="product.product_uom_unit"/>
             <field name="uom_po_id" ref="product.product_uom_unit"/>
             <field name="categ_id" ref="product_category_services_ipd"/>
+            <field name="uuid">bc0933f5-cf6e-4776-8f6b-9f44a3291ed7</field>
             <field name="type">service</field>
         </record>
         <record model="product.product" id="product_service_ipd_bed">
@@ -21,6 +28,7 @@
             <field name="uom_id" ref="product.product_uom_day"/>
             <field name="uom_po_id" ref="product.product_uom_day"/>
             <field name="categ_id" ref="product_category_services_ipd"/>
+            <field name="uuid">61056ece-b630-4c35-bbd5-6b4d4bcd1309</field>
             <field name="type">service</field>
         </record>
         <record model="product.product" id="product_service_ipd_charges">
@@ -30,6 +38,7 @@
             <field name="uom_id" ref="product.product_uom_unit"/>
             <field name="uom_po_id" ref="product.product_uom_unit"/>
             <field name="categ_id" ref="product_category_services_ipd"/>
+            <field name="uuid">e08a2802-d0eb-410c-9325-f1f3b1e01495</field>
             <field name="type">service</field>
         </record>
         <record model="product.product" id="product_service_ipd_delivery_charges">
@@ -39,6 +48,7 @@
             <field name="uom_id" ref="product.product_uom_unit"/>
             <field name="uom_po_id" ref="product.product_uom_unit"/>
             <field name="categ_id" ref="product_category_services_ipd"/>
+            <field name="uuid">96f6bf24-b0a9-4f04-a7f0-387ae8ddd1ff</field>
             <field name="type">service</field>
         </record>
 
@@ -50,6 +60,7 @@
             <field name="uom_id" ref="product.product_uom_unit"/>
             <field name="uom_po_id" ref="product.product_uom_unit"/>
             <field name="categ_id" ref="product_category_services_lab"/>
+            <field name="uuid">4d506091-121a-4061-9ebb-8b4fe9f0b969</field>
             <field name="type">service</field>
         </record>
 
@@ -61,6 +72,7 @@
             <field name="uom_id" ref="product.product_uom_unit"/>
             <field name="uom_po_id" ref="product.product_uom_unit"/>
             <field name="categ_id" ref="product_category_services_ot"/>
+            <field name="uuid">6d1847ca-8619-4f04-a34c-993ac992bf60</field>
             <field name="type">service</field>
         </record>
 
@@ -72,6 +84,7 @@
             <field name="uom_id" ref="product.product_uom_unit"/>
             <field name="uom_po_id" ref="product.product_uom_unit"/>
             <field name="categ_id" ref="product_category_services_radiology"/>
+            <field name="uuid">1f7765cc-d455-488c-8eea-ee8ff766942d</field>
             <field name="type">service</field>
         </record>
         <record model="product.product" id="product_service_radiology_xray">
@@ -81,6 +94,7 @@
             <field name="uom_id" ref="product.product_uom_unit"/>
             <field name="uom_po_id" ref="product.product_uom_unit"/>
             <field name="categ_id" ref="product_category_services_radiology"/>
+            <field name="uuid">66ec3f4a-22d8-42fc-9e9f-29a7bdb2c948</field>
             <field name="type">service</field>
         </record>
         <record model="product.product" id="product_service_radiology_echo">
@@ -90,6 +104,7 @@
             <field name="uom_id" ref="product.product_uom_unit"/>
             <field name="uom_po_id" ref="product.product_uom_unit"/>
             <field name="categ_id" ref="product_category_services_radiology"/>
+            <field name="uuid">8173ff52-ff2c-4e56-8760-a05f7a874bed</field>
             <field name="type">service</field>
         </record>
         <record model="product.product" id="product_service_radiology_ecg">
@@ -99,6 +114,7 @@
             <field name="uom_id" ref="product.product_uom_unit"/>
             <field name="uom_po_id" ref="product.product_uom_unit"/>
             <field name="categ_id" ref="product_category_services_radiology"/>
+            <field name="uuid">025fd8d2-1e21-4f51-8ab1-1d2979077a65</field>
             <field name="type">service</field>
         </record>
 
@@ -109,6 +125,7 @@
             <field name="uom_id" ref="product.product_uom_unit"/>
             <field name="uom_po_id" ref="product.product_uom_unit"/>
             <field name="categ_id" ref="product_category_services"/>
+            <field name="uuid">10a4df46-ece6-4694-a95b-c0624b362db8</field>
             <field name="type">service</field>
         </record>
         <record model="product.product" id="product_service_registration_charges">
@@ -118,6 +135,7 @@
             <field name="uom_id" ref="product.product_uom_unit"/>
             <field name="uom_po_id" ref="product.product_uom_unit"/>
             <field name="categ_id" ref="product_category_services"/>
+            <field name="uuid">09c77fb3-c488-4716-a05a-e82954c1b607</field>
             <field name="type">service</field>
         </record>
     </data>

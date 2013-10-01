@@ -2,6 +2,11 @@
 <openerp>
     <data noupdate="0">
 
+        <!-- Have to add an UUID to service before deleting, so that atom feed has uuid -->
+        <record id="product.product_product_consultant" model="product.product">
+            <field name="name">Service</field>
+            <field name="uuid">058222f9-d49e-44e4-b4ab-8b5e169a56e5</field>
+        </record>
         <delete model="product.product" id="product.product_product_consultant"/> <!-- Removing default service product -->
 
     </data>
