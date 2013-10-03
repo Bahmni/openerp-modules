@@ -16,6 +16,7 @@ class total_receivables(osv.osv):
     _name = "account.receivables"
     _description = 'Total Receivables update service'
 
+    #service method which used to be invoked during migration of patients to openmrs
     def update_customer_receivables(self, cr, uid, vals,context=None):
         patient_ref = vals[0][1]
         amount = vals[1][1]

@@ -380,6 +380,7 @@ class sale_order(osv.osv):
             res[order.id]= partner.village
         return res
 
+
     _constraints = [
         (_check_discount_range, 'Error!\nDiscount percentage should be between 0-100%.', ['discount_percentage']),
     ]
