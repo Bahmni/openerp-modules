@@ -35,12 +35,14 @@ class atom_event_worker(osv.osv):
         so = self.pool.get('sale.order').create(cr, uid, sale_order, context=context)
 
         for prod_id in product_ids:
-            prod_id = self.pool.get('product.product').search(cr, uid, [('uuid', '=', prod_id)], context=context)[0]
-            prod_obj = self.pool.get('product.product').browse(cr,uid,prod_id)
+            prod_ids = self.pool.get('product.product').search(cr, uid, [('uuid', '=', prod_id)], context=context)
+            if(len(prod_ids) > 0):
+                prod_id = prod_ids[0]
+                prod_obj = self.pool.get('product.product').browse(cr,uid,prod_id)
 
-            sale_order_line = {'product_id':prod_id,'price_unit':prod_obj.list_price,'product_uom_qty':1,'product_uom':uom_obj,'order_id':so,
-                               'name':name,'type':'make_to_stock','state':'draft','product_dosage':'0','product_number_of_days':'0'}
-            self.pool.get('sale.order.line').create(cr, uid, sale_order_line, context=context)
+                sale_order_line = {'product_id':prod_id,'price_unit':prod_obj.list_price,'product_uom_qty':1,'product_uom':uom_obj,'order_id':so,
+                                   'name':name,'type':'make_to_stock','state':'draft','product_dosage':'0','product_number_of_days':'0'}
+                self.pool.get('sale.order.line').create(cr, uid, sale_order_line, context=context)
 
 
     def _update_marker(self, cr, feed_uri_for_last_read_entry, last_read_entry_id, marker_ids, uid):
