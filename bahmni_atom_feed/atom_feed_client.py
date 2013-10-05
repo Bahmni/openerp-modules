@@ -27,9 +27,10 @@ class atom_event_worker(osv.osv):
 
         uom_obj = self.pool.get('product.uom').search(cr, uid, [('name', '=', 'Unit(s)')], context=context)[0]
         cus_id = self.pool.get('res.partner').search(cr, uid, [('ref', '=', customer_id)], context=context)[0]
+        shop_id = self.pool.get('sale.shop').search(cr, uid, [('name', '=', 'Pharmacy')], context=context)[0]
 
         name = self.pool.get('ir.sequence').get(cr, uid, 'sale.order')
-        sale_order = {'partner_id': cus_id, 'name': name, 'date': datetime.date.today(),'shop_id':1,'partner_invoice_id':cus_id,'partner_shipping_id':cus_id,
+        sale_order = {'partner_id': cus_id, 'name': name, 'date': datetime.date.today(),'shop_id':shop_id,'partner_invoice_id':cus_id,'partner_shipping_id':cus_id,
                       'order_policy':'manual','pricelist_id':1}
         so = self.pool.get('sale.order').create(cr, uid, sale_order, context=context)
 
