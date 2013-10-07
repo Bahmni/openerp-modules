@@ -236,15 +236,16 @@ class product_product(osv.osv):
         prod = prod_obj.browse(cr,uid,prod_id)
 
 #        if((data.get('uuid',None) == None) or (data.get('uuid',None) == False)):
+        data.pop('uuid',None)
+        if(prod.uuid == False or prod.uuid == None):
+            return
         data['uuid'] = prod.uuid
 
         description = data.get('description',False)
-
         data.pop('description',None) if(description == False) else None
 
         data.pop('categ_id',None)
-        category = prod.categ_id.name
-        data['category'] = category
+        data['category'] = prod.categ_id.name
 
         data.pop('active', None)
         data['status'] = 'active' if(prod.active) else 'inactive'
