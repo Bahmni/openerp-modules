@@ -21,35 +21,67 @@
 
 from openerp.osv import fields, osv
 from openerp.tools.translate import _
+from openerp import tools
+from openerp.tools.sql import drop_view_if_exists
 
-class stock_report_prodlots(osv.osv):
-    _name = "stock.report.prodlots"
+class prodlots_report(osv.osv):
+    _name = "prodlots.report"
     _description = "Stock report by serial number"
-    _inherit = "stock.report.prodlots"
+    _auto = False
+    _columns = {
+        'qty': fields.float('Quantity', readonly=True),
+        'location_id': fields.many2one('stock.location', 'Location', readonly=True, select=True),
+        'product_id': fields.many2one('product.product', 'Product', readonly=True, select=True),
+        'prodlot_id': fields.many2one('stock.production.lot', 'Serial Number', readonly=True, select=True),
+        'life_date': fields.date('Expiry Date', readonly=True),
+    }
 
+    def init(self, cr):
+        cr.execute("""
+            create or replace view prodlots_report as (
+                select max(id) as id,
+                    location_id,
+                    product_id,
+                    prodlot_id,
+                    life_date,
+                    sum(qty) as qty
+                from (
+                    select -max(sm.id) as id,
+                        sm.location_id,
+                        sm.product_id,
+                        sm.prodlot_id,
+                        spl.life_date,
+                        -sum(sm.product_qty /uo.factor) as qty
+                    from stock_move as sm
+                    left join stock_production_lot spl
+                        on (spl.id = sm.prodlot_id)
+                    left join stock_location sl
+                        on (sl.id = sm.location_id)
+                    left join product_uom uo
+                        on (uo.id=sm.product_uom)
+                    where state = 'done'
+                    group by sm.location_id, sm.product_id, sm.product_uom, sm.prodlot_id, spl.life_date
+                    union all
+                    select max(sm.id) as id,
+                        sm.location_dest_id as location_id,
+                        sm.product_id,
+                        sm.prodlot_id,
+                        spl.life_date,
+                        sum(sm.product_qty /uo.factor) as qty
+                    from stock_move as sm
+                    left join stock_production_lot spl
+                        on (spl.id = sm.prodlot_id)
+                    left join stock_location sl
+                        on (sl.id = sm.location_dest_id)
+                    left join product_uom uo
+                        on (uo.id=sm.product_uom)
+                    where sm.state = 'done'
+                    group by sm.location_dest_id, sm.product_id, sm.product_uom, sm.prodlot_id, spl.life_date
+                ) as report
+                group by location_id, product_id, prodlot_id, life_date
+            )""")
 
-    def action_open_window(self, cr, uid, ids, context=None):
-        """ To open location wise product information specific to given duration
-         @param self: The object pointer.
-         @param cr: A database cursor
-         @param uid: ID of the user currently logged in
-         @param ids: An ID or list of IDs (but only the first ID will be processed)
-         @param context: A standard dictionary 
-         @return: Invoice type
-        """
-        if context is None:
-            context = {}
-        location_products = self.read(cr, uid, ids,  context=context)
-        if location_products:
-            return {
-                'name': _('Current Inventory'),
-                'view_type': 'tree,form',
-                'view_mode': 'tree',
-                'view_id':'stock_product_lot_tree_view',
-                'res_model': 'stock.report.prodlots',
-                'type': 'ir.actions.act_window',
-            }
+    def unlink(self, cr, uid, ids, context=None):
+        raise osv.except_osv(_('Error!'), _('You cannot delete any record!'))
 
-stock_report_prodlots()
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+prodlots_report()

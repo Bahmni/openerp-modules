@@ -8,6 +8,7 @@
     "description": """
     """,
     'data': [
+        'security/ir.model.access.csv',
         'stock_internal_move_view.xml',
         'stock_location_prod_lot_view.xml',
         'stock_view.xml',

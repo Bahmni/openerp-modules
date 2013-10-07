@@ -1,69 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <data>
-        <record id="view_stock_location_prod_lot" model="ir.ui.view">
-            <field name="name">Product lots by Location</field>
-            <field name="model">stock.report.prodlots</field>
-            <field name="arch" type="xml">
-               <form string="View Stock of Product Lots" version="7.0">
-                    <group>
-                        <!--<field name="type"/>-->
-                    </group>
-                    <!--<group attrs="{'invisible':[('type', '!=', 'period')], 'required':[('type', '=', 'period')]}">-->
-                        <!--<field name="from_date"/>-->
-                        <!--<field name="to_date"/>-->
-                    <!--</group>-->
-                    <footer>
-                        <button name="action_open_window" string="View Product Lots Inventory" type="object" class="oe_highlight"/>
-                        or
-                        <button string="Cancel" class="oe_link" special="cancel" />
-                    </footer>
-                </form>
-            </field>
-        </record>
-
-        <record id="stock_product_lot_tree_view" model="ir.ui.view">
-            <field name="name">stock.product.lot.tree</field>
-            <field name="model">stock.report.prodlots</field>
+        <record id="stock_product_lot_extended_tree_view" model="ir.ui.view">
+            <field name="name">prodlots.report.tree</field>
+            <field name="model">prodlots.report</field>
             <field eval="7" name="priority"/>
             <field name="arch" type="xml">
 
                 <tree  string="Product Lots">
                     <field name="prodlot_id" />
                     <field name="product_id"/>
+                    <field name="life_date"/>
                     <field name="location_id"/>
                     <field name="qty" />
                 </tree>
             </field>
         </record>
 
-        <record id="view_stock_product_lot_filter" model="ir.ui.view">
-            <field name="name">stock.prodlot.filter</field>
-            <field name="model">stock.report.prodlots</field>
+        <record id="view_stock_product_lot_extended_filter" model="ir.ui.view">
+            <field name="name">prodlots.report.filter</field>
+            <field name="model">prodlots.report</field>
             <field name="arch" type="xml">
                 <search string="Search Prodlots">
                     <field name="location_id"/>
                     <field name="product_id"/>
+                    <field name="prodlot_id"/>
+                    <filter string="Pharmacy" domain="[('location_id','ilike', 'Pharmacy'), ('prodlot_id', '!=', False)]"/>
+                    <filter string="Stock Room" domain="[('location_id','ilike', 'Stock Room'), ('prodlot_id', '!=', False)]"/>
+                    <filter string="Expire in 6 months"
+                        domain="[
+                            ['life_date', '&gt;', context_today().strftime('%%Y-%%m-%%d')],
+                            ['life_date', '&lt;', (context_today() + datetime.timedelta(180)).strftime('%%Y-%%m-%%d')],
+                            ['qty', '&gt;', 0],
+                        ]"
+                    />
                 </search>
             </field>
         </record>
-
-
-        <record id="product_normal_form_view" model="ir.ui.view">
-            <field name="name">prodlots.normal.form</field>
-            <field name="model">stock.report.prodlots</field>
-            <field eval="7" name="priority"/>
-            <field name="arch" type="xml">
-                 <form string="Product" version="7.0">
-                     <sheet>
-                         <field name="location_id"/>
-                         <field name="product_id"/>
-                         <field name="prodlot_id" />
-                         <field name="qty" />
-                     </sheet>
-                    </form>
-            </field>
-        </record>
-
     </data>
 </openerp>

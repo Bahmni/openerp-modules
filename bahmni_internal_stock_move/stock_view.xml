@@ -2,45 +2,20 @@
 <openerp>
     <data>
 
-        <act_window
-                context=""
-                id="act_product_lot_location_open"
-                name="Serial Number By Location"
-                res_model="stock.report.prodlots"
-                src_model="stock.location"/>
-
-
-        <record id="ir_act_product_lot_location_open" model="ir.values">
-            <field name="key2">tree_but_open</field>
-            <field name="model">stock.report.prodlots</field>
-            <field name="name">Products1</field>
-            <!--<field name="inherit_id" ref="stock.ir_act_product_location_open"/>-->
-            <field eval="'ir.actions.act_window,%d'%act_product_lot_location_open" name="value"/>
-        </record>
-
-
         <record id="action_production_lot_location_form" model="ir.actions.act_window">
             <field name="name">Serial Number By Location</field>
             <field name="type">ir.actions.act_window</field>
-            <field name="res_model">stock.report.prodlots</field>
-            <field name="model">stock.report.prodlots</field>
-            <field name="view_type">tree</field>
-            <field name="view_mode">tree,form,kanban</field>
-            <field name="view_id" ref="stock_product_lot_tree_view"/>
-            <field name="search_view_id" ref="view_stock_product_lot_filter"/>
+            <field name="res_model">prodlots.report</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="stock_product_lot_extended_tree_view"/>
+            <field name="search_view_id" ref="view_stock_product_lot_extended_filter"/>
             <field name="context">{}</field>
         </record>
 
-        <menuitem action="act_product_lot_location_open" id="menu_action_production_lot_location_form"
-                  parent="stock.menu_traceability" groups="stock.group_production_lot"
-                  sequence="3"/>
-
-        <!--<record id="ir_act_product_lot_location_open" model="ir.values">-->
-            <!--<field name="key2">tree_but_open</field>-->
-            <!--<field name="model">stock.report.prodlots</field>-->
-            <!--<field name="name">Open Products1</field>-->
-            <!--&lt;!&ndash;<field name="inherit_id" ref="stock.ir_act_product_location_open"/>&ndash;&gt;-->
-            <!--<field eval="'ir.actions.act_window,%d'%action_view_stock_location_product_lot" name="value"/>-->
-        <!--</record>-->
+        <menuitem action="action_production_lot_location_form"
+            id="menu_action_production_lot_location_form"
+            parent="stock.menu_traceability" groups="stock.group_production_lot"
+            sequence="3"/>
     </data>
 </openerp>
