@@ -44,7 +44,6 @@ class atom_event_worker(osv.osv):
                                    'name':name,'type':'make_to_stock','state':'draft','product_dosage':'0','product_number_of_days':'0'}
                 self.pool.get('sale.order.line').create(cr, uid, sale_order_line, context=context)
 
-
     def _update_marker(self, cr, feed_uri_for_last_read_entry, last_read_entry_id, marker_ids, uid):
         for marker_id in marker_ids:
             marker = self.pool.get('atom.feed.marker')
@@ -85,8 +84,8 @@ class atom_event_worker(osv.osv):
             self._create_or_update_customer( cr, patient_ref, uid, vals,context)
         if(category == "create.sale.order"):
             sale_order  = self._create_sale_order(cr,uid,vals,context)
-
         self._create_or_update_marker(cr, uid, vals)
+        return {'success': True}
 
 
 class atom_feed_marker(osv.osv):
