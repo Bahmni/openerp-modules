@@ -19,11 +19,7 @@ class atom_event_worker(osv.osv):
         customer = {'ref': ref, 'name': name, 'village': village}
         return customer
 
-    def _create_sale_order(self, context, cr, cus_id, name, external_id, product_ids, shop_id, uid, uom_obj):
-        sale_order = {'partner_id': cus_id, 'name': name, 'date': datetime.date.today(), 'shop_id': shop_id,
-                      'partner_invoice_id': cus_id, 'partner_shipping_id': cus_id,
-                      'order_policy': 'manual', 'pricelist_id': 1, 'external_id': external_id}
-        so = self.pool.get('sale.order').create(cr, uid, sale_order, context=context)
+    def _create_sale_orderline(self,cr,uid,name, product_ids, so,  uom_obj,external_order_line_id,context):
         for prod_id in product_ids:
             prod_ids = self.pool.get('product.product').search(cr, uid, [('uuid', '=', prod_id)], context=context)
             if(len(prod_ids) > 0):
@@ -33,55 +29,60 @@ class atom_event_worker(osv.osv):
                 sale_order_line = {'product_id': prod_id, 'price_unit': prod_obj.list_price, 'product_uom_qty': 1,
                                    'product_uom': uom_obj, 'order_id': so,
                                    'name': name, 'type': 'make_to_stock', 'state': 'draft', 'product_dosage': '0',
-                                   'product_number_of_days': '0'}
+                                   'product_number_of_days': '0','external_id':external_order_line_id}
                 self.pool.get('sale.order.line').create(cr, uid, sale_order_line, context=context)
 
-    def _update_sale_order(self, context, cr, uid, cus_id, name, external_id, product_ids, shop_id, uom_obj,order_id):
+    def _create_sale_order(self, context, cr, cus_id, name, external_id, product_ids, shop_id, uid, uom_obj,external_order_line_id):
+        _logger.info("Inside _create_sale_order")
+        sale_order = {'partner_id': cus_id, 'name': name, 'date': datetime.date.today(), 'shop_id': shop_id,
+                      'partner_invoice_id': cus_id, 'partner_shipping_id': cus_id,
+                      'order_policy': 'manual', 'pricelist_id': 1, 'external_id': external_id}
+        so = self.pool.get('sale.order').create(cr, uid, sale_order, context=context)
+        self._create_sale_orderline(cr,uid,name, product_ids, so, uom_obj,external_order_line_id,context)
+
+    def _update_sale_order(self, context, cr, uid, cus_id, name, external_id,shop_id, uom_obj,order_id,group_prod_ids,external_order_line_id):
+        _logger.info("Inside _update_sale_order")
         sale_order = self.pool.get('sale.order').browse(cr,uid,order_id)
 
         for order_line in sale_order.order_line :
             prod_obj = order_line.product_id
-            if prod_obj.uuid in product_ids:
-                product_ids.remove(prod_obj.uuid)
+            ids = [order_line.id]
+            if prod_obj.uuid in group_prod_ids:
+                group_prod_ids.remove(prod_obj.uuid)
             else :
-                self.pool.get('sale.order.line').unlink(cr,uid,order_line.id)
+                self.pool.get('sale.order.line').unlink(cr,uid,ids)
 
-        for prod_id in product_ids:
-            prod_obj = self.pool.get('product.product').browse(cr, uid, prod_id)
-            sale_order_line = {'product_id': prod_id, 'price_unit': prod_obj.list_price, 'product_uom_qty': 1,
-                               'product_uom': uom_obj, 'order_id': order_id,
-                               'name': name, 'type': 'make_to_stock', 'state': 'draft', 'product_dosage': '0',
-                               'product_number_of_days': '0'}
-            self.pool.get('sale.order.line').create(cr, uid, sale_order_line, context=context)
+        self._create_sale_orderline(cr,uid,name, group_prod_ids, sale_order.id, uom_obj,external_order_line_id,context)
 
 
     def _create_orders(self, cr,uid,vals,context):
         customer_id = vals.get("customer_id")
         date = vals.get("date")
         orders_string = vals.get("orders")
+        order_group = json.loads(orders_string)
+        order_group_id = order_group.get('id')
+        orders = order_group.get('openERPOrders')
+        group_prod_ids = []
 
-        orders = json.loads(orders_string).get('openERPOrders')
-        for order in orders :
-            external_id = order.get('id')
+        for order in orders:
+            group_prod_ids = group_prod_ids + order['productIds']
 
-            product_ids = order['productIds']
-            cus_id = None
+        external_order_line_id = order.get('id')
+        cus_id = None
+        uom_obj = self.pool.get('product.uom').search(cr, uid, [('name', '=', 'Unit(s)')], context=context)[0]
+        customer_ids = self.pool.get('res.partner').search(cr, uid, [('ref', '=', customer_id)], context=context)
 
-            uom_obj = self.pool.get('product.uom').search(cr, uid, [('name', '=', 'Unit(s)')], context=context)[0]
-            customer_ids = self.pool.get('res.partner').search(cr, uid, [('ref', '=', customer_id)], context=context)
-            if(len(customer_ids) > 0):
-                cus_id = self.pool.get('res.partner').search(cr, uid, [('ref', '=', customer_id)], context=context)[0]
-                shop_id = self.pool.get('sale.shop').search(cr, uid, [('name', '=', 'Pharmacy')], context=context)[0]
-
-                name = self.pool.get('ir.sequence').get(cr, uid, 'sale.order')
-
-                sale_order_ids = self.pool.get('sale.order').search(cr, uid, [('external_id', '=', external_id)], context=context)
-                if(len(sale_order_ids) == 0) :
-                    self._create_sale_order(context, cr, cus_id, name, external_id, product_ids, shop_id, uid, uom_obj)
-                else:
-                    self._update_sale_order(context, cr,  uid,cus_id, name, external_id, product_ids, shop_id, uom_obj,sale_order_ids[0])
+        if(len(customer_ids) > 0):
+            cus_id = self.pool.get('res.partner').search(cr, uid, [('ref', '=', customer_id)], context=context)[0]
+            shop_id = self.pool.get('sale.shop').search(cr, uid, [('name', '=', 'Pharmacy')], context=context)[0]
+            name = self.pool.get('ir.sequence').get(cr, uid, 'sale.order')
+            sale_order_ids = self.pool.get('sale.order').search(cr, uid, [('external_id', '=', order_group_id)], context=context)
+            if(len(sale_order_ids) == 0) :
+                self._create_sale_order(context, cr, cus_id, name, order_group_id,group_prod_ids,shop_id, uid, uom_obj,external_order_line_id)
             else:
-                raise osv.except_osv(('Error!'),("Patient Id not found in openerp"))
+                self._update_sale_order(context, cr,  uid,cus_id, name, order_group_id,shop_id, uom_obj,sale_order_ids[0],group_prod_ids,external_order_line_id)
+        else:
+            raise osv.except_osv(('Error!'),("Patient Id not found in openerp"))
 
     def _update_marker(self, cr, feed_uri_for_last_read_entry, last_read_entry_id, marker_ids, uid):
         for marker_id in marker_ids:
@@ -133,6 +134,13 @@ class sale_order(osv.osv):
         'external_id': fields.char('external_id', size=64),
     }
 
+class sale_order_line(osv.osv):
+    _name = "sale.order.line"
+    _inherit = "sale.order.line"
+
+    _columns = {
+        'external_id': fields.char('external_id', size=64),
+    }
 
 class atom_feed_marker(osv.osv):
     _name = 'atom.feed.marker'
