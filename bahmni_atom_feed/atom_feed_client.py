@@ -33,7 +33,6 @@ class atom_event_worker(osv.osv):
                 self.pool.get('sale.order.line').create(cr, uid, sale_order_line, context=context)
 
     def _create_sale_order(self, context, cr, cus_id, name, external_id, product_ids, shop_id, uid, uom_obj,external_order_line_id):
-        _logger.info("Inside _create_sale_order")
         sale_order = {'partner_id': cus_id, 'name': name, 'date': datetime.date.today(), 'shop_id': shop_id,
                       'partner_invoice_id': cus_id, 'partner_shipping_id': cus_id,
                       'order_policy': 'manual', 'pricelist_id': 1, 'external_id': external_id}
@@ -103,6 +102,9 @@ class atom_event_worker(osv.osv):
         feed_uri = vals.get('feed_uri')
 
         marker_ids = self.pool.get('atom.feed.marker').search(cr, uid, [('feed_uri', '=', feed_uri)], limit=1)
+        if "$param.name" in feed_uri_for_last_read_entry or "$param.name" in feed_uri :
+            raise osv.except_osv(('Error!'),("Patient Id not found in openerp"))
+
         if len(marker_ids) > 0:
             self._update_marker(cr, feed_uri_for_last_read_entry, last_read_entry_id, marker_ids, uid)
         else:
