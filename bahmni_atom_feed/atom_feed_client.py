@@ -40,8 +40,9 @@ class atom_event_worker(osv.osv):
         self._create_sale_orderline(cr,uid,name, product_ids, so, uom_obj,external_order_line_id,context)
 
     def _update_sale_order(self, context, cr, uid, cus_id, name, external_id,shop_id, uom_obj,order_id,group_prod_ids,external_order_line_id):
-        _logger.info("Inside _update_sale_order")
         sale_order = self.pool.get('sale.order').browse(cr,uid,order_id)
+        if(sale_order.state != 'draft'):
+            raise osv.except_osv(('Error!'),("Sale order is already approved"))
 
         for order_line in sale_order.order_line :
             prod_obj = order_line.product_id
