@@ -32,12 +32,25 @@ class atom_event_worker(osv.osv):
                                    'product_number_of_days': '0','external_id':external_order_line_id}
                 self.pool.get('sale.order.line').create(cr, uid, sale_order_line, context=context)
 
-    def _create_sale_order(self, context, cr, cus_id, name, external_id, product_ids, shop_id, uid, uom_obj,external_order_line_id):
+    def _create_sale_order(self, context, cr, cus_id, name, external_id, orders, shop_id, uid, uom_obj,external_order_line_id):
+        order = orders[0]
+        sale_order_group = {'group_id': order['visitId'], 'description': order['description'], 'type': order['type'] }
+
+        sale_order_group_ids = self.pool.get('sale.order.group').search(cr, uid, [('group_id', '=', order['visitId'])], context=context)
+        if(len(sale_order_group_ids) == 0):
+            sog_id = self.pool.get('sale.order.group').create(cr, uid, sale_order_group, context=context)
+        else:
+            sog_id = sale_order_group_ids[0]
+
         sale_order = {'partner_id': cus_id, 'name': name, 'date': datetime.date.today(), 'shop_id': shop_id,
                       'partner_invoice_id': cus_id, 'partner_shipping_id': cus_id,
-                      'order_policy': 'manual', 'pricelist_id': 1, 'external_id': external_id}
-        so = self.pool.get('sale.order').create(cr, uid, sale_order, context=context)
-        self._create_sale_orderline(cr,uid,name, product_ids, so, uom_obj,external_order_line_id,context)
+                      'order_policy': 'manual', 'pricelist_id': 1, 'external_id': external_id, 'group_id': sog_id }
+        so_id = self.pool.get('sale.order').create(cr, uid, sale_order, context=context)
+
+        group_prod_ids = []
+        for order in orders:
+            group_prod_ids = group_prod_ids + order['productIds']
+        self._create_sale_orderline(cr,uid,name, group_prod_ids, so_id, uom_obj,external_order_line_id,context)
 
     def _update_sale_order(self, context, cr, uid, cus_id, name, external_id,shop_id, uom_obj,order_id,group_prod_ids,external_order_line_id):
         sale_order = self.pool.get('sale.order').browse(cr,uid,order_id)
@@ -57,7 +70,6 @@ class atom_event_worker(osv.osv):
 
     def _create_orders(self, cr,uid,vals,context):
         customer_id = vals.get("customer_id")
-        date = vals.get("date")
         orders_string = vals.get("orders")
         order_group = json.loads(orders_string)
         order_group_id = order_group.get('id')
@@ -68,9 +80,9 @@ class atom_event_worker(osv.osv):
             group_prod_ids = group_prod_ids + order['productIds']
 
         external_order_line_id = order.get('id')
-        cus_id = None
         uom_obj = self.pool.get('product.uom').search(cr, uid, [('name', '=', 'Unit(s)')], context=context)[0]
         customer_ids = self.pool.get('res.partner').search(cr, uid, [('ref', '=', customer_id)], context=context)
+
 
         if(len(customer_ids) > 0):
             cus_id = self.pool.get('res.partner').search(cr, uid, [('ref', '=', customer_id)], context=context)[0]
@@ -78,7 +90,7 @@ class atom_event_worker(osv.osv):
             name = self.pool.get('ir.sequence').get(cr, uid, 'sale.order')
             sale_order_ids = self.pool.get('sale.order').search(cr, uid, [('external_id', '=', order_group_id)], context=context)
             if(len(sale_order_ids) == 0) :
-                self._create_sale_order(context, cr, cus_id, name, order_group_id,group_prod_ids,shop_id, uid, uom_obj,external_order_line_id)
+                self._create_sale_order(context, cr, cus_id, name, order_group_id,orders,shop_id, uid, uom_obj,external_order_line_id)
             else:
                 self._update_sale_order(context, cr,  uid,cus_id, name, order_group_id,shop_id, uom_obj,sale_order_ids[0],group_prod_ids,external_order_line_id)
         else:
@@ -120,6 +132,8 @@ class atom_event_worker(osv.osv):
             self.pool.get('res.partner').create(cr, uid, customer, context=context)
 
     def process_event(self, cr, uid, vals,context=None):
+        _logger.info("vals")
+        _logger.info(vals)
         category = vals.get("category")
         patient_ref = vals.get("ref")
         if(category == "create.customer"):
@@ -134,7 +148,16 @@ class sale_order(osv.osv):
     _inherit = "sale.order"
 
     _columns = {
-        'external_id': fields.char('external_id', size=64),
+        'external_id'   : fields.char('external_id', size=64),
+        'group_id'      : fields.many2one('sale.order.group', 'Group Reference', required=False, select=True, readonly=True)
+        }
+
+class sale_order_group(osv.osv):
+    _name = "sale.order.group"
+    _columns = {
+        'group_id'      : fields.char('group_id', 38),
+        'description'   : fields.char('visit', 40),
+        'type'          : fields.char('type', 15)
     }
 
 class sale_order_line(osv.osv):
