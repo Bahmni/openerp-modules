@@ -36,9 +36,9 @@ class atom_event_worker(osv.osv):
         order = orders[0]
         sale_order_group = {'group_id': order['visitId'], 'description': order['description'], 'type': order['type'] }
 
-        sale_order_group_ids = self.pool.get('sale.order.group').search(cr, uid, [('group_id', '=', order['visitId'])], context=context)
+        sale_order_group_ids = self.pool.get('visit').search(cr, uid, [('group_id', '=', order['visitId'])], context=context)
         if(len(sale_order_group_ids) == 0):
-            sog_id = self.pool.get('sale.order.group').create(cr, uid, sale_order_group, context=context)
+            sog_id = self.pool.get('visit').create(cr, uid, sale_order_group, context=context)
         else:
             sog_id = sale_order_group_ids[0]
 
@@ -149,16 +149,23 @@ class sale_order(osv.osv):
 
     _columns = {
         'external_id'   : fields.char('external_id', size=64),
-        'group_id'      : fields.many2one('sale.order.group', 'Group Reference', required=False, select=True, readonly=True)
+        'group_id'      : fields.many2one('visit', 'Group Reference', required=False, select=True, readonly=True),
+        'group_description':fields.related('group_id', 'description', type='char', string='Visit'),
         }
 
 class sale_order_group(osv.osv):
-    _name = "sale.order.group"
+    _name = "visit"
+    _table = "sale_order_group"
+
+    def __str__(self):
+        return "Visit"
+
     _columns = {
         'group_id'      : fields.char('group_id', 38),
         'description'   : fields.char('visit', 40),
         'type'          : fields.char('type', 15)
     }
+
 
 class sale_order_line(osv.osv):
     _name = "sale.order.line"

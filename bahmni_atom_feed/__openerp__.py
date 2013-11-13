@@ -7,7 +7,7 @@
 	"summary": "Event Publisher",
     "description": """
     """,
-    'data': ["atom_event_sequence.xml"
+    'data': ["atom_event_sequence.xml","sale_order_group_filter.xml"
             ],
     'demo': [],
     'css' : [
