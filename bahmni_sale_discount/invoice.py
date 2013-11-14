@@ -442,6 +442,7 @@ class account_invoice(osv.osv):
                     'account.move.reconcile': (_get_invoice_from_reconcile, None, 50),
                     },
                 help="Remaining amount due."),
+            'group_id' : fields.many2one('visit', 'Group Reference', required=False, select=True, readonly=True),
             }
     
     _defaults={

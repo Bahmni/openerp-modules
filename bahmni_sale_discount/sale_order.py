@@ -117,7 +117,10 @@ class sale_order(osv.osv):
             'discount': sale_discount,
             'round_off': order.round_off,
             'discount_acc_id':order.discount_acc_id.id,
-            'user_id': order.user_id and order.user_id.id or False
+            'user_id': order.user_id and order.user_id.id or False,
+            'group_id':order.group_id
+
+
         }
 
         # Care for deprecated _inv_get() hook - FIXME: to be removed after 6.1
