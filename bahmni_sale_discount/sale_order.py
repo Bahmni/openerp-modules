@@ -118,7 +118,7 @@ class sale_order(osv.osv):
             'round_off': order.round_off,
             'discount_acc_id':order.discount_acc_id.id,
             'user_id': order.user_id and order.user_id.id or False,
-            'group_id':order.group_id
+            'group_id':order.group_id.id
 
 
         }

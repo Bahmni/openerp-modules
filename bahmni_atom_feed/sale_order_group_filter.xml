@@ -7,7 +7,7 @@
             <field name="inherit_id" ref="sale.view_sales_order_filter"/>
             <field name="arch" type="xml">
                 <xpath expr="/search/group/filter[@string='Order Date']" position="after">
-                    <filter string="Visit" icon="terp-personal" domain="[]" context="{'group_by':'group_id'}"/>
+                    <filter string="Visit" icon="terp-personal" domain="[]" context="{'group_by':'group_description'}"/>
                 </xpath>
             </field>
         </record>
@@ -19,7 +19,7 @@
             <field name="arch" type="xml">
                 <xpath expr="/tree/field[@name='state']" position="after">
                     <field name="group_description"/>
-                    <field name="group_id" string="Visit" invisible ="True"/>
+                    <!--<field name="group_id" string="Visit" invisible ="True"/>-->
                 </xpath>
             </field>
         </record>

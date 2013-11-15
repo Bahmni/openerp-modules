@@ -44,7 +44,7 @@ class atom_event_worker(osv.osv):
 
         sale_order = {'partner_id': cus_id, 'name': name, 'date': datetime.date.today(), 'shop_id': shop_id,
                       'partner_invoice_id': cus_id, 'partner_shipping_id': cus_id,
-                      'order_policy': 'manual', 'pricelist_id': 1, 'external_id': external_id, 'group_id': sog_id }
+                      'order_policy': 'manual', 'pricelist_id': 1, 'external_id': external_id, 'group_id': sog_id,'group_description':order['description'] }
         so_id = self.pool.get('sale.order').create(cr, uid, sale_order, context=context)
 
         group_prod_ids = []
@@ -150,7 +150,7 @@ class sale_order(osv.osv):
     _columns = {
         'external_id'   : fields.char('external_id', size=64),
         'group_id'      : fields.many2one('visit', 'Group Reference', required=False, select=True, readonly=True),
-        'group_description':fields.related('group_id', 'description', type='char', string='Visit'),
+        'group_description':fields.char('Visit', 15),
         }
 
 class sale_order_group(osv.osv):

@@ -1,1 +1,1 @@
-import partner,sale_order,invoice,account,total_receivables
+import partner,invoice,sale_order,account,total_receivables
