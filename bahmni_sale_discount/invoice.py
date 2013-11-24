@@ -443,6 +443,7 @@ class account_invoice(osv.osv):
                     },
                 help="Remaining amount due."),
             'group_id' : fields.many2one('visit', 'Group Reference', required=False, select=True, readonly=True),
+            'group_description':fields.char('Visit', 15),
             }
     
     _defaults={

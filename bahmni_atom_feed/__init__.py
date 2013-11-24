@@ -1,1 +1,1 @@
-import event_publisher,atom_feed_client
+import event_publisher,atom_feed_client,sale_order
