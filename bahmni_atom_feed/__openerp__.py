@@ -1,7 +1,7 @@
 {
     "name": "Bahmni  Event Publisher",
     "version": "1.0",
-    "depends": ["base","product","sale"],
+    "depends": ["base","product","sale","account"],
     "author": "ThoughtWorks Technologies Pvt. Ltd.",
     "category": "Product",
 	"summary": "Event Publisher",
