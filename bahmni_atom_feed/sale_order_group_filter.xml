@@ -46,16 +46,16 @@
             </field>
         </record>
 
-        <record id="invoice_tree_with_visit" model="ir.ui.view">
-            <field name="name">account.invoice.tree</field>
-            <field name="model">account.invoice</field>
-            <field name="inherit_id" ref="account.invoice_tree"/>
-            <field name="arch" type="xml">
-                <xpath expr="/tree/field[@name='state']" position="after">
-                    <field name="group_description"/>
-                </xpath>
-            </field>
-        </record>
+        <!--<record id="invoice_tree_with_visit" model="ir.ui.view">-->
+            <!--<field name="name">account.invoice.tree</field>-->
+            <!--<field name="model">account.invoice</field>-->
+            <!--<field name="inherit_id" ref="account.invoice_tree"/>-->
+            <!--<field name="arch" type="xml">-->
+                <!--<xpath expr="/tree/field[@name='state']" position="after">-->
+                    <!--<field name="group_description"/>-->
+                <!--</xpath>-->
+            <!--</field>-->
+        <!--</record>-->
 
     </data>
 </openerp>
