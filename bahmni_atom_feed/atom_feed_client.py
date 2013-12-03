@@ -70,6 +70,9 @@ class atom_event_worker(osv.osv):
 
     def _create_orders(self, cr,uid,vals,context):
         customer_id = vals.get("customer_id")
+        if(vals.get("orders")==None): 
+            return ""
+
         orders_string = vals.get("orders")
         order_group = json.loads(orders_string)
         order_group_id = order_group.get('id')
