@@ -116,8 +116,8 @@ class atom_event_worker(osv.osv):
         feed_uri_for_last_read_entry = vals.get('feed_uri_for_last_read_entry')
         feed_uri = vals.get('feed_uri')
 
-        if "$param" in feed_uri_for_last_read_entry or "$param" in feed_uri :
-            raise osv.except_osv(('Error!'),("Junk values in feed urls"))
+        if "$param" in feed_uri_for_last_read_entry or "$param" in feed_uri or feed_uri_for_last_read_entry == None:
+            return
 
         marker_ids = self.pool.get('atom.feed.marker').search(cr, uid, [('feed_uri', '=', feed_uri)], limit=1)
 
