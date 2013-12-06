@@ -1,7 +1,7 @@
 {
     "name": "Bahmni Lab Seed Data setup",
     "version": "1.0",
-    "depends": ["base","product", "stock"],
+    "depends": ["base","product", "stock", "bahmni_pharmacy_product"],
     "author": "ThoughtWorks Technologies Pvt. Ltd.",
     "category": "Setup",
 	"summary": "Initial data setup",

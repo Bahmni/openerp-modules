@@ -4,7 +4,7 @@
     <data noupdate="0">
 
         <!-- Have to add an UUID to service before deleting, so that atom feed has uuid -->
-        <record id="product.product_product_consultant" model="product.product">
+        <record id="product.product_product_consultant_lab" model="product.product">
             <field name="name">Service</field>
             <field name="uuid">db4558dd-8ae2-4dcd-813c-d7cc33a6fe86</field>
         </record>
@@ -19,6 +19,26 @@
             <field name="uom_po_id" ref="product.product_uom_unit"/>
             <field name="categ_id" ref="product_category_services_ipd"/>
             <field name="uuid">bc0933f5-cf6e-4776-8f6b-9f44a3291ed7</field>
+            <field name="type">service</field>
+        </record>
+        <record model="product.product" id="product_service_bed_charges">
+            <field name="name">General Bed</field>
+            <field name="list_price">200.0</field>
+            <field name="standard_price">0.0</field>
+            <field name="uom_id" ref="product.product_uom_unit"/>
+            <field name="uom_po_id" ref="product.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_services_ipd"/>
+            <field name="uuid">1041f233-9bfa-4488-bb4a-144823cc1149</field>
+            <field name="type">service</field>
+        </record>
+        <record model="product.product" id="product_service_bed_charges">
+            <field name="name">ICU Bed</field>
+            <field name="list_price">500.0</field>
+            <field name="standard_price">0.0</field>
+            <field name="uom_id" ref="product.product_uom_unit"/>
+            <field name="uom_po_id" ref="product.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_services_ipd"/>
+            <field name="uuid">87553d97-a358-4aed-bb86-7646d343cf16</field>
             <field name="type">service</field>
         </record>
         <record model="product.product" id="product_service_ipd_bed">
