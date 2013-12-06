@@ -45,12 +45,14 @@ class atom_event_worker(osv.osv):
         sale_order = {'partner_id': cus_id, 'name': name, 'date': datetime.date.today(), 'shop_id': shop_id,
                       'partner_invoice_id': cus_id, 'partner_shipping_id': cus_id,
                       'order_policy': 'manual', 'pricelist_id': 1, 'external_id': external_id, 'group_id': sog_id,'group_description':order['description'] }
-        so_id = self.pool.get('sale.order').create(cr, uid, sale_order, context=context)
 
         group_prod_ids = []
         for order in orders:
             group_prod_ids = group_prod_ids + order['productIds']
-        self._create_sale_orderline(cr,uid,name, group_prod_ids, so_id, uom_obj,external_order_line_id,context)
+
+        if(len(group_prod_ids) > 0):
+            so_id = self.pool.get('sale.order').create(cr, uid, sale_order, context=context)
+            self._create_sale_orderline(cr,uid,name, group_prod_ids, so_id, uom_obj,external_order_line_id,context)
 
     def _update_sale_order(self, context, cr, uid, cus_id, name, external_id,shop_id, uom_obj,order_id,group_prod_ids,external_order_line_id):
         sale_order = self.pool.get('sale.order').browse(cr,uid,order_id)
