@@ -19,11 +19,10 @@ class atom_event_worker(osv.osv):
         customer = {'ref': ref, 'name': name, 'village': village}
         return customer
 
-    def _create_sale_orderline(self,cr,uid,name, product_ids, so,  uom_obj,external_order_line_id,context):
-        for prod_id in product_ids:
-            prod_ids = self.pool.get('product.product').search(cr, uid, [('uuid', '=', prod_id)], context=context)
-            if(len(prod_ids) > 0):
-                prod_id = prod_ids[0]
+    def _create_sale_orderline(self,cr,uid,name, product_id, so,  uom_obj,external_order_line_id,context):
+            stored_prod_ids = self.pool.get('product.product').search(cr, uid, [('uuid', '=', product_id)], context=context)
+            if(len(stored_prod_ids) > 0):
+                prod_id = stored_prod_ids[0]
                 prod_obj = self.pool.get('product.product').browse(cr, uid, prod_id)
 
                 sale_order_line = {'product_id': prod_id, 'price_unit': prod_obj.list_price, 'product_uom_qty': 1,
@@ -32,7 +31,7 @@ class atom_event_worker(osv.osv):
                                    'product_number_of_days': '0','external_id':external_order_line_id}
                 self.pool.get('sale.order.line').create(cr, uid, sale_order_line, context=context)
 
-    def _create_sale_order(self, context, cr, cus_id, name, external_id, orders, shop_id, uid, uom_obj,external_order_line_id):
+    def _create_sale_order(self, context, cr, cus_id, name, external_id, orders, shop_id, uid, uom_obj):
         order = orders[0]
         sale_order_group = {'group_id': order['visitId'], 'description': order['description'], 'type': order['type'] }
 
@@ -46,15 +45,20 @@ class atom_event_worker(osv.osv):
                       'partner_invoice_id': cus_id, 'partner_shipping_id': cus_id,
                       'order_policy': 'manual', 'pricelist_id': 1, 'external_id': external_id, 'group_id': sog_id,'group_description':order['description'] }
 
+        if(len(orders) > 0):
+            so_id = self.pool.get('sale.order').create(cr, uid, sale_order, context=context)
+            for order in orders:
+                if(len(order['productIds']) > 0):
+                    self._create_sale_orderline(cr,uid,name, order['productIds'][0], so_id, uom_obj,order.get('id'),context)
+
+    def _update_sale_order(self, context, cr, uid, cus_id, name, external_id,shop_id, uom_obj,order_id,orders):
+        prod_order_Map ={}
         group_prod_ids = []
         for order in orders:
             group_prod_ids = group_prod_ids + order['productIds']
+            for prodId in order['productIds']:
+                prod_order_Map.update(prodId,order.get('id'))
 
-        if(len(group_prod_ids) > 0):
-            so_id = self.pool.get('sale.order').create(cr, uid, sale_order, context=context)
-            self._create_sale_orderline(cr,uid,name, group_prod_ids, so_id, uom_obj,external_order_line_id,context)
-
-    def _update_sale_order(self, context, cr, uid, cus_id, name, external_id,shop_id, uom_obj,order_id,group_prod_ids,external_order_line_id):
         sale_order = self.pool.get('sale.order').browse(cr,uid,order_id)
         if(sale_order.state != 'draft'):
             raise osv.except_osv(('Error!'),("Sale order is already approved"))
@@ -67,7 +71,8 @@ class atom_event_worker(osv.osv):
             else :
                 self.pool.get('sale.order.line').unlink(cr,uid,ids)
 
-        self._create_sale_orderline(cr,uid,name, group_prod_ids, sale_order.id, uom_obj,external_order_line_id,context)
+        for prod_id in group_prod_ids:
+            self._create_sale_orderline(cr,uid,name, prod_id, sale_order.id, uom_obj,prod_order_Map.get(prod_id),context)
 
 
     def _create_orders(self, cr,uid,vals,context):
@@ -81,10 +86,6 @@ class atom_event_worker(osv.osv):
         orders = order_group.get('openERPOrders')
         group_prod_ids = []
 
-        for order in orders:
-            group_prod_ids = group_prod_ids + order['productIds']
-
-        external_order_line_id = order.get('id')
         uom_obj = self.pool.get('product.uom').search(cr, uid, [('name', '=', 'Unit(s)')], context=context)[0]
         customer_ids = self.pool.get('res.partner').search(cr, uid, [('ref', '=', customer_id)], context=context)
 
@@ -94,9 +95,9 @@ class atom_event_worker(osv.osv):
             name = self.pool.get('ir.sequence').get(cr, uid, 'sale.order')
             sale_order_ids = self.pool.get('sale.order').search(cr, uid, [('external_id', '=', order_group_id)], context=context)
             if(len(sale_order_ids) == 0) :
-                self._create_sale_order(context, cr, cus_id, name, order_group_id,orders,shop_id, uid, uom_obj,external_order_line_id)
+                self._create_sale_order(context, cr, cus_id, name, order_group_id,orders,shop_id, uid, uom_obj)
             else:
-                self._update_sale_order(context, cr,  uid,cus_id, name, order_group_id,shop_id, uom_obj,sale_order_ids[0],group_prod_ids,external_order_line_id)
+                self._update_sale_order(context, cr,  uid,cus_id, name, order_group_id,shop_id, uom_obj,sale_order_ids[0],orders)
         else:
             raise osv.except_osv(('Error!'),("Patient Id not found in openerp"))
 
