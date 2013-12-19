@@ -84,6 +84,9 @@ class atom_event_worker(osv.osv):
         order_group = json.loads(orders_string)
         order_group_id = order_group.get('id')
         orders = order_group.get('openERPOrders')
+        if(len(orders) == 0):
+            return ""
+
         group_prod_ids = []
 
         uom_obj = self.pool.get('product.uom').search(cr, uid, [('name', '=', 'Unit(s)')], context=context)[0]
