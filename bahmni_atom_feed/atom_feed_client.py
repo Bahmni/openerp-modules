@@ -57,7 +57,7 @@ class atom_event_worker(osv.osv):
         for order in orders:
             group_prod_ids = group_prod_ids + order['productIds']
             for prodId in order['productIds']:
-                prod_order_Map.update(prodId,order.get('id'))
+                prod_order_Map[prodId] = order.get('id')
 
         sale_order = self.pool.get('sale.order').browse(cr,uid,order_id)
         if(sale_order.state != 'draft'):
@@ -72,7 +72,7 @@ class atom_event_worker(osv.osv):
                 self.pool.get('sale.order.line').unlink(cr,uid,ids)
 
         for prod_id in group_prod_ids:
-            self._create_sale_orderline(cr,uid,name, prod_id, sale_order.id, uom_obj,prod_order_Map.get(prod_id),context)
+            self._create_sale_orderline(cr,uid,name, prod_id, sale_order.id, uom_obj,prod_order_Map[prod_id],context)
 
 
     def _create_orders(self, cr,uid,vals,context):
