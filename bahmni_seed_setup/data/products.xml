@@ -21,7 +21,7 @@
             <field name="uuid">bc0933f5-cf6e-4776-8f6b-9f44a3291ed7</field>
             <field name="type">service</field>
         </record>
-        <record model="product.product" id="product_service_bed_charges">
+        <record model="product.product" id="product_service_general_bed_charges">
             <field name="name">General Bed</field>
             <field name="list_price">200.0</field>
             <field name="standard_price">0.0</field>
@@ -31,7 +31,7 @@
             <field name="uuid">1041f233-9bfa-4488-bb4a-144823cc1149</field>
             <field name="type">service</field>
         </record>
-        <record model="product.product" id="product_service_bed_charges">
+        <record model="product.product" id="product_service_icu_bed_charges">
             <field name="name">ICU Bed</field>
             <field name="list_price">500.0</field>
             <field name="standard_price">0.0</field>
