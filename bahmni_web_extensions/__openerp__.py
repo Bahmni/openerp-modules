@@ -16,6 +16,7 @@
         'static/src/js/fixingErrorInCancelEdition.js',
         'static/src/js/addingAccessKeyToOne2ManyList.js',
         'static/src/js/accesskeyHighlight.js',
+        'static/src/js/addSerialNumberToListView.js',
     ],
     'auto_install': False,
     'application': True,
