@@ -255,7 +255,7 @@ class sale_order(osv.osv):
             for line in order.order_line:
                 sale_order_item = {'product_uuid': line.product_id.uuid, 'dosage': line.product_dosage, 'number_of_days': line.product_number_of_days, 'quantity': line.product_uos_qty, 'unit': line.product_uom.name}
                 sale_order_items.append(sale_order_item)
-            data = {'id': order.id, 'sale_order_items': sale_order_items, 'external_id': order.external_id, 'order_date': order.date_order, 'customer_id': order.partner_id.ref }
+            data = {'id': order.id, 'sale_order_items': sale_order_items, 'external_id': order.external_id or None, 'order_date': order.date_order, 'customer_id': order.partner_id.ref }
             event_publisher_obj.publish_event(cr, uid, 'sale_order', data)
 
     def action_view_invoice(self, cr, uid, ids, context=None):
