@@ -216,6 +216,9 @@ class sale_order(osv.osv):
 
             dummy, view_id = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'account_voucher', 'view_vendor_receipt_form')
             inv = invoice.browse(cr, uid, invoice_ids[0], context=context)
+
+            self.publish_sale_order(cr, uid, ids, context)
+
             return {
                 'name':_("Pay Invoice"),
                 'view_mode': 'form',
@@ -245,6 +248,15 @@ class sale_order(osv.osv):
                 }
 
   #  return self.action_view_invoice(cr,uid,ids,context=context)
+    def publish_sale_order(self, cr, uid, ids, context=None):
+        event_publisher_obj = self.pool.get('event.publisher')
+        for order in self.browse(cr, uid, ids, context=context):
+            sale_order_items = []
+            for line in order.order_line:
+                sale_order_item = {'product_uuid': line.product_id.uuid, 'dosage': line.product_dosage, 'number_of_days': line.product_number_of_days, 'quantity': line.product_uos_qty, 'unit': line.product_uom.name}
+                sale_order_items.append(sale_order_item)
+            data = {'id': order.id, 'sale_order_items': sale_order_items, 'external_id': order.external_id, 'order_date': order.date_order, 'customer_id': order.partner_id.ref }
+            event_publisher_obj.publish_event(cr, uid, 'sale_order', data)
 
     def action_view_invoice(self, cr, uid, ids, context=None):
         '''

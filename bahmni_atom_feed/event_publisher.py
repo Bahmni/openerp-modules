@@ -12,11 +12,11 @@ class atom_event_publisher(osv.osv):
     _name = 'event.publisher'
     _auto = False
 
-    def publish_event(self,cr,uid,obj):
+    def publish_event(self, cr, uid, category, obj):
         serializedContents = json.dumps(obj)
         event_vals = {
             'uuid': uuid.uuid4(),
-            'category': 'product',
+            'category': category,
             'title': obj.get('id','Null'),
             'timestamp': datetime.now(),
             'uri': None,

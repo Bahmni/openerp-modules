@@ -255,7 +255,7 @@ class product_product(osv.osv):
             data['status'] = 'deleted'
 
         event_publisher_obj = self.pool.get('event.publisher')
-        event_publisher_obj.publish_event(cr, uid, data)
+        event_publisher_obj.publish_event(cr, uid, 'product', data)
 
     _columns = {
         'uuid': fields.char('UUID', size=64),

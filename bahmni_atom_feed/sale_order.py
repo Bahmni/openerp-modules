@@ -10,7 +10,7 @@ class sale_order(osv.osv):
         'external_id'   : fields.char('external_id', size=64),
         'group_id'      : fields.many2one('visit', 'Group Reference', required=False, select=True, readonly=True),
         'group_description':fields.char('Visit', 15),
-        }
+    }
 
 class sale_order_group(osv.osv):
     _name = "visit"
@@ -32,4 +32,4 @@ class sale_order_line(osv.osv):
 
     _columns = {
         'external_id': fields.char('external_id', size=64),
-        }
+    }
