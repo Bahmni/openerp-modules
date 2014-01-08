@@ -52,6 +52,11 @@ class account_voucher(osv.osv):
 
         return res
 
+    def _date_string(self, cr, uid, ids, name, args, context=None):
+        res = {}
+        for voucher in self.browse(cr, uid, ids, context=context):
+            res[voucher.id]=voucher.date
+        return res
 
     def _get_balance_amount(self, cr, uid, ids, name, args, context=None):
         if not ids: return {}
@@ -219,6 +224,7 @@ class account_voucher(osv.osv):
         'create_uid':  fields.many2one('res.users', 'Cashier', readonly=True),
         'invoice_id':fields.many2one('account.invoice', 'Invoice'),
         'bill_amount':fields.function(_calculate_balances, digits_compute=dp.get_precision('Account'), string='Current Bill Amount', multi='all'),
+        'date_string':fields.function(_date_string,string='Date',type='char',store=True),
 
         }
     _defaults = {
