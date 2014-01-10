@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <report
+            auto="False"
+            id="purchase_order_ext"
+            model="purchase.order"
+            name="purchase.purchase_order_ext"
+            rml="bahmni_purchase_extension/report/purchase_order_ext.rml"
+            string="Purchase Order"
+            />
+    </data>
+</openerp>

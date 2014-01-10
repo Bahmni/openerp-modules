@@ -7,7 +7,7 @@
 	"summary": "Purchase flow Enhancements",
     "description": """
     """,
-    'data': ['purchase_order_view_enhancements.xml'],
+    'data': ['purchase_order_view_enhancements.xml', 'order_report.xml'],
     'demo': [],
     'auto_install': False,
     'application': True,
