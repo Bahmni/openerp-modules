@@ -1,12 +1,42 @@
 import openerp
+import re
 from openerp import SUPERUSER_ID
 from openerp import pooler, tools
 from openerp.osv import osv, fields
 from openerp.tools.translate import _
 
+import logging
+
+_logger = logging.getLogger(__name__)
+
 class product_product(osv.osv):
     _name = "product.product"
     _inherit = "product.product"
+
+    def name_search(self, cr, user, name='', args=None, operator='=ilike', context=None, limit=10):
+        if not args:
+            args = []
+        if name:
+            name_starts_with = "%s%%" % name
+            ids = list()
+            ids.extend(self.search(cr, user, [('default_code','=ilike', name_starts_with)]+ args, order="default_code", limit=limit, context=context))
+            if len(ids) < limit:
+                args = args + [('id', 'not in', ids)]
+                ids.extend(self.search(cr, user, args + [('name', '=ilike', name_starts_with)], order="name", limit=limit, context=context))
+            if len(ids) < limit:
+                args = args + [('id', 'not in', ids)]
+                ids.extend(self.search(cr, user, args + [('default_code', 'ilike', name)], order="default_code", limit=limit, context=context))
+            if len(ids) < limit:
+                args = args + [('id', 'not in', ids)]
+                ids.extend(self.search(cr, user, args + [('name', 'ilike', name)], order="name", limit=limit, context=context))
+            if not ids:
+                ptrn = re.compile('(\[(.*?)\])')
+                res = ptrn.search(name)
+                if res:
+                    ids = self.search(cr, user, [('default_code','=', res.group(2))] + args, limit=limit, context=context)
+        else:
+            ids = self.search(cr, user, args, limit=limit, context=context)
+        return self.name_get(cr, user, ids, context=context)
 
     def name_get(self, cr, user, ids, context=None):
 
