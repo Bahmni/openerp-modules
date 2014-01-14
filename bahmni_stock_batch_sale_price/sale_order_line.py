@@ -159,7 +159,21 @@ class sale_order_line(osv.osv):
                 'title': _('Configuration Error!'),
                 'message' : warning_msgs
             }
-        return {'value': result, 'domain': domain, 'warning': warning}
+
+        res = {'value': result, 'domain': domain, 'warning': warning}
+        # Code extracted From sale_stock.py
+        if not product:
+            res['value'].update({'product_packaging': False})
+            return res
+
+        #update of result obtained in super function
+        res_packing = self.product_packaging_change(cr, uid, ids, pricelist, product, qty, uom, partner_id, packaging, context=context)
+        res['value'].update(res_packing.get('value', {}))
+        warning_msgs = res_packing.get('warning') and res_packing['warning']['message'] or ''
+        res['value']['delay'] = (product_obj.sale_delay or 0.0)
+        res['value']['type'] = product_obj.procure_method
+
+        return res
 
     def onchange_product_dosage(self, cr, uid, ids, product_dosage, product_number_of_days, context=None):
         qty = product_dosage*product_number_of_days
