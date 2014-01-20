@@ -17,6 +17,7 @@
         'static/src/js/addingAccessKeyToOne2ManyList.js',
         'static/src/js/accesskeyHighlight.js',
         'static/src/js/addSerialNumberToListView.js',
+        'static/src/js/addContextOnExport.js',
     ],
     'auto_install': False,
     'application': True,
