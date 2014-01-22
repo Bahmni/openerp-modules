@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="bahmni_dhis2_view_stock_location_product" model="ir.ui.view">
+            <field name="name">Export To DHIS2</field>
+            <field name="model">stock.location.product.dhis2</field>
+            <field name="arch" type="xml">
+                <form string="View Stock of Products" version="7.0">
+                    <field name="state" invisible="1"/>
+                    <field name="name" invisible="1"/>
+                    <div states="choose">
+                        <group>
+                            <group>
+                                <field name="month"/>
+                            </group>
+                            <group>
+                                <field name="year"/>
+                            </group>
+                        </group>
+                        <footer states="choose">
+                            <button name="action_generate_csv" string="Generate CSV" type="object" class="oe_highlight"/>
+                            or
+                            <button string="Cancel" class="oe_link" special="cancel" />
+                        </footer>
+                    </div>
+                    <div states="get">
+                        <h2>Click Link below to download file</h2>
+                        <field name="data" readonly="1" filename="name"/>
+                        <footer states="get">
+                            <button string="Close" class="oe_highlight" special="cancel" />
+                        </footer>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+
+        <act_window name="Export To DHIS2"
+            res_model="stock.location.product.dhis2"
+            src_model="res.company"
+            view_mode="form"
+            target="new"
+            key2="client_action_multi"
+            id="action_bahmni_dhis2_view_stock_location_product"/>
+    </data>
+</openerp>

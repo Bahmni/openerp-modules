@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<openerp>
+    <data>
+        <record id="view_product_form_add_dhis2_code" model="ir.ui.view">
+            <field name="name">product.product.form</field>
+            <field name="model">product.product</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="/form/sheet//field[@name='categ_id']/.." position="after" >
+                    <label for="dhis2_code" class="oe_edit_only"/>
+                    <h2><field name="dhis2_code" /></h2>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_product_tree_add_dhis2_code" model="ir.ui.view">
+            <field name="name">product.product.tree</field>
+            <field name="model">product.product</field>
+            <field name="type">tree</field>
+            <field name="inherit_id" ref="product.product_product_tree_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="/tree//field[@name='name']" position="after" >
+                    <field name="dhis2_code" />
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>
