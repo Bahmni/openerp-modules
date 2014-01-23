@@ -88,7 +88,7 @@
                 </xpath>
                 <xpath expr="/tree[@string='Stock Moves']//field[@name='prodlot_id']" position="replace">
                     <field name="prodlot_id"
-                        context="{'location_id': parent.location_id, 'show_future_forcast': True}"
+                        context="{'location_id': parent.location_id, 'show_future_forcast': True, 'only_available_batch': True}"
                         groups="stock.group_production_lot"
                         on_change="onchange_lot_id(prodlot_id, product_qty, location_id, product_id, product_uom, context)"
                         domain="[('product_id', '=', product_id)]"/>

@@ -57,6 +57,27 @@ class stock_production_lot(osv.osv):
             res.append((record.id, name))
         return res
 
+    def name_search(self, cr, uid, name, args=None, operator='ilike', context=None, limit=100):
+        args = args or []
+        ids = []
+        if(context.get('only_available_batch', False)):
+            batch_stock_query = 'select prodlot_id from batch_stock_future_forecast where qty > 0'
+            for column,operator,value in args:
+                if(column == "product_id"):
+                    batch_stock_query += " and product_id = %s" % value
+            if context.get('location_id', False):
+                batch_stock_query += " and location_id = %s" % context['location_id']
+            cr.execute(batch_stock_query)
+            args += [('id', 'in', [row[0] for row in cr.fetchall()])]
+
+        if name:
+            ids = self.search(cr, uid, [('prefix', '=', name)] + args, limit=limit, context=context)
+            if not ids:
+                ids = self.search(cr, uid, [('name', 'ilike', name)] + args, limit=limit, context=context)
+        else:
+            ids = self.search(cr, uid, args, limit=limit, context=context)
+        return self.name_get(cr, uid, ids, context)
+
     _columns = {
         'sale_price':fields.float('Sale Price',digits=(4,2)),
         'mrp':fields.float('MRP',digits=(4,2)),
