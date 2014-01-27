@@ -22,8 +22,8 @@ openerp.bahmni_web_extensions.addContextOnExport = function(instance) {
                     model: this.dataset.model,
                     fields: exported_fields,
                     ids: this.dataset.ids,
-                    domain: this.dataset.domain,
-                    context: this.dataset.context,
+                    domain: this.dataset._model._domain,
+                    context: this.dataset._model._context,
                     import_compat: Boolean(
                         this.$el.find("#import_compat").val())
                 })},
