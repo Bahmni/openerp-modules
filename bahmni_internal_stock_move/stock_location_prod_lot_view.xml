@@ -13,6 +13,7 @@
                     <field name="life_date"/>
                     <field name="location_id"/>
                     <field name="qty" />
+                    <field name="unit_id" />
                 </tree>
             </field>
         </record>
