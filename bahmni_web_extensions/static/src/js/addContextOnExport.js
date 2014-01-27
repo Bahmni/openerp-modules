@@ -1,5 +1,10 @@
 openerp.bahmni_web_extensions.addContextOnExport = function(instance) {
     instance.web.DataExport.include({
+        init: function(parent, dataset) {
+            this._super(parent, dataset);
+            this.selectedIds = parent.groups && parent.groups.get_selection().ids || [];
+        },
+
         on_click_export_data: function() {
             var self = this;
             var exported_fields = this.$el.find('#fields_list option').map(function () {
@@ -21,7 +26,7 @@ openerp.bahmni_web_extensions.addContextOnExport = function(instance) {
                 data: {data: JSON.stringify({
                     model: this.dataset.model,
                     fields: exported_fields,
-                    ids: this.dataset.ids,
+                    ids: this.selectedIds,
                     domain: this.dataset._model._domain,
                     context: this.dataset._model._context,
                     import_compat: Boolean(
