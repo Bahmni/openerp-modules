@@ -149,6 +149,8 @@ class atom_event_worker(osv.osv):
             self._create_or_update_customer( cr, patient_ref, uid, vals,context)
         if(category == "create.sale.order"):
             sale_order  = self._create_orders(cr,uid,vals,context)
+        if(category == "create.lab.test"):
+            self.pool.get('lab.test.service').create_or_update_labtest(cr,uid,vals,context)
         self._create_or_update_marker(cr, uid, vals)
         return {'success': True}
 

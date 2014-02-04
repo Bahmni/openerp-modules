@@ -1,1 +1,1 @@
-import event_publisher,atom_feed_client,sale_order
+import event_publisher,atom_feed_client,sale_order,lab_test_service,product_category,product_uom
