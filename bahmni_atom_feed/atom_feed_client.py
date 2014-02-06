@@ -54,10 +54,15 @@ class atom_event_worker(osv.osv):
     def _update_sale_order(self, context, cr, uid, cus_id, name, external_id,shop_id, uom_obj,order_id,orders):
         prod_order_Map ={}
         group_prod_ids = []
+        deleted_prod_ids =[]
+
         for order in orders:
-            group_prod_ids = group_prod_ids + order['productIds']
-            for prodId in order['productIds']:
-                prod_order_Map[prodId] = order.get('id')
+            if(order.voided):
+                deleted_prod_ids + order['productIds']
+            else:
+                group_prod_ids = group_prod_ids + order['productIds']
+                for prodId in order['productIds']:
+                    prod_order_Map[prodId] = order.get('id')
 
         sale_order = self.pool.get('sale.order').browse(cr,uid,order_id)
         if(sale_order.state != 'draft'):
@@ -69,7 +74,8 @@ class atom_event_worker(osv.osv):
             if prod_obj.uuid in group_prod_ids:
                 group_prod_ids.remove(prod_obj.uuid)
             else :
-                self.pool.get('sale.order.line').unlink(cr,uid,ids)
+                if prod_obj.uuid in deleted_prod_ids:
+                    self.pool.get('sale.order.line').unlink(cr,uid,ids)
 
         for prod_id in group_prod_ids:
             self._create_sale_orderline(cr,uid,name, prod_id, sale_order.id, uom_obj,prod_order_Map[prod_id],context)
