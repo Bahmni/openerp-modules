@@ -146,6 +146,8 @@ class atom_event_worker(osv.osv):
         else:
             self.pool.get('res.partner').create(cr, uid, customer, context=context)
 
+
+
     def process_event(self, cr, uid, vals,context=None):
         _logger.info("vals")
         _logger.info(vals)
@@ -157,6 +159,15 @@ class atom_event_worker(osv.osv):
             sale_order  = self._create_orders(cr,uid,vals,context)
         if(category == "create.lab.test"):
             self.pool.get('lab.test.service').create_or_update_labtest(cr,uid,vals,context)
+        if(category == "create.drug"):
+            self.pool.get('drug.service').create_or_update_drug(cr,uid,vals,context)
+        if(category == "create.drug.category"):
+            self.pool.get('drug.service').create_or_update_drug_category(cr,uid,vals,context)
+        if(category == "create.drug.uom"):
+            self.pool.get('product.uom.service').create_or_update_product_uom(cr,uid,vals,context)
+        if(category == "create.drug.uom.category"):
+            self.pool.get('product.uom.service').create_or_update_product_uom_category(cr,uid,vals,context)
+
         self._create_or_update_marker(cr, uid, vals)
         return {'success': True}
 

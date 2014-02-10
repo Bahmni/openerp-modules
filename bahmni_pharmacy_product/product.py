@@ -196,6 +196,69 @@ class product_product(osv.osv):
             ctx.update({'compute_child': False})
         return self.get_product_available(cr, uid, ids, context=ctx)
 
+
+    def unlink(self, cr, uid, ids, context=None):
+        for id in ids:
+            self.raise_event(cr, uid,{'isDeleted' : True}, id)
+        res = super(product_product, self).unlink(cr,uid,ids,context)
+        return res
+
+    def create(self, cr, uid, data, context=None):
+        if data.get("uuid") is None:
+            data['uuid'] = str(uuid.uuid4())
+
+        prod_id = super(product_product, self).create(cr, uid, data, context)
+
+        data_to_be_published = {
+            'uuid':data.get('uuid',''),
+            'name':data.get('name',''),
+            'list_price':data.get('list_price' ,0.0),
+            'standard_price':data.get('standard_price',0.0) ,
+            'life_time':data.get('life_time',None),
+            'drug':data.get('drug',''),
+            'default_code':data.get('default_code',''),
+            'manufacturer':data.get('manufacturer',''),
+            'description':data.get('description',False),
+            'category':data.get('category',''),
+            'categ_id':data.get('categ_id',''),
+            }
+        self.raise_event(cr, uid,data_to_be_published, prod_id)
+        return prod_id
+
+    def write(self, cr, uid, ids, vals, context=None):
+        status = super(product_product, self).write(cr, uid, ids, vals, context=context)
+        if (len(vals)==1) and (("message_follower_ids" in vals) or "image" in vals) :
+            return status
+        self.raise_event(cr, uid,vals, ids[0])
+        return status
+
+    def raise_event(self, cr,uid, data, prod_id):
+        data['id'] = prod_id
+        prod_obj = self.pool.get('product.product')
+        prod = prod_obj.browse(cr,uid,prod_id)
+
+#        if((data.get('uuid',None) == None) or (data.get('uuid',None) == False)):
+        data.pop('uuid',None)
+        if(prod.uuid == False or prod.uuid == None):
+            return
+        data['uuid'] = prod.uuid
+
+        description = data.get('description',False)
+        data.pop('description',None) if(description == False) else None
+
+        data.pop('categ_id',None)
+        data['category'] = prod.categ_id.name
+
+        data.pop('active', None)
+        data['status'] = 'active' if(prod.active) else 'inactive'
+
+        if(data.get('isDeleted',False)):
+            data.pop('isDeleted', None)
+            data['status'] = 'deleted'
+
+        event_publisher_obj = self.pool.get('event.publisher')
+        event_publisher_obj.publish_event(cr, uid, 'product', data)
+
     _columns = {
         'uuid': fields.char('UUID', size=64),
         'drug':fields.char('Drug Name', size=64),
