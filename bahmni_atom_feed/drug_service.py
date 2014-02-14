@@ -50,7 +50,7 @@ class drug_service(osv.osv):
             drug["uom_po_id"] = purchase_uom_from_db.get("id")
         if sale_uom_from_db and purchase_uom_from_db:
             cost_price = drug_from_feed.get("costPrice")
-            cost_price_in_sale_uom = cost_price * sale_uom_from_db.get("factor") / purchase_uom_from_db.get("factor")
+            cost_price_in_sale_uom = cost_price * purchase_uom_from_db.get("factor")/ sale_uom_from_db.get("factor")
             drug["standard_price"] = cost_price_in_sale_uom
 
         return drug
