@@ -2,6 +2,7 @@
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 import time
+import uuid
 
 from osv import fields, osv
 from tools.translate import _
