@@ -57,7 +57,7 @@ class atom_event_worker(osv.osv):
         deleted_prod_ids =[]
 
         for order in orders:
-            if(order.voided):
+            if(order["voided"]):
                 deleted_prod_ids + order['productIds']
             else:
                 group_prod_ids = group_prod_ids + order['productIds']
