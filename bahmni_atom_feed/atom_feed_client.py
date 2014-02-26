@@ -54,11 +54,11 @@ class atom_event_worker(osv.osv):
     def _update_sale_order(self, context, cr, uid, cus_id, name, external_id,shop_id, uom_obj,order_id,orders):
         prod_order_Map ={}
         group_prod_ids = []
-        deleted_prod_ids =[]
+        deleted_prod_ids = []
 
         for order in orders:
             if(order["voided"]):
-                deleted_prod_ids + order['productIds']
+                deleted_prod_ids += order['productIds']
             else:
                 group_prod_ids = group_prod_ids + order['productIds']
                 for prodId in order['productIds']:
