@@ -16,7 +16,7 @@ class drug_service(osv.osv):
     def create_or_update_drug(self, cr, uid, vals, context=None):
         drug = json.loads(vals.get("drug"))
 
-        object_ids = self.pool.get("product.product").search(cr, uid, [('uuid', '=', drug.get("id"))])
+        object_ids = self.pool.get("product.product").search(cr, uid, [('uuid', '=', drug.get("id"))],context={"active_test":False})
         updated_drug = self._fill_drug_object(cr,uid,drug)
         if object_ids :
             prod_id = self.pool.get('product.product').write(cr, uid,object_ids[0:1] , updated_drug, context)

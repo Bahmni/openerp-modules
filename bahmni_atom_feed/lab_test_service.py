@@ -15,7 +15,7 @@ class lab_test_service(osv.osv):
 
     def create_or_update_labtest(self, cr, uid, vals, context=None):
         lab_test_from_feed = json.loads(vals.get("lab_test"))
-        lab_test_ids = self.pool.get('product.product').search(cr, uid, [('uuid', '=', lab_test_from_feed.get("id"))])
+        lab_test_ids = self.pool.get('product.product').search(cr, uid, [('uuid', '=', lab_test_from_feed.get("id"))],context={"active_test":False})
         category_name = lab_test_from_feed.get("category")
         category_ids = self.pool.get('product.category').search(cr, uid, [('name', '=', category_name)])
         category_hierarchy = ["Lab", "Services", "All Products"]

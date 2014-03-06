@@ -51,7 +51,7 @@ class product_uom_service(osv.osv):
 
     def create_or_update_product_uom(self,cr, uid, vals, context=None):
         product_uom = json.loads(vals.get("product_uom"))
-        object_ids = self.pool.get("product.uom").search(cr, uid, [('uuid', '=', product_uom.get("id"))])
+        object_ids = self.pool.get("product.uom").search(cr, uid, [('uuid', '=', product_uom.get("id"))],context={"active_test":False})
         uom = self._fill_product_uom(cr, uid, product_uom)
 
         if object_ids:
@@ -101,31 +101,3 @@ class product_uom_service(osv.osv):
         product_uom["uom_type"] = uom_type
         return product_uom
 
-    # def _get_object_by_uuid(self, cr, uid, object_type, uuid):
-    #     object_ids = self.pool.get(object_type).search(cr, uid, [('uuid', '=', uuid)])
-    #     return self._get_first_obj_for_object_ids(cr, uid, object_ids, object_type)
-    #
-    #
-    # def _get_object_by_name_or_uuid(self, cr, uid, object_type, name, uuid):
-    #     if uuid is not None:
-    #         object_by_uuid = self._get_object_by_uuid(cr, uid, object_type, uuid)
-    #         if object_by_uuid is not None: return object_by_uuid
-    #
-    #     object_ids = self.pool.get(object_type).search(cr, uid, [('name', '=', name)])
-    #     return self._get_first_obj_for_object_ids(cr, uid, object_ids, object_type)
-
-
-    # def _get_first_obj_for_object_ids(self, cr, uid, object_ids, object_type):
-    #     if object_ids is not None and len(object_ids) > 0:
-    #         obj = self.pool.get(object_type).read(cr, uid, object_ids[0])
-    #       #  scalar_obj = obj[0] if obj and len(obj) > 0 else obj
-    #         if obj is not None:
-    #             return {"id": object_ids[0], "value": obj}
-    #     return None
-
-    # def _get_first_obj_for_object_ids(self, cr, uid, object_ids, object_type):
-    #     if object_ids is not None and len(object_ids) > 0:
-    #         obj = self.pool.get(object_type).read(cr, uid, object_ids[0])
-    #         if obj is not None and len(obj)!= 0:
-    #             return obj
-    #     return None
