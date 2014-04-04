@@ -414,13 +414,13 @@ class sale_order(osv.osv):
             'sale.order.line': (_get_order, ['price_unit', 'tax_id', 'discount', 'product_uom_qty'], 10),
             },
         multi='sums', help="The calc disc amount."),
-    'calculated_discount':fields.function(_amount_all, fnct_inv=_get_calculated_discount, digits_compute=dp.get_precision('Account'), string='Discount Amount',
+    'calculated_discount':fields.function(_amount_all, fnct_inv=_get_calculated_discount, digits_compute=dp.get_precision('Account'), string='Discount Amount', readonly=True, states={'draft':[('readonly',False)]},
         store={
             'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line','discount_percentage','discount', 'calculated_discount'], 10),
             'sale.order.line': (_get_order, ['price_unit', 'tax_id', 'discount', 'product_uom_qty'], 10),
             },
         multi='sums', help="The calc disc amount."),
-    'discount_acc_id': fields.many2one('account.account', 'Discount Account Head', domain=[('parent_id.name', '=', 'Discounts')]),
+    'discount_acc_id': fields.many2one('account.account', 'Discount Account Head', domain=[('parent_id.name', '=', 'Discounts')], readonly=True, states={'draft':[('readonly',False)]}),
     'amount_untaxed': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='New Charges',
         store={
             'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line','discount_percentage','discount', 'calculated_discount'], 10),
