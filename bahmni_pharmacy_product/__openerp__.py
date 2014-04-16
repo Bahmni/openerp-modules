@@ -1,7 +1,7 @@
 {
     "name": "Bhamni Pharmacy Product",
     "version": "6.0",
-    "depends": ["base","product", "stock","bahmni_atom_feed"],
+    "depends": ["base","product", "stock","bahmni_atom_feed", "purchase"],
     "author": "ThoughtWorks tecnologies Pvt. Ltd.",
     "category": "Product",
 	"summary": "Pharmacy Product",
