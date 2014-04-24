@@ -25,6 +25,7 @@
 
         <div id="printBill">
             <div style="margin-top: 10px">
+                <div><img width="50" height="50" t-att-src='"data:image/jpeg;base64, " + company.logo'/></div>
                 <div style="width: 50%; float: left">
                     <div><t t-esc="company.name"/></div>
                     <div><t t-esc="company.address.city"/></div>

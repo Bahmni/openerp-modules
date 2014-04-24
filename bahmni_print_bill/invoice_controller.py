@@ -52,6 +52,7 @@ class InvoiceController(openerp.addons.web.http.Controller):
                     'name': company.name,
                     'phone': company.phone,
                     'vat': company.vat,
+                    'logo': str(company.logo_web),
                     'address': {
                         'street': str(company.street) + ", " + str(company.street2),
                         'city': company.city,
