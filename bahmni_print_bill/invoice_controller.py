@@ -26,8 +26,9 @@ class InvoiceController(openerp.addons.web.http.Controller):
         with registry.cursor() as cr:
             pool = pooler.get_pool(dbname)
             account_voucher_obj = registry.get('account.voucher')
+            company_obj = registry.get('res.company')
             voucher = account_voucher_obj.browse(cr, uid, voucher_id, context=context)
-
+            company = company_obj.browse(cr, uid, voucher.company_id.id, context=context)
             voucher_line_ids = sorted(voucher.line_ids, key=lambda v: v.id,reverse=True)
             invoice = None
             for voucher_line in voucher_line_ids:
@@ -47,6 +48,16 @@ class InvoiceController(openerp.addons.web.http.Controller):
                     'subtotal': invoice_line_item.price_subtotal,
                 })
             bill = {
+                'company': {
+                    'name': company.name,
+                    'phone': company.phone,
+                    'vat': company.vat,
+                    'address': {
+                        'street': str(company.street) + ", " + str(company.street2),
+                        'city': company.city,
+                        'zip': company.zip,
+                    }
+                },
                 'voucher_number': voucher.number,
                 'voucher_date': voucher.date,
                 'invoice_line_items': invoice_line_items,

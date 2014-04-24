@@ -26,9 +26,13 @@
         <div id="printBill">
             <div style="margin-top: 10px">
                 <div style="width: 50%; float: left">
-                    <div>Jan Swasthya Sahyog</div>
-                    <div>Ganiyari, Bilaspur (C.G) 495112</div>
-                    <div>Phone: 07753-244819</div>
+                    <div><t t-esc="company.name"/></div>
+                    <div><t t-esc="company.address.city"/></div>
+                    <div>PIN: <t t-esc="company.address.zip"/></div>
+                    <div>Phone: <t t-esc="company.phone"/></div>
+                </div>
+                <div style="width: 50%; float: right; text-align: right">
+                    <div><t t-esc="company.vat"/></div>
                 </div>
             </div>
 
