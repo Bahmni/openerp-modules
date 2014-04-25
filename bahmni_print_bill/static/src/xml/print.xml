@@ -27,12 +27,12 @@
             <div style="margin-top: 10px">
                 <div><img width="50" height="50" t-att-src='"data:image/jpeg;base64, " + company.logo'/></div>
                 <div style="width: 50%; float: left">
-                    <div><t t-esc="company.name"/></div>
-                    <div><t t-esc="company.address.city"/></div>
-                    <div>PIN: <t t-esc="company.address.zip"/></div>
-                    <div>Phone: <t t-esc="company.phone"/></div>
+                    <div t-if="company.name"><t t-esc="company.name"/></div>
+                    <div t-if="company.address.city"><t t-esc="company.address.city"/></div>
+                    <div t-if="company.address.zip">PIN: <t t-esc="company.address.zip"/></div>
+                    <div t-if="company.phone">Phone: <t t-esc="company.phone"/></div>
                 </div>
-                <div style="width: 50%; float: right; text-align: right">
+                <div style="width: 50%; float: right; text-align: right" t-if="company.vat">
                     <div><t t-esc="company.vat"/></div>
                 </div>
             </div>
