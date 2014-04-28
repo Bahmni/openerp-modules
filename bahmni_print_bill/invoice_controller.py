@@ -46,6 +46,7 @@ class InvoiceController(openerp.addons.web.http.Controller):
                     'unit_price': invoice_line_item.price_unit,
                     'quantity': invoice_line_item.quantity,
                     'subtotal': invoice_line_item.price_subtotal,
+                    'product_category': invoice_line_item.product_id.categ_id.name,
                 })
             bill = {
                 'company': {

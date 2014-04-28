@@ -11,27 +11,33 @@ openerp.bahmni_print_bill = function(instance) {
 
        start: function() {
             this._super.apply(this, arguments);
-            $('button#print-bill-button').click($.proxy(this.fetchAndPrint, this));  //link button to function
+            $('button#print-bill-button').click($.proxy(function() {this.fetchAndPrintBill("Bill")}, this));
+            $('button#print-summary-bill-button').click($.proxy(function() {this.fetchAndPrintBill("BillSummary")}, this));
         },
 
-        fetchAndPrint: function() {
+        fetch: function() {
+            return this.rpc('/invoice/bill', {voucher_id: this.parent.datarecord.id});
+        },
+
+        fetchAndPrintBill: function(billTemplate) {
             var self = this;
-            this.rpc('/invoice/bill', {voucher_id: this.parent.datarecord.id}).done(function(bill) {self.printReceipt(bill)})
+            this.fetch().done(function(bill) {
+                self.transform(bill);
+                self.printReceipt(bill, billTemplate);
+            });
         },
 
-        printReceipt: function(bill) {
-            this.transform(bill);
-            var $ht = $(QWeb.render("Bill", bill))[0];
+        printReceipt: function(bill, billTemplate) {
+            var $ht = $(QWeb.render(billTemplate, bill))[0];
             var hiddenFrame = $("#printBillFrame")[0]
-    
             var doc = hiddenFrame.contentWindow.document.open("text/html", "replace");
-
             doc.write($ht.innerHTML);
             doc.close();
             hiddenFrame.contentWindow.print();
 
             window.location = "/?ts=1370260915528#page=0&limit=80&view_type=list&model=sale.order&menu_id=296&action=373"
         },
+
         transform: function(bill) {
             bill.voucher_date = $.datepicker.formatDate('dd/mm/yy', new Date(bill.voucher_date));
             bill.new_charges = bill.new_charges.toFixed(2);
@@ -47,6 +53,14 @@ openerp.bahmni_print_bill = function(instance) {
                 invoice_line_item.quantity = invoice_line_item.quantity.toFixed(3);
                 invoice_line_item.subtotal = invoice_line_item.subtotal.toFixed(2);
             });
+
+            this.summarize(bill);
+        },
+
+        summarize: function(bill) {
+            bill.categories = Object.keys(_.groupBy(bill.invoice_line_items, function(item) {
+                return item.product_category;
+            })).join(", ");
         }
     });
 

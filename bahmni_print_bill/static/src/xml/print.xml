@@ -3,6 +3,7 @@
 <templates>
     <span t-name="print_button" t-attf-class="base" class="oe_web_example">
         <button name="print" type="object" class="oe_highlight" id="print-bill-button" accesskey="P">Print</button>
+        <button name="print" type="object" class="oe_highlight" id="print-summary-bill-button" accesskey="B">Summarized Bill</button>
         <iframe id="printBillFrame" style="display:none"/>
     </span>
 
@@ -25,14 +26,16 @@
 
         <div id="printBill">
             <div style="margin-top: 10px">
-                <div><img width="50" height="50" t-att-src='"data:image/jpeg;base64, " + company.logo'/></div>
-                <div style="width: 50%; float: left">
+                <div style="width: 45%; float: left">
                     <div t-if="company.name"><t t-esc="company.name"/></div>
                     <div t-if="company.address.city"><t t-esc="company.address.city"/></div>
                     <div t-if="company.address.zip">PIN: <t t-esc="company.address.zip"/></div>
                     <div t-if="company.phone">Phone: <t t-esc="company.phone"/></div>
                 </div>
-                <div style="width: 50%; float: right; text-align: right" t-if="company.vat">
+                <div style="width: 10%; float: left">
+                    <img width="100%" t-att-src='"data:image/jpeg;base64, " + company.logo'/>
+                </div>
+                <div style="width: 45%; float: right; text-align: right" t-if="company.vat">
                     <div><t t-esc="company.vat"/></div>
                 </div>
             </div>
@@ -111,6 +114,80 @@
                         <tr>
                             <td class="totalLabel">Outstanding Balance</td>
                             <td class="totalValue"><t t-esc="balance_amount"/></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div t-name="BillSummary" t-attf-class="base" class="oe_web_example">
+        <style>
+            @page { size: 18cm 22cm; margin: 1cm;}
+            table { font-family: Roman, San-Serif, Draft;font-size:10pt;}
+            #printBill { font-family: Roman, San-Serif, Draft;font-size:10pt; }
+            #lineItems { clear:both; width:100%; border-top: 1px dashed;}
+            #receipt_heading {width:100%;text-align:center;clear:both;margin-top:10px; font-weight: bold}
+            #cashier-initials {margin-top: 40px; font-size: 8pt;}
+            #message-bill {font-style: italic; margin-top: 10px}
+            table.bottom-border {border-bottom: 1px dashed;}
+            .totalLabel { width: 60%; text-align: right;}
+            .totalValue { width: 40%; text-align: right;}
+            .right { text-align: right;}
+
+            hr.dashed {border-top: 1px dashed #000; color: #fff; background-color: #fff; height: 1px; }
+        </style>
+
+        <div id="printBill">
+            <div style="margin-top: 10px">
+                <div style="width: 45%; float: left">
+                    <div t-if="company.name"><t t-esc="company.name"/></div>
+                    <div t-if="company.address.city"><t t-esc="company.address.city"/></div>
+                    <div t-if="company.address.zip">PIN: <t t-esc="company.address.zip"/></div>
+                    <div t-if="company.phone">Phone: <t t-esc="company.phone"/></div>
+                </div>
+                <div style="width: 10%; margin: auto">
+                    <img width="100%" t-att-src='"data:image/jpeg;base64, " + company.logo'/>
+                </div>
+                <div style="width: 45%; float: right; text-align: right" t-if="company.vat">
+                    <div><t t-esc="company.vat"/></div>
+                </div>
+            </div>
+
+            <div id="receipt_heading">R E C E I P T</div>
+
+            <div style="margin-top: 10px;">
+                <div style="width: 50%; float: left">
+                    <div>Name: <t t-esc="partner_name"/></div>
+                    <div>ID: <t t-esc="partner_ref"/></div>
+                </div>
+                <div style="width: 50%; float: right; text-align: right">
+                    <div>Date: <t t-esc="voucher_date"/></div>
+                    <div>Bill Number: <t t-esc="voucher_number"/></div>
+                </div>
+            </div>
+
+            <div style="clear:both; padding-top: 10px;"></div>
+
+            <table id="lineItems" class="bottom-border">
+                <tbody>
+                    <tr>
+                        <td>Charges Towards <b><t t-esc="categories"/></b></td>
+                        <td style="text-align: right"><t t-esc="net_amount"/></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div>
+                <div style="width: 40%; float: left; padding-top: 20px">
+                    <div t-if="cashier_initials" id="cashier-initials"><t t-esc="cashier_initials"/></div>
+                    <div id="message-bill">This is a computer generated receipt and does not require a signature.</div>
+                </div>
+
+                <div style="width:40%;float:right">
+                    <table class="bottom-border" style="width:100%">
+                        <tr>
+                            <td class="totalLabel">Net Amount</td>
+                            <td class="totalValue"><t t-esc="net_amount"/></td>
                         </tr>
                     </table>
                 </div>
