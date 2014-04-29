@@ -172,8 +172,8 @@
             <table id="lineItems" class="bottom-border">
                 <tbody>
                     <tr>
-                        <td>Charges Towards <b><t t-esc="categories"/></b></td>
-                        <td style="text-align: right"><t t-esc="net_amount"/></td>
+                        <td style="width:75%">Charges Towards <b><t t-esc="categories"/></b></td>
+                        <td style="text-align: right;width:25%"><t t-esc="net_amount"/></td>
                     </tr>
                 </tbody>
             </table>
