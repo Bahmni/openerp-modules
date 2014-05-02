@@ -64,7 +64,10 @@ class sale_order(osv.osv):
             res[order.id]['amount_untaxed'] = cur_obj.round(cr, uid, cur, val1)
             total_amount = res[order.id]['amount_untaxed'] + res[order.id]['amount_tax']
 
-            if order.discount_amount == 0.0:
+            if order.chargeable_amount > 0.0:
+                res[order.id]['calculated_discount'] = total_amount - order.chargeable_amount;
+                self._set_calculated_discount_head(cr, uid, order, res[order.id]['calculated_discount'], context=context)
+            elif order.discount_amount == 0.0:
                 res[order.id]['calculated_discount'] = total_amount * order.discount_percentage / 100
             else:
                 res[order.id]['calculated_discount'] = order.discount_amount
@@ -74,6 +77,18 @@ class sale_order(osv.osv):
             res[order.id]['amount_total'] = amount_total_before_round_off + round_off_amount
             self.write(cr, uid, order.id, {'discount_amount': res[order.id]['calculated_discount'], 'round_off': round_off_amount})
         return res
+
+    def _set_calculated_discount_head(self, cr, uid, order, calculated_discount, context=None):
+        calculated_discount_head = self.pool.get('account.account').search(cr, uid, [('name', '=', 'Discount')], context=context)[0]
+        calculated_overcharge_head = self.pool.get('account.account').search(cr, uid, [('name', '=', 'Overcharge')], context=context)[0]
+        if(not order.discount_acc_id 
+            or order.discount_acc_id.id == calculated_discount_head
+            or order.discount_acc_id.id == calculated_overcharge_head):
+
+            if(calculated_discount > 0.0):
+                self.write(cr, uid, order.id, {'discount_acc_id': calculated_discount_head})
+            else:
+                self.write(cr, uid, order.id, {'discount_acc_id': calculated_overcharge_head})
 
     def _round_off_amount_for_nearest_five(self, value):
         remainder = value % 5
@@ -406,24 +421,25 @@ class sale_order(osv.osv):
     _columns = {
     'date_order': fields.datetime('Date', required=True, readonly=True, select=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]}),
     'discount_percentage':fields.float('Discount %',digits_compute=dp.get_precision('Account'),readonly=True, states={'draft':[('readonly',False)]}),
+    'chargeable_amount':fields.float('Final Chargeable Amount',digits_compute=dp.get_precision('Account'),readonly=True, states={'draft':[('readonly',False)]}),
     'discount_amount':fields.float('Absolute Discount Amount',digits_compute=dp.get_precision('Account'),readonly=True, states={'draft':[('readonly',False)]}),
     'round_off':fields.float('Amount Round off',digits_compute=dp.get_precision('Account'),readonly=True, states={'draft':[('readonly',False)]}),
     'discount':fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string= 'Discount ',
         store={
-            'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line','discount_percentage','discount', 'calculated_discount'], 10),
+            'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line','discount_percentage', 'chargeable_amount', 'discount', 'calculated_discount'], 10),
             'sale.order.line': (_get_order, ['price_unit', 'tax_id', 'discount', 'product_uom_qty'], 10),
             },
         multi='sums', help="The calc disc amount."),
     'calculated_discount':fields.function(_amount_all, fnct_inv=_get_calculated_discount, digits_compute=dp.get_precision('Account'), string='Discount Amount', readonly=True, states={'draft':[('readonly',False)]},
         store={
-            'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line','discount_percentage','discount', 'calculated_discount'], 10),
+            'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line','discount_percentage', 'chargeable_amount','discount', 'calculated_discount'], 10),
             'sale.order.line': (_get_order, ['price_unit', 'tax_id', 'discount', 'product_uom_qty'], 10),
             },
         multi='sums', help="The calc disc amount."),
     'discount_acc_id': fields.many2one('account.account', 'Discount Account Head', domain=[('parent_id.name', '=', 'Discounts')], readonly=True, states={'draft':[('readonly',False)]}),
     'amount_untaxed': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='New Charges',
         store={
-            'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line','discount_percentage','discount', 'calculated_discount'], 10),
+            'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line','discount_percentage', 'chargeable_amount','discount', 'calculated_discount'], 10),
             'sale.order.line': (_get_order, ['price_unit', 'tax_id', 'discount', 'product_uom_qty'], 10),
             },
         multi='sums', help="The amount without tax.", track_visibility='always'),
@@ -435,7 +451,7 @@ class sale_order(osv.osv):
         multi='sums', help="The tax amount."),
     'amount_total': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Net Amount',
         store={
-            'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line','discount_percentage','discount', 'calculated_discount'], 10),
+            'sale.order': (lambda self, cr, uid, ids, c={}: ids, ['order_line','discount_percentage', 'chargeable_amount','discount', 'calculated_discount'], 10),
             'sale.order.line': (_get_order, ['price_unit', 'tax_id', 'discount', 'product_uom_qty'], 10),
             },
         multi='sums', help="The total amount."),

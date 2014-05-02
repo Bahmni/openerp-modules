@@ -1,1 +1,1 @@
-import partner,invoice,sale_order,account,total_receivables
+import res_config,partner,invoice,sale_order,account,total_receivables

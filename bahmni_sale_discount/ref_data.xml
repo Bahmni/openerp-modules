@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="0">
+
+        <record id="group_final_so_charge" model="res.groups">
+            <field name="name">Enable Adding final SaleOrder Charge</field>
+            <field name="category_id" ref="base.module_category_hidden"/>
+        </record>
+
+        <record model="account.account" id="account_discounts_calculated_discounts">
+            <field name="code">D01</field>
+            <field name="name">Discount</field>
+            <field name="parent_id" search="[('name', '=', 'Discounts')]" model="account.account"/>
+            <field name="type">other</field>
+            <field name="user_type" ref="account.data_account_type_expense"/>
+        </record>
+
+        <record model="account.account" id="account_discounts_calculated_overcharge">
+            <field name="code">D02</field>
+            <field name="name">Overcharge</field>
+            <field name="parent_id" search="[('name', '=', 'Discounts')]" model="account.account"/>
+            <field name="type">other</field>
+            <field name="user_type" ref="account.data_account_type_expense"/>
+        </record>
+
+    </data>
+</openerp>

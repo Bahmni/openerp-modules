@@ -7,7 +7,12 @@
 	"summary": "Sale Discount ",
     "description": """
     """,
-    'data': ['sale_discount_price_view.xml','invoice_discount_view.xml','quotation_view.xml'],
+    'data': [
+        'ref_data.xml',
+        'res_config_view.xml',
+        'sale_discount_price_view.xml',
+        'invoice_discount_view.xml',
+        'quotation_view.xml'],
     'demo': [],
     'auto_install': False,
     'application': True,
