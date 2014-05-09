@@ -15,8 +15,9 @@ class atom_event_worker(osv.osv):
     def _create_customer(self, vals):
         ref = vals.get("ref")
         name = vals.get("name")
+        local_name = vals.get("local_name")
         village = vals.get("village")
-        customer = {'ref': ref, 'name': name, 'village': village}
+        customer = {'ref': ref, 'name': name, 'local_name': local_name, 'village': village}
         return customer
 
     def _create_sale_orderline(self,cr,uid,name, product_id, so,  uom_obj,external_order_line_id,context):
