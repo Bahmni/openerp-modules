@@ -216,7 +216,7 @@ class account_invoice(osv.osv):
             move_obj.post(cr, uid, [move_id], context=ctx)
 
             # jss debit invoice discount against respective account head
-            if inv.discount > 0 and inv.discount_acc_id :
+            if inv.discount_acc_id :
                 self._update_discount_head(cr,uid, inv, inv.discount,period_id, context=context)
 
         self._log_event(cr, uid, ids)
@@ -227,10 +227,12 @@ class account_invoice(osv.osv):
             context = {}
         #disc_account = self.pool.get('account.account')
         amount_currency = 0.0
+        debit = discount if(discount >= 0.0) else 0.0
+        credit = -discount if(discount < 0.0) else 0.0
         date = time.strftime('%Y-%m-%d')
         l1 = {
-                'debit': discount,
-                'credit': 0,
+                'debit': debit,
+                'credit': credit,
                 'account_id': invoice.discount_acc_id.id,
                 'partner_id': invoice.partner_id.id,
                 'ref':invoice.reference,
