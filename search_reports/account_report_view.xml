@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="view_account_report_tree" model="ir.ui.view">
+            <field name="name">account.report.tree</field>
+            <field name="model">account.report</field>
+            <field eval="7" name="priority"/>
+            <field name="arch" type="xml">
+                <tree  string="Accounts Report">
+                    <field name="date"/>
+                    <field name="account_id"/>
+                    <field name="amount_received" sum="Total Collections"/>
+                    <field name="actual_amount" sum="Total Expense"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_account_report_filter" model="ir.ui.view">
+            <field name="name">account.report.filter</field>
+            <field name="model">account.report</field>
+            <field name="arch" type="xml">
+                <search string="Search Accounts Report">
+                    <field name="account_id"/>
+                    
+                    <filter string="Last 30 Days" name="filter_month"
+                        domain="[
+                            ['date', '&lt;=', context_today().strftime('%%Y-%%m-%%d')],
+                            ['date', '&gt;=', (context_today() - datetime.timedelta(30)).strftime('%%Y-%%m-%%d')]
+                        ]" />
+
+                    <filter string="Today" name="filter_today" 
+                        domain="[('date', '=', context_today().strftime('%%Y-%%m-%%d'))]"/>
+
+                    <group string="Group By...">
+                        <filter string="Account" name="groupby_account_head" 
+                            icon="terp-go-month" domain="[]" context="{'group_by':'account_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_search_account_reports" model="ir.actions.act_window">
+            <field name="name">SEARCH Accounts Reports</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">account.report</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_account_report_tree"/>
+            <field name="search_view_id" ref="view_account_report_filter"/>
+            <field name="context">{}</field>
+        </record>
+
+        <menuitem action="action_search_account_reports"
+            id="menu_action_search_account_reports"
+            parent="account.menu_finance_generic_reporting" groups="account.group_account_user"
+            sequence="3"/>
+    </data>
+</openerp>
