@@ -7,7 +7,7 @@
     "summary": "Reports",
     "description": """
     """,
-    'data': ['account_report_view.xml'],
+    'data': ['account_report_view.xml', 'account_count_report_view.xml'],
     'demo': [],
     'auto_install': False,
     'application': True,

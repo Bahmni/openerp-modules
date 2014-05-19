@@ -36,3 +36,34 @@ class account_report(osv.osv):
         raise osv.except_osv(_('Error!'), _('You cannot delete any record!'))
 
 account_report()
+
+
+class account_count_report(osv.osv):
+    _name = "account.count.report"
+    _description = "Count of account heads in sale orders over a period"
+    _auto = False
+    _columns = {
+        'count': fields.integer('Count', readonly=True),
+        'date': fields.date('Date', readonly=True),
+        'account_id': fields.many2one('account.account', 'Account Head', readonly=True, select=True),
+    }
+
+    def init(self, cr):
+        drop_view_if_exists(cr, 'account_count_report')
+        cr.execute("""
+            create or replace view account_count_report as (
+                select
+                    concat(ail.account_id, '_', ai.date_invoice) as id,
+                    ai.date_invoice as date,
+                    ail.account_id as account_id,
+                    count(*) as count
+                from account_invoice ai, account_invoice_line ail
+                where
+                    ail.invoice_id = ai.id
+                group by ail.account_id, ai.date_invoice
+            )""")
+
+    def unlink(self, cr, uid, ids, context=None):
+        raise osv.except_osv(_('Error!'), _('You cannot delete any record!'))
+
+account_count_report()
