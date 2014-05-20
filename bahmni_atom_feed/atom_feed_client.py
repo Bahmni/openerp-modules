@@ -144,8 +144,22 @@ class atom_event_worker(osv.osv):
         existing_customer_ids = self.pool.get('res.partner').search(cr, uid, [('ref', '=', patient_ref)])
         if len(existing_customer_ids) > 0:
             self.pool.get('res.partner').write(cr, uid, existing_customer_ids[0], customer, context=context)
+            self._create_or_update_person_attributes(cr, uid, existing_customer_ids[0], vals, context=context)
         else:
-            self.pool.get('res.partner').create(cr, uid, customer, context=context)
+            cust_id = self.pool.get('res.partner').create(cr, uid, customer, context=context)
+            self._create_or_update_person_attributes(cr, uid, cust_id, vals, context=context)
+
+
+    def _create_or_update_person_attributes(self, cr, uid, cust_id, vals, context=None):
+        attributes = json.loads(vals.get("attributes", "{}"))
+        for key in attributes:
+            attribute_id = self.pool.get('res.partner.attributes').search(cr, uid, [('name', '=', key), ('partner_id' , '=', cust_id)]) 
+            column_dict = {'name': key, 'value': attributes[key], 'partner_id': cust_id}
+            if len(attribute_id) > 0:
+                self.pool.get('res.partner.attributes').write(cr, uid, attribute_id, column_dict, context=context)    
+            else:
+                self.pool.get('res.partner.attributes').create(cr, uid, column_dict, context=context)    
+                
 
 
 
