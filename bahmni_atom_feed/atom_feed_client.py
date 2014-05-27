@@ -145,9 +145,11 @@ class atom_event_worker(osv.osv):
         if len(existing_customer_ids) > 0:
             self.pool.get('res.partner').write(cr, uid, existing_customer_ids[0], customer, context=context)
             self._create_or_update_person_attributes(cr, uid, existing_customer_ids[0], vals, context=context)
+            self._create_or_update_person_address(cr, uid, existing_customer_ids[0], vals, context=context)
         else:
             cust_id = self.pool.get('res.partner').create(cr, uid, customer, context=context)
             self._create_or_update_person_attributes(cr, uid, cust_id, vals, context=context)
+            self._create_or_update_person_address(cr, uid, cust_id, vals, context=context)
 
 
     def _create_or_update_person_attributes(self, cr, uid, cust_id, vals, context=None):
@@ -158,9 +160,31 @@ class atom_event_worker(osv.osv):
             if len(attribute_id) > 0:
                 self.pool.get('res.partner.attributes').write(cr, uid, attribute_id, column_dict, context=context)    
             else:
-                self.pool.get('res.partner.attributes').create(cr, uid, column_dict, context=context)    
-                
+                self.pool.get('res.partner.attributes').create(cr, uid, column_dict, context=context)
 
+
+    def _create_or_update_person_address(self, cr, uid, cust_id, vals, context=None):
+        try:
+            address = json.loads(vals.get("preferredAddress", "{}"))
+        except ValueError:
+            raise ValueError("Could not retrive preferred address from the String - %s" % str(vals))
+        existing_address = self.pool.get('res.partner.address').search(cr, uid, [('partner_id' , '=', cust_id)])
+        if not address and not existing_address:
+            return
+        column_dict = {
+            'address1': address['address1'],
+            'address2': address['address2'],
+            'city_village': address['cityVillage'],
+            'state_province': address['stateProvince'],
+            'country': address['country'],
+            'county_district': address['countyDistrict'],
+            'address3': address['address3'],
+            'partner_id': cust_id
+        }
+        if len(existing_address) > 0:
+            self.pool.get('res.partner.address').write(cr, uid, existing_address, column_dict, context=context)
+        else:
+            self.pool.get('res.partner.address').create(cr, uid, column_dict, context=context)
 
 
     def process_event(self, cr, uid, vals,context=None):
