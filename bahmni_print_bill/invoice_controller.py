@@ -3,7 +3,7 @@ import simplejson
 import os
 import re
 import openerp
-
+from num2words import num2words
 from openerp.modules.registry import RegistryManager
 from openerp.addons.web.controllers.main import manifest_list, module_boot, html_template
 from openerp import pooler, tools
@@ -67,11 +67,13 @@ class InvoiceController(openerp.addons.web.http.Controller):
                 'discount_head': invoice.discount_acc_id and invoice.discount_acc_id.name or None,
                 'discount': invoice.discount,
                 'net_amount': voucher.bill_amount,
+                'net_amount_words': str(int(voucher.bill_amount)) + "/- (" + num2words(voucher.bill_amount).title() + " only)",
                 'previous_balance': voucher.balance_amount + voucher.amount - voucher.bill_amount,
                 'bill_amount': voucher.amount + voucher.balance_amount,
                 'paid_amount': voucher.amount,
                 'balance_amount': voucher.balance_amount,
                 'partner_name': voucher.partner_id.name,
+                'partner_local_name': voucher.partner_id.local_name,
                 'partner_ref': voucher.partner_id.ref,
                 'cashier_initials': voucher.create_uid.initials,
             }

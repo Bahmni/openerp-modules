@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates>
+    <span t-name="print_button" t-attf-class="base" class="oe_web_example">
+        <button name="print" type="object" class="oe_highlight" id="print-bill-button" accesskey="P">Print</button>
+        <button name="print" type="object" class="oe_highlight" id="print-summary-bill-button" accesskey="B">Summarized Bill</button>
+        <iframe id="printBillFrame" style="display:none"/>
+    </span>
+
+    <div t-name="BillSummary" t-attf-class="base" class="oe_web_example">
+        <style>
+            @page { margin: 0cm;}
+            table { font-family: Roman, San-Serif, Draft;font-size:10pt;}
+            #printBill { font-family: Roman, San-Serif, Draft;font-size:10pt; }
+        </style>
+
+        <div id="printBill">
+            <div style="margin-top: 2mm; width=72mm;">
+                <div style="width: 25%;float:left;">
+                    <img style="width: 100%;" t-att-src='"data:image/jpeg;base64, " + company.logo'/>
+                </div>
+                <div style="width: 75%; float:right;">
+                    <center>
+                        <div t-if="company.name">
+                            <t t-esc="company.name"/>
+                        </div>
+                        <div t-if="company.address.city">
+                            <t t-esc="company.address.city"/>
+                        </div>
+                        <div t-if="company.phone">
+                            <t t-esc="company.phone"/>
+                        </div>
+                        <div><strong>दिनांक: </strong><t t-esc="voucher_date"/></div>
+                        <div><strong>बिल क्र: </strong><t t-esc="voucher_number"/></div>
+                    </center>
+                </div>
+            </div>
+
+            <div style="width: 100%;">
+                <div style="width: 100%; float:left;"><strong>रुग्णाचे नाव: </strong><t t-esc="partner_local_name"/></div>
+                <div style="width: 100%; float:left;"><strong>रजि नं: </strong><t t-esc="partner_ref"/></div>
+                <div style="width: 100%; float:left;"><strong>बाबत: </strong><t t-esc="categories"/></div>
+                <div style="width: 100%; float:left;"><strong>फी रु.: </strong><t t-esc="net_amount_words"/></div>
+                <div style="float: right;"> प्राप्त झाले<br/> रुपये. <t t-esc="net_amount"/></div>
+            </div>
+        </div>
+    </div>
+</templates>
