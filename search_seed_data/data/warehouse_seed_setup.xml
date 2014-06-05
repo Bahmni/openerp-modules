@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+        <record model="stock.location" id="stock.stock_location_company">
+            <field name="name">SEARCH</field>
+        </record>
+
+        <record id="stock_location_stock_maa_danteshwari_dawakhana" model="stock.location">
+            <field name="name">Maa Danteshwari Dawakhana</field>
+            <field name="usage">internal</field>
+            <field name="location_id" search="[('name', '=', 'Stock')]"/>
+        </record>
+
+        <!-- Warehouse -->
+        <record id="warehouse_dawakhana" model="stock.warehouse">
+            <field name="name">Dawakhana</field>
+            <field name="lot_input_id" ref="stock_location_stock_maa_danteshwari_dawakhana"/>
+            <field name="lot_stock_id" ref="stock_location_stock_maa_danteshwari_dawakhana"/>
+            <field name="lot_output_id" search="[('name', '=', 'Output')]"/>
+        </record>
+
+        <!-- Sale Shop -->
+        <record id="sale_shop_pharmacy" model="sale.shop">
+            <field name="name">Pharmacy</field>
+            <!-- defined in account_data.xml -->
+            <field name="payment_default_id" ref="account.account_payment_term_immediate"/> 
+            <field name="warehouse_id" ref="warehouse_dawakhana"/>
+        </record>
+    </data>
+</openerp>

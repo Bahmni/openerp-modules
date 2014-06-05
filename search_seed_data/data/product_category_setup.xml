@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+
+        <record model="product.category" id="product_category_admit">
+            <field name="name">Admit</field>
+            <field name="parent_id" search="[('name', '=', 'All products')]"></field>
+            <field name="property_account_income_categ" ref="account_admit"></field>
+        </record>
+
+        <record model="product.category" id="product_category_xray">
+            <field name="name">X-Ray</field>
+            <field name="parent_id" search="[('name', '=', 'All products')]"></field>
+            <field name="property_account_income_categ" ref="account_xray"></field>
+        </record>
+
+        <record model="product.category" id="product_category_usg">
+            <field name="name">USG</field>
+            <field name="parent_id" search="[('name', '=', 'All products')]"></field>
+            <field name="property_account_income_categ" ref="account_usg"></field>
+        </record>
+
+        <record model="product.category" id="product_category_fine">
+            <field name="name">Fine</field>
+            <field name="parent_id" search="[('name', '=', 'All products')]"></field>
+            <field name="property_account_income_categ" ref="account_fine"></field>
+        </record>
+
+        <record model="product.category" id="product_category_mtp">
+            <field name="name">MTP</field>
+            <field name="parent_id" search="[('name', '=', 'All products')]"></field>
+            <field name="property_account_income_categ" ref="account_mtp"></field>
+        </record>
+
+        <record model="product.category" id="product_category_lab">
+            <field name="name">LAB</field>
+            <field name="parent_id" search="[('name', '=', 'All products')]"></field>
+            <field name="property_account_income_categ" ref="account_lab"></field>
+        </record>
+
+        <record model="product.category" id="product_category_registration">
+            <field name="name">Registration Fees</field>
+            <field name="parent_id" search="[('name', '=', 'All products')]"></field>
+            <field name="property_account_income_categ" ref="account_registration"></field>
+        </record>
+
+        <record model="product.category" id="product_category_surgery">
+            <field name="name">Surgery</field>
+            <field name="parent_id" search="[('name', '=', 'All products')]"></field>
+            <field name="property_account_income_categ" ref="account_surgery"></field>
+        </record>
+
+        <record model="product.category" id="product_category_medicine">
+            <field name="name">Medicine</field>
+            <field name="parent_id" search="[('name', '=', 'All products')]"></field>
+            <field name="property_account_income_categ" ref="account_medicine"></field>
+        </record>
+
+        <record model="product.category" id="product_category_services">
+            <field name="name">Services</field>
+            <field name="parent_id" search="[('name', '=', 'All products')]"></field>
+            <field name="property_account_income_categ" ref="account_services"></field>
+        </record>
+    </data>
+</openerp>

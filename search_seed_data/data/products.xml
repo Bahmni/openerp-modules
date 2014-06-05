@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+
+        <!-- Have to add an UUID to service before deleting, so that atom feed has uuid -->
+        <record id="product.product_product_consultant_lab" model="product.product">
+            <field name="name">Service</field>
+            <field name="uuid">db4558dd-8ae2-4dcd-813c-d7cc33a6fe86</field>
+        </record>
+
+        <delete model="product.product" id="product.product_product_consultant_lab"/> <!-- Removing default service product -->
+
+        <record model="product.product" id="product_admit">
+            <field name="name">Admit</field>
+            <field name="list_price">0.0</field>
+            <field name="standard_price">0.0</field>
+            <field name="uom_id" ref="product.product_uom_unit"/>
+            <field name="uom_po_id" ref="product.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_admit"/>
+            <field name="uuid">bc0933f5-cf6e-4776-8f6b-9f44a3291ed7</field>
+            <field name="type">service</field>
+        </record>
+        <record model="product.product" id="product_xray">
+            <field name="name">X-Ray</field>
+            <field name="list_price">0.0</field>
+            <field name="standard_price">0.0</field>
+            <field name="uom_id" ref="product.product_uom_unit"/>
+            <field name="uom_po_id" ref="product.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_xray"/>
+            <field name="uuid">1041f233-9bfa-4488-bb4a-144823cc1149</field>
+            <field name="type">service</field>
+        </record>
+        <record model="product.product" id="product_usg">
+            <field name="name">USG</field>
+            <field name="list_price">0.0</field>
+            <field name="standard_price">0.0</field>
+            <field name="uom_id" ref="product.product_uom_unit"/>
+            <field name="uom_po_id" ref="product.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_usg"/>
+            <field name="uuid">87553d97-a358-4aed-bb86-7646d343cf16</field>
+            <field name="type">service</field>
+        </record>
+        <record model="product.product" id="product_fine">
+            <field name="name">Fine</field>
+            <field name="list_price">0.0</field>
+            <field name="standard_price">0.0</field>
+            <field name="uom_id" ref="product.product_uom_unit"/>
+            <field name="uom_po_id" ref="product.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_fine"/>
+            <field name="uuid">61056ece-b630-4c35-bbd5-6b4d4bcd1309</field>
+            <field name="type">service</field>
+        </record>
+        <record model="product.product" id="product_mtp">
+            <field name="name">MTP</field>
+            <field name="list_price">0.0</field>
+            <field name="standard_price">0.0</field>
+            <field name="uom_id" ref="product.product_uom_unit"/>
+            <field name="uom_po_id" ref="product.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_mtp"/>
+            <field name="uuid">e08a2802-d0eb-410c-9325-f1f3b1e01495</field>
+            <field name="type">service</field>
+        </record>
+        <record model="product.product" id="product_lab">
+            <field name="name">Lab Charges</field>
+            <field name="list_price">0.0</field>
+            <field name="standard_price">0.0</field>
+            <field name="uom_id" ref="product.product_uom_unit"/>
+            <field name="uom_po_id" ref="product.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_lab"/>
+            <field name="uuid">96f6bf24-b0a9-4f04-a7f0-387ae8ddd1ff</field>
+            <field name="type">service</field>
+        </record>
+
+        <record model="product.product" id="product_registration">
+            <field name="name">Registration Charges</field>
+            <field name="list_price">0.0</field>
+            <field name="standard_price">0.0</field>
+            <field name="uom_id" ref="product.product_uom_unit"/>
+            <field name="uom_po_id" ref="product.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_registration"/>
+            <field name="uuid">4d506091-121a-4061-9ebb-8b4fe9f0b969</field>
+            <field name="type">service</field>
+        </record>
+
+        <record model="product.product" id="product_surgery">
+            <field name="name">Surgery Charges</field>
+            <field name="list_price">0.0</field>
+            <field name="standard_price">0.0</field>
+            <field name="uom_id" ref="product.product_uom_unit"/>
+            <field name="uom_po_id" ref="product.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_surgery"/>
+            <field name="uuid">6d1847ca-8619-4f04-a34c-993ac992bf60</field>
+            <field name="type">service</field>
+        </record>
+
+        <record model="product.product" id="product_medicine">
+            <field name="name">Medicince</field>
+            <field name="list_price">0.0</field>
+            <field name="standard_price">0.0</field>
+            <field name="uom_id" ref="product.product_uom_unit"/>
+            <field name="uom_po_id" ref="product.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_medicine"/>
+            <field name="uuid">1f7765cc-d455-488c-8eea-ee8ff766942d</field>
+            <field name="type">service</field>
+        </record>
+
+        <record model="product.product" id="product_services">
+            <field name="name">Services</field>
+            <field name="list_price">0.0</field>
+            <field name="standard_price">0.0</field>
+            <field name="uom_id" ref="product.product_uom_unit"/>
+            <field name="uom_po_id" ref="product.product_uom_unit"/>
+            <field name="categ_id" ref="product_category_services"/>
+            <field name="uuid">2479304c-ecaf-11e3-8acb-0800271c1b75</field>
+            <field name="type">service</field>
+        </record>
+    </data>
+</openerp>
