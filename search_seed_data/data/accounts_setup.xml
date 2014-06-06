@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <data noupdate="1">
+        <record model="account.account" id="account_discounts">
+            <field name="code">222</field>
+            <field name="name">Discounts</field>
+            <field name="parent_id" ref="account.conf_ovr"/>
+            <field name="type">view</field>
+            <field name="user_type" ref="account.account_type_expense_view1"/>
+        </record>
+
         <record model="account.account" id="account_admit">
             <field name="code">200100</field>
             <field name="name">Admit</field>
-            <field name="parent_id" ref="account.conf_ovr"/>
+            <field name="parent_id" ref="account.conf_rev"/>
             <field name="type">other</field>
             <field name="user_type" ref="account.data_account_type_expense"/>
         </record>
@@ -12,7 +20,7 @@
         <record model="account.account" id="account_xray">
             <field name="code">200200</field>
             <field name="name">X-Ray</field>
-            <field name="parent_id" ref="account.conf_ovr"/>
+            <field name="parent_id" ref="account.conf_rev"/>
             <field name="type">other</field>
             <field name="user_type" ref="account.data_account_type_expense"/>
         </record>
@@ -20,7 +28,7 @@
         <record model="account.account" id="account_usg">
             <field name="code">200300</field>
             <field name="name">USG</field>
-            <field name="parent_id" ref="account.conf_ovr"/>
+            <field name="parent_id" ref="account.conf_rev"/>
             <field name="type">other</field>
             <field name="user_type" ref="account.data_account_type_expense"/>
         </record>
@@ -28,7 +36,7 @@
         <record model="account.account" id="account_fine">
             <field name="code">200400</field>
             <field name="name">FINE</field>
-            <field name="parent_id" ref="account.conf_ovr"/>
+            <field name="parent_id" ref="account.conf_rev"/>
             <field name="type">other</field>
             <field name="user_type" ref="account.data_account_type_expense"/>
         </record>
@@ -36,7 +44,7 @@
         <record model="account.account" id="account_mtp">
             <field name="code">200500</field>
             <field name="name">MTP</field>
-            <field name="parent_id" ref="account.conf_ovr"/>
+            <field name="parent_id" ref="account.conf_rev"/>
             <field name="type">other</field>
             <field name="user_type" ref="account.data_account_type_expense"/>
         </record>
@@ -44,7 +52,7 @@
         <record model="account.account" id="account_lab">
             <field name="code">200600</field>
             <field name="name">LAB</field>
-            <field name="parent_id" ref="account.conf_ovr"/>
+            <field name="parent_id" ref="account.conf_rev"/>
             <field name="type">other</field>
             <field name="user_type" ref="account.data_account_type_expense"/>
         </record>
@@ -52,7 +60,7 @@
         <record model="account.account" id="account_registration">
             <field name="code">200700</field>
             <field name="name">Registration Fees</field>
-            <field name="parent_id" ref="account.conf_ovr"/>
+            <field name="parent_id" ref="account.conf_rev"/>
             <field name="type">other</field>
             <field name="user_type" ref="account.data_account_type_expense"/>
         </record>
@@ -60,7 +68,7 @@
         <record model="account.account" id="account_surgery">
             <field name="code">200800</field>
             <field name="name">Surgery</field>
-            <field name="parent_id" ref="account.conf_ovr"/>
+            <field name="parent_id" ref="account.conf_rev"/>
             <field name="type">other</field>
             <field name="user_type" ref="account.data_account_type_expense"/>
         </record>
@@ -68,7 +76,7 @@
         <record model="account.account" id="account_medicine">
             <field name="code">200900</field>
             <field name="name">Medicine</field>
-            <field name="parent_id" ref="account.conf_ovr"/>
+            <field name="parent_id" ref="account.conf_rev"/>
             <field name="type">other</field>
             <field name="user_type" ref="account.data_account_type_expense"/>
         </record>
@@ -76,7 +84,7 @@
         <record model="account.account" id="account_services">
             <field name="code">201000</field>
             <field name="name">Services</field>
-            <field name="parent_id" ref="account.conf_ovr"/>
+            <field name="parent_id" ref="account.conf_rev"/>
             <field name="type">other</field>
             <field name="user_type" ref="account.data_account_type_expense"/>
         </record>
