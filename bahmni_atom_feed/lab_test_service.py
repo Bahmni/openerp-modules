@@ -56,7 +56,7 @@ class lab_test_service(osv.osv):
             else:
                 parent_category_name = category_hierarchy[0];
                 del category_hierarchy[0]
-                parent_id = self._create_category_in_hierarchy(cr, uid, parent_category_name, category_hierarchy)
+                parent_id = self._create_category_in_hierarchy(cr, uid, context, parent_category_name, category_hierarchy)
             return self.pool.get('product.category').create(cr, uid, {'name': category_name, 'parent_id': parent_id}, context)
         else:
             return self.pool.get('product.category').create(cr, uid, {'name': category_name}, context)
