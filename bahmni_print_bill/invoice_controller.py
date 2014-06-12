@@ -1,17 +1,19 @@
+# -*- coding: utf-8 -*-
 import logging
 import simplejson
 import os
 import re
 import openerp
-from num2words import num2words
 from openerp.modules.registry import RegistryManager
 from openerp.addons.web.controllers.main import manifest_list, module_boot, html_template
 from openerp import pooler, tools
+from bahmni_print_bill.number_to_marathi import convert
 
 import openerp.addons.web.http as openerpweb
 
 
 import logging
+
 _logger = logging.getLogger(__name__)
 
 class InvoiceController(openerp.addons.web.http.Controller):
@@ -48,6 +50,7 @@ class InvoiceController(openerp.addons.web.http.Controller):
                     'subtotal': invoice_line_item.price_subtotal,
                     'product_category': invoice_line_item.product_id.categ_id.name,
                 })
+            number, number_in_words = convert(voucher.bill_amount)
             bill = {
                 'company': {
                     'name': company.name,
@@ -67,7 +70,8 @@ class InvoiceController(openerp.addons.web.http.Controller):
                 'discount_head': invoice.discount_acc_id and invoice.discount_acc_id.name or None,
                 'discount': invoice.discount,
                 'net_amount': voucher.bill_amount,
-                'net_amount_words': str(int(voucher.bill_amount)) + "/- (" + num2words(voucher.bill_amount).title() + " only)",
+                'net_amount_string': number+"/-",
+                'net_amount_words': number + "/- (" + number_in_words + " फक्त)",
                 'previous_balance': voucher.balance_amount + voucher.amount - voucher.bill_amount,
                 'bill_amount': voucher.amount + voucher.balance_amount,
                 'paid_amount': voucher.amount,
