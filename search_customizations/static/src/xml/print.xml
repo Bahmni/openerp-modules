@@ -15,7 +15,7 @@
         </style>
 
         <div id="printBill">
-            <div style="margin-top: 2mm; width=72mm;">
+            <div style="margin-top: 2mm; width=74mm; line-height: 1.5em">
                 <div style="width: 25%;float:left;">
                     <img style="width: 100%;" t-att-src='"data:image/jpeg;base64, " + company.logo'/>
                 </div>
@@ -30,18 +30,18 @@
                         <div t-if="company.phone">
                             <t t-esc="company.phone"/>
                         </div>
-                        <div><strong>दिनांक: </strong><div style="display:inline; font-size: .8em"><t t-esc="voucher_date"/></div></div>
-                        <div><strong>बिल क्र: </strong><div style="display:inline; font-size: .8em"><t t-esc="voucher_number"/></div></div>
+                        <div><strong style="display:inline; font-size: .8em">दिनांक: </strong><div style="display:inline; font-size: .7em;"><t t-esc="voucher_date"/></div></div>
+                        <div><strong style="display:inline; font-size: .8em">बिल क्र: </strong><div style="display:inline; font-size: .7em;"><t t-esc="voucher_number"/></div></div>
                     </center>
                 </div>
             </div>
 
             <div style="width: 100%; line-height: 1.5em;">
-                <div style="width: 100%; float:left;"><strong>रुग्णाचे नाव: </strong><div style="display:inline; font-size: .8em"><t t-esc="partner_local_name"/></div></div>
-                <div style="width: 100%; float:left;"><strong>रजि नं: </strong><div style="display:inline; font-size: .8em"><t t-esc="partner_ref"/></div></div>
-                <div style="width: 100%; float:left;"><strong>बाबत: </strong><div style="display:inline; font-size: .8em"><t t-esc="categories"/></div></div>
+                <div style="width: 100%; float:left;"><strong>रुग्णाचे नाव: </strong><t t-esc="partner_local_name"/></div>
+                <div style="width: 100%; float:left;"><strong>रजि नं: </strong><div style="display:inline; font-size: .7em;"><t t-esc="partner_ref"/></div></div>
+                <div style="width: 100%; float:left;"><strong>बाबत: </strong><div style="display:inline; font-size: .7em;"><t t-esc="categories"/></div></div>
                 <div style="width: 100%; float:left;"><strong>फी रु.: </strong><t t-esc="net_amount_words"/></div>
-                <div style="float: right;"> प्राप्त झाले<br/> रुपये. <t t-esc="net_amount_string"/></div>
+                <div style="float: right; font-weight:100;">प्राप्त झाले<br/> रुपये. <t t-esc="net_amount_string"/></div>
             </div>
         </div>
     </div>
