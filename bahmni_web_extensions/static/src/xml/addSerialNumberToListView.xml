@@ -37,6 +37,9 @@
     </thead>
     <tfoot>
         <tr>
+            <!-- CHANGE_START -->
+            <td></td>
+            <!-- CHANGE_END -->
             <td t-if="options.selectable"/>
             <td t-foreach="aggregate_columns" t-as="column" class="oe_list_footer oe_number"
                 t-att-data-field="column.id" t-att-title="column.label">
