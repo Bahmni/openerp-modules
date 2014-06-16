@@ -20,16 +20,19 @@ class account_report(osv.osv):
         cr.execute("""
             create or replace view account_report as (
                 select
-                    concat(ail.account_id, '_', ai.date_invoice) as id,
+                    concat(ail.account_id, '_', ai.date_invoice, '_', ai.type) as id,
                     ai.date_invoice as date,
                     ail.account_id as account_id,
-                    sum(ail.price_subtotal) as actual_amount,
-                    sum(ail.price_subtotal * (ai.amount_total/(ai.amount_tax + ai.amount_untaxed))) as amount_received
+                    CASE WHEN ai.type = 'out_refund' THEN sum(-ail.price_subtotal) ELSE sum(ail.price_subtotal) END as  actual_amount,
+                    CASE
+                        WHEN ai.type = 'out_refund' THEN sum(-ail.price_subtotal * (ai.amount_total/(ai.amount_tax + ai.amount_untaxed)))
+                        ELSE sum(ail.price_subtotal * (ai.amount_total/(ai.amount_tax + ai.amount_untaxed)))
+                    END as amount_received
                 from account_invoice ai, account_invoice_line ail
                 where
                     ail.invoice_id = ai.id
                     and (ai.amount_tax + ai.amount_untaxed) > 0
-                group by ail.account_id, ai.date_invoice
+                group by ail.account_id, ai.date_invoice, ai.type
             )""")
 
     def unlink(self, cr, uid, ids, context=None):
