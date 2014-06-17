@@ -63,6 +63,7 @@ class account_count_report(osv.osv):
                 from account_invoice ai, account_invoice_line ail
                 where
                     ail.invoice_id = ai.id
+                    and ai.type != 'out_refund'
                 group by ail.account_id, ai.date_invoice
             )""")
 
