@@ -33,3 +33,6 @@ class res_partner_address(osv.osv):
         'address3': fields.char('Address3', size=256, required=False),
         'partner_id': fields.many2one('res.partner', 'Partner', required=True, select=True, readonly=False)
     }
+
+res_partner_attributes()
+res_partner_address()
