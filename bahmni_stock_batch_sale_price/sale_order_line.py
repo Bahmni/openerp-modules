@@ -73,7 +73,7 @@ class sale_order_line(osv.osv):
         for prodlot_id in stock_prod_lot.search(cr, uid,[('product_id','=',product_obj.id)]):
             prodlot_context = self._get_prodlot_context(cr, uid, context=context)
             prodlot = stock_prod_lot.browse(cr, uid, prodlot_id, context=prodlot_context)
-            if(prodlot.life_date and datetime.strptime(prodlot.life_date, tools.DEFAULT_SERVER_DATE_FORMAT) < datetime.today()):
+            if(prodlot.life_date and datetime.strptime(prodlot.life_date, tools.DEFAULT_SERVER_DATETIME_FORMAT) < datetime.today()):
                 continue
             if qty <= prodlot.future_stock_forecast:
                 sale_price = prodlot.sale_price

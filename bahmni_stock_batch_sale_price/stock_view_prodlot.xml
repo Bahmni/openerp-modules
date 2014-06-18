@@ -13,10 +13,33 @@
                     <field name="stock_available"/>
                     <field name="future_stock_forecast"/>
                     <field name="sale_price"/>
-                    <field name="life_date"/>
+                    <field name="life_date" widget="date" />
                     <field name="date"/>
                    </tree>
                 </tree>
+            </field>
+        </record>
+        <record model="ir.ui.view" id="view_move_form_expiry_two">
+            <field name="name">stock.production.lot.form</field>
+            <field name="model">stock.production.lot</field>
+            <field name="inherit_id" ref="product_expiry.view_move_form_expiry" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='life_date']"
+                        position="replace">
+                    <field name="life_date" widget="date"/>
+                </xpath>
+                <xpath expr="//field[@name='use_date']"
+                        position="replace">
+                    <field name="use_date" widget="date"/>
+                </xpath>
+                <xpath expr="//field[@name='removal_date']"
+                        position="replace">
+                    <field name="removal_date" widget="date"/>
+                </xpath>
+                <xpath expr="//field[@name='alert_date']"
+                        position="replace">
+                    <field name="alert_date" widget="date"/>
+                </xpath>
             </field>
         </record>
     </data>

@@ -43,7 +43,7 @@ class stock_move(osv.osv):
                 'message': _('You are moving %.2f %s but only %.2f %s available for this serial number.') % (product_qty, uom.name, amount_actual, uom.name)
             }
 
-        if(prodlot.life_date and datetime.strptime(prodlot.life_date, DEFAULT_SERVER_DATE_FORMAT) < datetime.today()):
+        if(prodlot.life_date and datetime.strptime(prodlot.life_date, DEFAULT_SERVER_DATETIME_FORMAT) < datetime.today()):
             warning = {
                 'title': _('Batch is expired'),
                 'message': _('This product is expired on %s') % (prodlot.life_date)
@@ -72,7 +72,7 @@ class stock_move(osv.osv):
             if(qty >=0 ):
                 prod_lot = self.pool.get('stock.production.lot').browse(cr, uid, lot_id)
                 if(prod_lot and prod_lot.life_date):
-                    if(datetime.today() <= datetime.strptime(prod_lot.life_date, '%Y-%m-%d')):
+                    if(datetime.today() <= datetime.strptime(prod_lot.life_date, DEFAULT_SERVER_DATETIME_FORMAT)):
                         sum_qty += qty
 
         return sum_qty

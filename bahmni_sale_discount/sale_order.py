@@ -413,13 +413,26 @@ class sale_order(osv.osv):
             res[order.id]= partner.village
         return res
 
+    def create(self, cr, uid, vals, context=None):
+        date_parsed = datetime.strptime(vals['datetime_order'], '%Y-%m-%d %H:%M:%S')
+        vals['date_order'] = date_parsed.strftime("%Y-%m-%d")
+        return super(sale_order, self).create(cr, uid, vals, context=context)
+
+    def write(self, cr, uid,ids, vals, context=None):
+        datetime_val = vals.get('datetime_order')
+        if datetime_val:
+            date_parsed = datetime.strptime(datetime_val, '%Y-%m-%d %H:%M:%S')
+            vals['date_order'] = date_parsed.strftime("%Y-%m-%d")
+        return super(sale_order, self).write(cr, uid,ids, vals, context=context)
+
 
     _constraints = [
         (_check_discount_range, 'Error!\nDiscount percentage should be between 0-100%.', ['discount_percentage']),
     ]
 
     _columns = {
-    'date_order': fields.datetime('Date', required=True, readonly=True, select=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]}),
+    'date_order': fields.date('Date', required=True, readonly=True, select=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]}),
+    'datetime_order': fields.datetime('Date Time', required=True, readonly=True, select=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]}),
     'discount_percentage':fields.float('Discount %',digits_compute=dp.get_precision('Account'),readonly=True, states={'draft':[('readonly',False)]}),
     'chargeable_amount':fields.float('Final Chargeable Amount',digits_compute=dp.get_precision('Account'),readonly=True, states={'draft':[('readonly',False)]}),
     'discount_amount':fields.float('Absolute Discount Amount',digits_compute=dp.get_precision('Account'),readonly=True, states={'draft':[('readonly',False)]}),
@@ -464,9 +477,9 @@ class sale_order(osv.osv):
     }
 
     _defaults = {
-        'date_order': lambda self,cr,uid, context=None: str(fields.datetime.context_timestamp(cr, uid, datetime.now().replace(microsecond=0), context=context)),
-        # 'partner_village': _get_partner_village,
-        }
+        'datetime_order': lambda self,cr,uid, context=None: str(fields.datetime.context_timestamp(cr, uid, datetime.now().replace(microsecond=0), context=context)),
+    }
+
 
 
 sale_order()

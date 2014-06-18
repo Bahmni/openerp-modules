@@ -1,7 +1,7 @@
 {
     "name": "Bahmni Batch Sale Price",
     "version": "1.0",
-    "depends": ["base","stock","sale", "sale_stock"],
+    "depends": ["base","stock","sale", "sale_stock","product_expiry"],
     "author": "ThoughtWorks Technologies Pvt. Ltd.",
     "category": "Sale",
 	"summary": "Bahmni Batch Sale Price",
