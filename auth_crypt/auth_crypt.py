@@ -117,50 +117,38 @@ def sh256crypt(cls, password, salt, magic=magic_sha256):
 class res_users(osv.osv):
     _inherit = "res.users"
 
-    def set_pw(self, cr, uid, id, name, value, args, context):
-        if value:
-            encrypted = md5crypt(value, gen_salt())
-            cr.execute('update res_users set password_crypt=%s where id=%s', (encrypted, int(id)))
-        del value
-
-    def get_pw( self, cr, uid, ids, name, args, context ):
-        cr.execute('select id, password from res_users where id in %s', (tuple(map(int, ids)),))
-        stored_pws = cr.fetchall()
-        res = {}
-
-        for id, stored_pw in stored_pws:
-            res[id] = stored_pw
-
-        return res
-
     _columns = {
-        'password': fields.function(get_pw, fnct_inv=set_pw, type='char', string='Password', invisible=True, store=True),
         'password_crypt': fields.char(string='Encrypted Password', invisible=True),
     }
 
     def check_credentials(self, cr, uid, password):
         # convert to base_crypt if needed
         cr.execute('SELECT password, password_crypt FROM res_users WHERE id=%s AND active', (uid,))
-        if cr.rowcount:
+        if password and cr.rowcount:
             stored_password, stored_password_crypt = cr.fetchone()
-            if password and not stored_password_crypt:
-                salt = gen_salt()
-                stored_password_crypt = md5crypt(stored_password, salt)
-                cr.execute("UPDATE res_users SET password='', password_crypt=%s WHERE id=%s", (stored_password_crypt, uid))
-        try:
-            return super(res_users, self).check_credentials(cr, uid, password)
-        except openerp.exceptions.AccessDenied:
-            # check md5crypt
-            if stored_password_crypt[:len(magic_md5)] == magic_md5:
-                salt = stored_password_crypt[len(magic_md5):11]
+            if stored_password:
+                salt = self.get_salt_from(stored_password)
+                password_encrypted = md5crypt(password, salt)
+                return super(res_users, self).check_credentials(cr, uid, password_encrypted)
+            elif stored_password_crypt:
+                salt = self.get_salt_from(stored_password_crypt)
                 if stored_password_crypt == md5crypt(password, salt):
                     return
-            elif stored_password_crypt[:len(magic_md5)] == magic_sha256:
-                salt = stored_password_crypt[len(magic_md5):11]
-                if stored_password_crypt == md5crypt(password, salt):
-                    return
-            # Reraise password incorrect
-            raise
 
+        raise openerp.exceptions.AccessDenied()
+
+
+    def write(self, cr, uid, ids, values, context=None):
+        if(values.get('password')):
+            values['password'] = md5crypt(values.get('password'), gen_salt())
+        return super(res_users, self).write(cr, uid, ids, values, context)
+
+
+    def get_salt_from(self,password):
+        if password[:len(magic_md5)] == magic_md5:
+            return password[len(magic_md5):11]
+
+        elif password[:len(magic_md5)] == magic_sha256:
+            return password[len(magic_md5):11]
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
