@@ -9,17 +9,18 @@ class account_report(osv.osv):
     _description = "Account reports for actual & received amount"
     _auto = False
     _columns = {
-        'actual_amount': fields.float('Expenses', readonly=True),
-        'amount_received': fields.float('Collections', readonly=True),
+        'actual_amount': fields.integer('Expenses', readonly=True),
+        'amount_received': fields.integer('Collections', readonly=True),
         'date': fields.date('Date', readonly=True),
         'account_id': fields.many2one('account.account', 'Account Head', readonly=True, select=True),
     }
+
 
     def init(self, cr):
         drop_view_if_exists(cr, 'account_report')
         cr.execute("""
             create or replace view account_report as (
-                select
+                (select
                     concat(ail.account_id, '_', ai.date_invoice, '_', ai.type) as id,
                     ai.date_invoice as date,
                     ail.account_id as account_id,
@@ -31,8 +32,23 @@ class account_report(osv.osv):
                 from account_invoice ai, account_invoice_line ail
                 where
                     ail.invoice_id = ai.id
-                    and (ai.amount_tax + ai.amount_untaxed) > 0
-                group by ail.account_id, ai.date_invoice, ai.type
+                    and ai.amount_tax + ai.amount_untaxed != 0
+                group by ail.account_id, ai.date_invoice, ai.type)
+                UNION
+                (select
+                    concat(ail.account_id, '_', ai.date_invoice, '_', ai.type) as id,
+                    ai.date_invoice as date,
+                    ail.account_id as account_id,
+                    CASE WHEN ai.type = 'out_refund' THEN sum(-ail.price_subtotal) ELSE sum(ail.price_subtotal) END as  actual_amount,
+                    CASE
+                        WHEN ai.type = 'out_refund' THEN sum(-ai.amount_total)
+                        ELSE sum(ai.amount_total)
+                    END as amount_received
+                from account_invoice ai, account_invoice_line ail
+                where
+                    ail.invoice_id = ai.id
+                    and ai.amount_tax + ai.amount_untaxed = 0
+                group by ail.account_id, ai.date_invoice, ai.type )
             )""")
 
     def unlink(self, cr, uid, ids, context=None):
