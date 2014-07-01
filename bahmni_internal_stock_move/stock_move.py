@@ -132,7 +132,7 @@ class stock_move(osv.osv):
         }
         warning = {}
 
-        if (not product_id) or (product_qty <=0.0):
+        if (not product_id) or (product_qty < 0.0):
             result['product_qty'] = 0.0
             return {'value': result}
 

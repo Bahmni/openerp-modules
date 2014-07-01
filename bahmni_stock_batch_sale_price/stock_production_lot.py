@@ -38,6 +38,12 @@ class stock_production_lot(osv.osv):
                     location_id IN %s and prodlot_id IN %s group by prodlot_id''',(tuple(locations),tuple(ids),))
             res.update(dict(cr.fetchall()))
 
+        product_uom_id = context.get('product_uom', None)
+        if(product_uom_id):
+            product_uom = self.pool.get('product.uom').browse(cr, uid, product_uom_id, context)
+            for key in res:
+                res[key] = res[key] * product_uom.factor
+
         return res
 
     def name_get(self, cr, uid, ids, context=None):
