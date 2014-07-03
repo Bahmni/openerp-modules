@@ -129,7 +129,8 @@ class atom_event_worker(osv.osv):
         feed_uri_for_last_read_entry = vals.get('feed_uri_for_last_read_entry')
         feed_uri = vals.get('feed_uri')
 
-        if "$param" in feed_uri_for_last_read_entry or "$param" in feed_uri or feed_uri_for_last_read_entry == None:
+        # Rohan/Mujir - do not update markers for failed events (failed events have empty 'feed_uri_for_last_read_entry')
+        if "$param" in feed_uri_for_last_read_entry or "$param" in feed_uri or feed_uri_for_last_read_entry == None or not feed_uri_for_last_read_entry:
             return
 
         marker_ids = self.pool.get('atom.feed.marker').search(cr, uid, [('feed_uri', '=', feed_uri)], limit=1)
