@@ -414,8 +414,9 @@ class sale_order(osv.osv):
         return res
 
     def create(self, cr, uid, vals, context=None):
-        date_parsed = datetime.strptime(vals['datetime_order'], '%Y-%m-%d %H:%M:%S')
-        vals['date_order'] = date_parsed.strftime("%Y-%m-%d")
+        if vals.get('datetime_order'):
+            date_parsed = datetime.strptime(vals.get('datetime_order'), '%Y-%m-%d %H:%M:%S')
+            vals['date_order'] = date_parsed.strftime("%Y-%m-%d")
         return super(sale_order, self).create(cr, uid, vals, context=context)
 
     def write(self, cr, uid,ids, vals, context=None):
