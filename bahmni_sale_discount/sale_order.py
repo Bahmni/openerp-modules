@@ -272,7 +272,7 @@ class sale_order(osv.osv):
                     sale_order_item = {'productUuid': line.product_id.uuid, 'dosage': line.product_dosage, 'numberOfDays': line.product_number_of_days, 'quantity': line.product_uos_qty, 'unit': line.product_uom.name}
                     sale_order_items.append(sale_order_item)
             if sale_order_items :
-                data = {'id': order.id, 'saleOrderItems': sale_order_items, 'externalId': order.external_id or None, 'orderDate': order.datetime_order, 'customerId': order.partner_id.ref }
+                data = {'id': order.id, 'saleOrderItems': sale_order_items, 'externalId': order.external_id or None, 'orderDate': order.datetime_order, 'customerId': order.partner_id.ref or None }
                 event_publisher_obj.publish_event(cr, uid, 'sale_order', data)
 
     def action_view_invoice(self, cr, uid, ids, context=None):
