@@ -1,5 +1,7 @@
 from openerp.osv import fields, osv
 from openerp import pooler
+import openerp
+
 
 class purchase_order(osv.osv):
 
@@ -33,3 +35,21 @@ class purchase_order_line(osv.osv):
     _columns = {
         'manufacturer':fields.char('Manufacturer', size=64),
     }
+
+
+class stock_partial_picking(osv.osv_memory):
+    _inherit = 'stock.partial.picking'
+
+    def is_field_empty(self, vals, field_name):
+        for key in vals:
+            for list_item in vals[key]:
+                for item in list_item:
+                    if isinstance(item, dict):
+                        if not item[field_name]:
+                            return False
+        return True
+
+    def create(self, cr, uid, vals, context=None):
+        if not self.is_field_empty(vals, 'prodlot_id'):
+            raise openerp.exceptions.Warning('Please enter a Serial Number.')
+        return super(stock_partial_picking, self).create(cr, uid, vals, context=context)
