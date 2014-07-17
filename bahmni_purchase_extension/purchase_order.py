@@ -1,7 +1,11 @@
 from openerp.osv import fields, osv
+from openerp.osv.orm import browse_null
 from openerp import pooler
 import openerp
+import logging
 
+
+_logger = logging.getLogger(__name__)
 
 class purchase_order(osv.osv):
 
@@ -37,19 +41,38 @@ class purchase_order_line(osv.osv):
     }
 
 
+class stock_picking_in(osv.osv):
+    _name = "stock.picking.in"
+    _inherit = "stock.picking.in"
+
+    _columns = {
+        'warned': fields.boolean('Warned')
+    }
+
+    _defaults = {
+        'warned': False
+    }
+
+
 class stock_partial_picking(osv.osv_memory):
+    _name = "stock.partial.picking"
     _inherit = 'stock.partial.picking'
 
-    def is_field_empty(self, vals, field_name):
-        for key in vals:
-            for list_item in vals[key]:
-                for item in list_item:
-                    if isinstance(item, dict):
-                        if not item[field_name]:
-                            return False
-        return True
+    def do_partial(self, cr, uid, ids, context=None):
+        partial = self.browse(cr, uid, ids[0], context=context)
+        picking_obj = self.pool.get('stock.picking.in')
+        picking = picking_obj.browse(cr, uid, context['active_id'], context=context)
 
-    def create(self, cr, uid, vals, context=None):
-        if not self.is_field_empty(vals, 'prodlot_id'):
-            raise openerp.exceptions.Warning('Please enter a Serial Number.')
-        return super(stock_partial_picking, self).create(cr, uid, vals, context=context)
+        serial_numbers = [line.prodlot_id.name for line in partial.move_ids if not isinstance(line.prodlot_id, browse_null)]
+        duplicate_serial_numbers = set([sn for sn in serial_numbers if serial_numbers.count(sn) > 1])
+        if(duplicate_serial_numbers):
+            raise openerp.exceptions.Warning('Duplicate Serial numbers: ' + ", ".join(duplicate_serial_numbers))
+
+        missing_serial_number = [line.product_id.name for line in partial.move_ids if isinstance(line.prodlot_id, browse_null)]
+        if(not picking.warned and missing_serial_number):
+            picking_obj.write(cr, uid, picking.id, {'warned': True})
+            return self.pool.get('warning').warning(cr, uid, title='Empty Serial number', message="Serial number for products " + ", ".join(missing_serial_number) + " are missing. Are you sure you want to continue?")
+
+        return super(stock_partial_picking, self).do_partial(cr, uid, ids, context=context)
+
+stock_partial_picking()

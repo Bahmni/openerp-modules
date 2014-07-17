@@ -7,7 +7,7 @@
 	"summary": "Extend web framework like base templates, javascript etc",
     "description": """
     """,
-    'data': [],
+    'data': ['warning_view.xml'],
     'demo': [],
     'qweb': ['static/src/xml/*.xml'],
     'css': ['static/src/css/extension.css'],
