@@ -3,6 +3,7 @@ from openerp.osv.orm import browse_null
 from openerp import pooler
 import openerp
 import logging
+import re
 
 
 _logger = logging.getLogger(__name__)
@@ -31,6 +32,11 @@ class purchase_order_line(osv.osv):
             name=False, price_unit=False, context=None):
         res = super(purchase_order_line, self).onchange_product_id(cr, uid, ids, pricelist_id, product_id, 
             qty, uom_id, partner_id, date_order, fiscal_position_id, date_planned, name, price_unit, context)
+
+        supplierUnitConstraintWarningPattern = re.compile('The selected supplier only sells this product by .*')
+        if(res.get('warning', False) and  supplierUnitConstraintWarningPattern.match(res['warning']['message'])):
+            res.pop('warning', None)
+
         if (product_id):
             product = self.pool.get('product.product').browse(cr, uid, product_id, context)
             res['value']['manufacturer'] = product and product.manufacturer or False
