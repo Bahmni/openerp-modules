@@ -44,10 +44,9 @@ class account_invoice(osv.osv):
                 total -= i['price']
                 total_currency -= i['amount_currency'] or i['price']
         if inv.type in ( 'out_refund'):
-            total += inv.discount
+            total = total + inv.discount - inv.round_off
         else :
-            total -= inv.discount
-        total += inv.round_off
+            total = total - inv.discount + inv.round_off
         total+= self._round_off_amount_for_nearest_five(total)
         return total, total_currency, invoice_move_lines
 
@@ -123,6 +122,7 @@ class account_invoice(osv.osv):
             total = 0
             total_currency = 0
             total, total_currency, iml = self.compute_invoice_totals(cr, uid, inv, company_currency, ref, iml, context=ctx)
+
             acc_id = inv.account_id.id
 
             name = inv['name'] or '/'
@@ -207,6 +207,7 @@ class account_invoice(osv.osv):
                     i[2]['period_id'] = period_id
 
             ctx.update(invoice=inv)
+
             move_id = move_obj.create(cr, uid, move, context=ctx)
             new_move_name = move_obj.browse(cr, uid, move_id, context=ctx).name
             # make the invoice point to that move
@@ -227,8 +228,13 @@ class account_invoice(osv.osv):
             context = {}
         #disc_account = self.pool.get('account.account')
         amount_currency = 0.0
-        debit = discount if(discount >= 0.0) else 0.0
-        credit = -discount if(discount < 0.0) else 0.0
+        if(invoice.type == 'out_refund'):
+            debit = -discount if(discount < 0.0) else 0.0
+            credit = discount if(discount >= 0.0) else 0.0
+        else:
+            debit = discount if(discount >= 0.0) else 0.0
+            credit = -discount if(discount < 0.0) else 0.0
+
         date = time.strftime('%Y-%m-%d')
         l1 = {
                 'debit': debit,
@@ -275,15 +281,18 @@ class account_invoice(osv.osv):
                 'amount_total': 0.0,
                 'discount': 0.0,
             }
+
             for line in invoice.invoice_line:
                 res[invoice.id]['amount_untaxed'] += line.price_subtotal
             for line in invoice.tax_line:
                 res[invoice.id]['amount_tax'] += line.amount
             #jss apply discount
             res[invoice.id]['discount']= invoice.discount
-            amount_total = res[invoice.id]['amount_tax'] + res[invoice.id]['amount_untaxed'] - invoice.discount + invoice.round_off
-            amount_total += self._round_off_amount_for_nearest_five(amount_total)
+            amount_total = res[invoice.id]['amount_tax'] + res[invoice.id]['amount_untaxed'] - invoice.discount
+            round_off_amount = self._round_off_amount_for_nearest_five(amount_total)
+            amount_total += round_off_amount
             res[invoice.id]['amount_total'] = amount_total
+            self.write(cr, uid, [invoice.id], {'round_off': round_off_amount})
         return res
 
     def _get_invoice_tax(self, cr, uid, ids, context=None):
@@ -310,6 +319,16 @@ class account_invoice(osv.osv):
                     if(result[invoice.id] <= 0 and invoice.state != 'paid'):
                         self.confirm_paid(cr,uid,ids,context)
             return result
+
+
+    # Overriding to add discounts to refund invoice
+    def _prepare_refund(self, cr, uid, invoice, date=None, period_id=None, description=None, journal_id=None, context=None):
+        invoice_data = super(account_invoice, self)._prepare_refund(cr, uid, invoice, date, period_id, description, journal_id, context);
+        invoice_data['discount'] = invoice.discount
+        invoice_data['round_off'] = invoice.round_off
+        invoice_data['discount_acc_id'] = invoice.discount_acc_id and invoice.discount_acc_id.id
+        return invoice_data
+
 
     def confirm_paid(self, cr, uid, ids, context=None):
         if context is None:
@@ -409,6 +428,26 @@ class account_invoice(osv.osv):
             'analytic_account_id': x.get('account_analytic_id', False),
             }
 
+    def onchange_refund_amount(self, cr, uid, ids, refund_amount, amount_total, invoice_line, discount, context=None):
+        invoice = self.browse(cr, uid, ids[0], context=context)
+        refund_ratio = (invoice.amount_total != 0.0 and (refund_amount / invoice.amount_total)) or 1
+        discount = invoice.discount * refund_ratio
+        amount_total = refund_amount
+
+        line_obj = self.pool.get('account.invoice.line')
+        def _map_updated_price(invoice_line):
+            obj = line_obj.browse(cr, uid, invoice_line[1], context=context)
+            new_price = obj.price_unit * refund_ratio
+            new_subtotal = new_price * obj.quantity
+            return (1, invoice_line[1], {'price_unit': new_price, 'price_subtotal': new_subtotal})
+
+        invoice_line = map(_map_updated_price, invoice_line)
+        amount_untaxed = sum(line['price_subtotal'] for (action, id, line) in invoice_line)
+        round_off = amount_total - amount_untaxed + discount
+
+        return {'value': {'discount': discount, 'invoice_line': invoice_line, 'amount_total': amount_total, 'amount_untaxed': amount_untaxed, 'round_off': round_off}}
+
+
     _columns={
               
             'discount':fields.float('Discount',digits=(4,2),readonly=True, states={'draft':[('readonly',False)]}),
@@ -446,10 +485,12 @@ class account_invoice(osv.osv):
                 help="Remaining amount due."),
             'group_id' : fields.many2one('visit', 'Group Reference', required=False, select=True, readonly=True),
             'group_description':fields.char('Visit', 15),
+            'refund_amount' : fields.float('Total Refund', digits=(4,2), readonly=True, states={'draft':[('readonly',False)]}),
             }
-    
+
     _defaults={
                'discount': 0.0,
+               'refund_amount': 0.0,
                }
     
 
