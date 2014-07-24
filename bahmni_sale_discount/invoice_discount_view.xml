@@ -11,9 +11,12 @@
 
             <field name="arch" type="xml">
                 <xpath expr="/form/sheet/notebook/page[1]/group[1]/field[@name='amount_untaxed']" position="after" >
-                    <field name="discount_acc_id"/>
-                    <field name="discount" />
-                    <field name="round_off" />
+                    <field name="discount_acc_id" attrs="{'invisible': [('type','&lt;&gt;','out_invoice')]}"/>
+                    <field name="discount"/>
+                    <field name="round_off"/>
+                    <field name="refund_amount"
+                        attrs="{'invisible': [('type','&lt;&gt;','out_refund')]}"
+                        on_change="onchange_refund_amount(refund_amount, amount_total, invoice_line, discount, context)"/>
                 </xpath>
                 <xpath expr="/form/sheet/notebook/page[1]/field[@name='invoice_line']/tree/field[@name='invoice_line_tax_id']" position="replace" >
                 </xpath>
