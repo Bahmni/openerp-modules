@@ -1,7 +1,7 @@
 {
     "name": "Search Customizations",
     "version": "1.0",
-    "depends": ["base","stock", "account", "bahmni_sale_discount", "bahmni_print_bill"],
+    "depends": ["base","stock", "account", "bahmni_sale_discount", "bahmni_print_bill", "bahmni_customer_payment"],
     "author": "ThoughtWorks Technologies Pvt. Ltd.",
     "category": "Report",
     "summary": "Reports",
