@@ -429,6 +429,8 @@ class account_invoice(osv.osv):
             }
 
     def onchange_refund_amount(self, cr, uid, ids, refund_amount, amount_total, invoice_line, discount, context=None):
+        if(len(ids) == 0):
+            return {}
         invoice = self.browse(cr, uid, ids[0], context=context)
         refund_ratio = (invoice.amount_total != 0.0 and (refund_amount / invoice.amount_total)) or 1
         discount = invoice.discount * refund_ratio
