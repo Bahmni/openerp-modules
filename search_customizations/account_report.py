@@ -24,7 +24,7 @@ class account_report(osv.osv):
                     concat(ail.account_id, '_', ai.date_invoice, '_', ai.type) as id,
                     ai.date_invoice as date,
                     ail.account_id as account_id,
-                    CASE WHEN ai.type = 'out_refund' THEN sum(-ail.price_subtotal) ELSE sum(ail.price_subtotal) END as  actual_amount,
+                    CASE WHEN ai.type = 'out_refund' THEN 0 ELSE sum(ail.price_subtotal) END as  actual_amount,
                     CASE
                         WHEN ai.type = 'out_refund' THEN sum(-ail.price_subtotal * (ai.amount_total/(ai.amount_tax + ai.amount_untaxed)))
                         ELSE sum(ail.price_subtotal * (ai.amount_total/(ai.amount_tax + ai.amount_untaxed)))
@@ -39,7 +39,7 @@ class account_report(osv.osv):
                     concat(ail.account_id, '_', ai.date_invoice, '_', ai.type) as id,
                     ai.date_invoice as date,
                     ail.account_id as account_id,
-                    CASE WHEN ai.type = 'out_refund' THEN sum(-ail.price_subtotal) ELSE sum(ail.price_subtotal) END as  actual_amount,
+                    CASE WHEN ai.type = 'out_refund' THEN 0 ELSE sum(ail.price_subtotal) END as  actual_amount,
                     CASE
                         WHEN ai.type = 'out_refund' THEN sum(-ai.amount_total)
                         ELSE sum(ai.amount_total)
