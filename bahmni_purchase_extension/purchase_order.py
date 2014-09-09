@@ -69,16 +69,16 @@ class stock_partial_picking(osv.osv_memory):
         picking_obj = self.pool.get('stock.picking.in')
         picking = picking_obj.browse(cr, uid, context['active_id'], context=context)
 
-        serial_numbers = [line.prodlot_id.name for line in partial.move_ids if not isinstance(line.prodlot_id, browse_null)]
-        duplicate_serial_numbers = set([sn for sn in serial_numbers if serial_numbers.count(sn) > 1])
-        if(duplicate_serial_numbers):
-            raise openerp.exceptions.Warning('Duplicate Serial numbers: ' + ", ".join(duplicate_serial_numbers))
+        if(picking and picking.type != "internal"):
+            serial_numbers = [line.prodlot_id.name for line in partial.move_ids if not isinstance(line.prodlot_id, browse_null)]
+            duplicate_serial_numbers = set([sn for sn in serial_numbers if serial_numbers.count(sn) > 1])
+            if(duplicate_serial_numbers):
+                raise openerp.exceptions.Warning('Duplicate Serial numbers: ' + ", ".join(duplicate_serial_numbers))
 
-        missing_serial_number = [line.product_id.name for line in partial.move_ids if isinstance(line.prodlot_id, browse_null)]
-        if(not picking.warned and missing_serial_number):
-            picking_obj.write(cr, uid, picking.id, {'warned': True})
-            return self.pool.get('warning').warning(cr, uid, title='Empty Serial number', message="Serial number for products " + ", ".join(missing_serial_number) + " are missing. Are you sure you want to continue?")
-
+            missing_serial_number = [line.product_id.name for line in partial.move_ids if isinstance(line.prodlot_id, browse_null)]
+            if(not picking.warned and missing_serial_number):
+                picking_obj.write(cr, uid, picking.id, {'warned': True})
+                return self.pool.get('warning').warning(cr, uid, title='Empty Serial number', message="Serial number for products " + ", ".join(missing_serial_number) + " are missing. Are you sure you want to continue?")
         return super(stock_partial_picking, self).do_partial(cr, uid, ids, context=context)
 
 stock_partial_picking()
