@@ -126,11 +126,11 @@ class res_users(osv.osv):
         cr.execute('SELECT password, password_crypt FROM res_users WHERE id=%s AND active', (uid,))
         if password and cr.rowcount:
             stored_password, stored_password_crypt = cr.fetchone()
-            if stored_password:
-                salt = self.get_salt_from(stored_password)
-                password_encrypted = md5crypt(password, salt)
-                return super(res_users, self).check_credentials(cr, uid, password_encrypted)
-            elif stored_password_crypt:
+            if password and not stored_password_crypt:
+                salt = gen_salt()
+                stored_password_crypt = md5crypt(stored_password, salt)
+                cr.execute("UPDATE res_users SET password='', password_crypt=%s WHERE id=%s", (stored_password_crypt, uid))
+            if stored_password_crypt:
                 salt = self.get_salt_from(stored_password_crypt)
                 if stored_password_crypt == md5crypt(password, salt):
                     return
