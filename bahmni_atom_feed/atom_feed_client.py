@@ -20,14 +20,15 @@ class atom_event_worker(osv.osv):
         customer = {'ref': ref, 'name': name, 'local_name': local_name, 'village': village}
         return customer
 
-    def _find_sale_order_line_for_product(self, cr, uid, sale_order, product_uuid):
-        for line in sale_order.order_line:
+    def _find_sale_order_line_for_product(self, cr, uid, sale_order, product_uuid, context=None):
+        line_ids = self.pool.get('sale.order.line').search(cr, uid, [('order_id', '=', sale_order.id)], context=context)
+        for line in self.pool.get('sale.order.line').browse(cr, uid, line_ids):
             if(line.product_id.uuid == product_uuid):
                 return line
         return None
 
     def _create_sale_order_line(self, cr, uid, name, sale_order, order, context=None):
-        if(self._find_sale_order_line_for_product(cr, uid, sale_order, order.get('productId', None))):
+        if(self._find_sale_order_line_for_product(cr, uid, sale_order, order.get('productId', None), context)):
             return
         stored_prod_ids = self.pool.get('product.product').search(cr, uid, [('uuid', '=', order['productId'])], context=context)
         uom_obj = self.pool.get('product.uom').search(cr, uid, [('name', '=', 'Unit(s)')], context=context)[0]
@@ -53,12 +54,14 @@ class atom_event_worker(osv.osv):
             'product_uom_qty': order.get('quantity', 0),
             'product_uom': uom_obj,
         }
-        line = self._find_sale_order_line_for_product(cr, uid, sale_order, order.get('productId', None))
-        self.pool.get('sale.order.line').write(cr, uid, line.id, update_dict, context=context)
+        line = self._find_sale_order_line_for_product(cr, uid, sale_order, order.get('productId', None), context)
+        if(line):
+            self.pool.get('sale.order.line').write(cr, uid, line.id, update_dict, context=context)
 
     def _delete_sale_order_line(self, cr, uid, sale_order, order, context=None):
-        line = self._find_sale_order_line_for_product(cr, uid, sale_order, order.get('productId', None))
-        self.pool.get('sale.order.line').unlink(cr, uid, line.id, context=context)
+        line = self._find_sale_order_line_for_product(cr, uid, sale_order, order.get('productId', None), context)
+        if(line):
+            self.pool.get('sale.order.line').unlink(cr, uid, [line.id], context=context)
 
     def _create_sale_order(self, cr, uid, cus_id, name, shop_id, orders, context=None):
         sale_order = {
@@ -74,8 +77,12 @@ class atom_event_worker(osv.osv):
         if(orders):
             sale_order_id = self.pool.get('sale.order').create(cr, uid, sale_order, context=context)
             sale_order = self.pool.get('sale.order').browse(cr, uid, sale_order_id, context=context)
-            for order in orders:
-                if(order.get('productId', False)):
+            for order in reversed(orders):
+                if(order["voided"] or order.get('action', "") == "DISCONTINUE"):
+                    self._delete_sale_order_line(cr, uid, sale_order, order, context)
+                elif(order.get('action', "") == "REVISE"):
+                    self._update_sale_order_line(cr, uid, sale_order, order, context)
+                else:
                     self._create_sale_order_line(cr, uid, name, sale_order, order, context)
 
 
