@@ -93,7 +93,7 @@ class atom_event_worker(osv.osv):
             elif(order.get('action', "") == "REVISE"):
                 self._update_sale_order_line(cr, uid, sale_order, order, context)
             else:
-                self._create_sale_orderline(cr, uid, name, sale_order, order, context)
+                self._create_sale_order_line(cr, uid, name, sale_order, order, context)
 
     def _create_orders(self, cr,uid,vals,context):
         customer_id = vals.get("customer_id")
