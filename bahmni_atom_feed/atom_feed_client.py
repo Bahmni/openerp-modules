@@ -27,11 +27,17 @@ class atom_event_worker(osv.osv):
                 return line
         return None
 
+    def _find_product_uom(self, cr, uid, order, context=None):
+        uom_obj = self.pool.get('product.uom').search(cr, uid, [('name', '=', order.get('quantityUnits'))], context=context)
+        if(uom_obj):
+            return uom_obj[0]
+        return self.pool.get('product.uom').search(cr, uid, [('name', '=', 'Unit(s)')], context=context)[0]
+
     def _create_sale_order_line(self, cr, uid, name, sale_order, order, context=None):
         if(self._find_sale_order_line_for_product(cr, uid, sale_order, order.get('productId', None), context)):
             return
         stored_prod_ids = self.pool.get('product.product').search(cr, uid, [('uuid', '=', order['productId'])], context=context)
-        uom_obj = self.pool.get('product.uom').search(cr, uid, [('name', '=', 'Unit(s)')], context=context)[0]
+        uom_obj = self._find_product_uom(cr, uid, order, context=context)
         if(stored_prod_ids):
             prod_id = stored_prod_ids[0]
             prod_obj = self.pool.get('product.product').browse(cr, uid, prod_id)
@@ -49,7 +55,7 @@ class atom_event_worker(osv.osv):
             self.pool.get('sale.order.line').create(cr, uid, sale_order_line, context=context)
 
     def _update_sale_order_line(self, cr, uid, name, sale_order, order, context=None):
-        uom_obj = self.pool.get('product.uom').search(cr, uid, [('name', '=', 'Unit(s)')], context=context)[0]
+        uom_obj = self._find_product_uom(cr, uid, order, context=context)
         update_dict = {
             'product_uom_qty': order.get('quantity', 0),
             'product_uom': uom_obj,
@@ -70,7 +76,7 @@ class atom_event_worker(osv.osv):
             if(order.get("orderId") == child_order.get("previousOrderId")):
                 return order
 
-    def _process_orders(self, cr, uid, name, sale_order, all_orders, order, processed_orders=[], context=None):
+    def _process_orders(self, cr, uid, name, sale_order, all_orders, order, processed_orders, context=None):
         if(order in processed_orders):
             return
 
@@ -90,6 +96,7 @@ class atom_event_worker(osv.osv):
         sale_order = {
             'partner_id': cus_id,
             'name': name,
+            'origin': 'ATOMFEED SYNC',
             'date': datetime.date.today(),
             'shop_id': shop_id,
             'partner_invoice_id': cus_id,
@@ -100,8 +107,9 @@ class atom_event_worker(osv.osv):
         if(orders):
             sale_order_id = self.pool.get('sale.order').create(cr, uid, sale_order, context=context)
             sale_order = self.pool.get('sale.order').browse(cr, uid, sale_order_id, context=context)
+            processed_orders = []
             for order in orders:
-                self._process_orders(cr, uid, name, sale_order, orders, order, context=context)
+                self._process_orders(cr, uid, name, sale_order, orders, order, processed_orders, context=context)
 
 
     def _update_sale_order(self, cr, uid, cus_id, name, shop_id, sale_order_id, orders, context=None):
@@ -111,8 +119,9 @@ class atom_event_worker(osv.osv):
         sale_order = self.pool.get('sale.order').browse(cr, uid, sale_order_id)
         if(sale_order.state != 'draft'):
             raise osv.except_osv(('Error!'),("Sale order is already approved"))
+        processed_orders = []
         for order in orders:
-            self._process_orders(cr, uid, name, sale_order, orders, order, context=context)
+            self._process_orders(cr, uid, name, sale_order, orders, order, processed_orders, context=context)
 
     def _create_orders(self, cr,uid,vals,context):
         customer_id = vals.get("customer_id")
@@ -124,7 +133,7 @@ class atom_event_worker(osv.osv):
             cus_id = customer_ids[0]
             shop_id = self.pool.get('sale.shop').search(cr, uid, [('name', '=', 'Pharmacy')], context=context)[0]
             name = self.pool.get('ir.sequence').get(cr, uid, 'sale.order')
-            sale_order_ids = self.pool.get('sale.order').search(cr, uid, [('partner_id', '=', cus_id), ('state', '=', 'draft')], context=context)
+            sale_order_ids = self.pool.get('sale.order').search(cr, uid, [('partner_id', '=', cus_id), ('state', '=', 'draft'), ('origin', '=', 'ATOMFEED SYNC')], context=context)
             if(not sale_order_ids):
                 self._create_sale_order(cr, uid, cus_id, name, shop_id, orders, context)
             else:
