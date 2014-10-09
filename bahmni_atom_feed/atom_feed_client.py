@@ -17,7 +17,8 @@ class atom_event_worker(osv.osv):
         name = vals.get("name")
         local_name = vals.get("local_name")
         village = vals.get("village")
-        customer = {'ref': ref, 'name': name, 'local_name': local_name, 'village': village}
+        uuid = vals.get("uuid")
+        customer = {'ref': ref, 'name': name, 'local_name': local_name, 'village': village, 'uuid': uuid}
         return customer
 
     def _find_sale_order_line_for_product(self, cr, uid, sale_order, product_uuid, context=None):
