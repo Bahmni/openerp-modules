@@ -11,19 +11,41 @@ openerp.bahmni_print_bill = function(instance) {
 
        start: function() {
             this._super.apply(this, arguments);
-            $('button#print-bill-button').click($.proxy(function() {this.fetchAndPrintBill("Bill")}, this));
-            $('button#print-summary-bill-button').click($.proxy(function() {this.fetchAndPrintBill("BillSummary")}, this));
+            $('button#print-bill-button').click($.proxy(function() {
+                var self = this;
+                this.fetchAndPrintBill("Bill", function(bill) {
+                    self.printLatestPrescription(bill);
+                    self.gotoQuotation();
+                });
+            }, this));
+
+            $('button#print-summary-bill-button').click($.proxy(function() {
+                var self = this;
+                this.fetchAndPrintBill("BillSummary", function(bill) {
+                    self.gotoQuotation();
+                });
+            }, this));
+
+            $('button#print-latest-prescription').click($.proxy(function() {
+                var self = this;
+                this.fetch().done(function(bill) {
+                    self.printLatestPrescription(bill);
+                });
+            }, this));
         },
 
         fetch: function() {
             return this.rpc('/invoice/bill', {voucher_id: this.parent.datarecord.id});
         },
 
-        fetchAndPrintBill: function(billTemplate) {
+        fetchAndPrintBill: function(billTemplate, callBack) {
             var self = this;
             this.fetch().done(function(bill) {
                 self.transform(bill);
                 self.printReceipt(bill, billTemplate);
+                if(callBack != undefined) {
+                    callBack(bill);
+                }
             });
         },
 
@@ -34,8 +56,14 @@ openerp.bahmni_print_bill = function(instance) {
             doc.write($ht.innerHTML);
             doc.close();
             hiddenFrame.contentWindow.print();
+        },
 
-            window.location = "/?ts=1370260915528#page=0&limit=80&view_type=list&model=sale.order&menu_id=296&action=373"
+        printLatestPrescription: function(bill) {
+            window.open("https://" + window.location.hostname + "/bahmni/clinical/#/latest-visit-summary-print/patient/" + bill.partner_ref);
+        },
+
+        gotoQuotation: function() {
+            window.location = "/?ts=1370260915528#page=0&limit=80&view_type=list&model=sale.order&menu_id=296&action=373";
         },
 
         transform: function(bill) {

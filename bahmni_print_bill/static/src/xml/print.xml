@@ -3,7 +3,8 @@
 <templates>
     <span t-name="print_button" t-attf-class="base" class="oe_web_example">
         <button name="print" type="object" class="oe_highlight" id="print-bill-button" accesskey="P">Print</button>
-        <button name="print" type="object" class="oe_highlight" id="print-summary-bill-button" accesskey="B">Summarized Bill</button>
+        <button name="print-summary" type="object" class="oe_highlight" id="print-summary-bill-button" accesskey="B">Summarized Bill</button>
+        <button name="print-prescription" type="object" class="oe_highlight" id="print-latest-prescription">Print Latest Prescription</button>
         <iframe id="printBillFrame" style="display:none"/>
     </span>
 
