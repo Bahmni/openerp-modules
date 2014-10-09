@@ -48,7 +48,7 @@ class atom_event_worker(osv.osv):
                 'product_uom': uom_obj,
                 'order_id': sale_order.id,
                 'external_id':order['encounterId'],
-                'name': name,
+                'name': prod_obj.name,
                 'type': 'make_to_stock',
                 'state': 'draft',
             }

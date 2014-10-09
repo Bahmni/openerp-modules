@@ -44,7 +44,7 @@ class InvoiceController(openerp.addons.web.http.Controller):
             invoice_line_items = []
             for invoice_line_item in invoice.invoice_line:
                 invoice_line_items.append({
-                    'product_name': re.sub(r"^\s*\[.*?\]\s*", "", invoice_line_item.name, 1),
+                    'product_name': invoice_line_item.product_id.name,
                     'unit_price': invoice_line_item.price_unit,
                     'quantity': invoice_line_item.quantity,
                     'subtotal': invoice_line_item.price_subtotal,
