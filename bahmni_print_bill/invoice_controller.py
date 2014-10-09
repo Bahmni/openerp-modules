@@ -79,6 +79,7 @@ class InvoiceController(openerp.addons.web.http.Controller):
                 'partner_name': voucher.partner_id.name,
                 'partner_local_name': voucher.partner_id.local_name,
                 'partner_ref': voucher.partner_id.ref,
+                'partner_uuid': voucher.partner_id.uuid,
                 'cashier_initials': voucher.create_uid.initials,
             }
             return bill

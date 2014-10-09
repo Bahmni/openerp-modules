@@ -59,7 +59,7 @@ openerp.bahmni_print_bill = function(instance) {
         },
 
         printLatestPrescription: function(bill) {
-            window.open("https://" + window.location.hostname + "/bahmni/clinical/#/latest-visit-summary-print/patient/" + bill.partner_ref);
+            window.open("https://" + window.location.hostname + "/bahmni/clinical/#/patient/" + bill.partner_uuid + "/latest-visit-summary-print");
         },
 
         gotoQuotation: function() {
