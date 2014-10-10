@@ -405,12 +405,12 @@ class sale_order(osv.osv):
                 return False
         return True
 
-    def _get_partner_village(self, cr, uid, ids, name, args, context=None):
+    def _get_partner_details(self, cr, uid, ids, name, args, context=None):
         res = {}
         for order in self.browse(cr, uid, ids, context=context):
             partner_obj = self.pool.get("res.partner")
             partner = partner_obj.browse(cr,uid,order.partner_id.id)
-            res[order.id]= partner.village
+            res[order.id] = {'partner_village': partner.village, 'partner_uuid': partner.uuid}
         return res
 
     def create(self, cr, uid, vals, context=None):
@@ -473,7 +473,8 @@ class sale_order(osv.osv):
              help="The Previous Outstanding amount.",multi="all"),
     'total_outstanding': fields.function(_calculate_balance, digits_compute=dp.get_precision('Account'), string='Total Outstanding',
              help="The Total Outstanding amount at the time of sale order creation.",multi="all"),
-    'partner_village': fields.function(_get_partner_village,type='char',string ='Village',readonly=True),
+    'partner_village': fields.function(_get_partner_details, type='char', string ='Village', readonly=True, multi=True),
+    'partner_uuid': fields.function(_get_partner_details, type='char', string ='Customer UUID', readonly=True, multi=True,),
 
     }
 

@@ -15,6 +15,8 @@
         'quotation_view.xml',
         'sale_order_form.xml'],
     'demo': [],
+    'js': ['static/src/js/*.js'],
+    'qweb': ['static/src/xml/*.xml'],
     'auto_install': False,
     'application': True,
     'installable': True,

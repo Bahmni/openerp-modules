@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates>
+    <span t-name="link_prescription" t-attf-class="base" class="oe_web_example">
+        <button name="latest-prescription" type="object" class="oe_highlight" id="latest-prescription" accesskey="P">Latest Prescription</button>
+    </span>
+</templates>

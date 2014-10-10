@@ -8,12 +8,18 @@
             <field name="inherit_id" ref="sale.view_order_form"/>
 
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='date_order']"
-                       position="after">
+                <xpath expr="/form/header/button[@name='invoice_cancel']" position="after">
+                    <field name="state" widget="link-prescription"/>
+                </xpath>
+
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="partner_uuid" invisible="1"/>
+                </xpath>
+
+                <xpath expr="//field[@name='date_order']" position="after">
                     <field name="datetime_order" />
                 </xpath>
-                <xpath expr="//field[@name='date_order']"
-                       position="replace">
+                <xpath expr="//field[@name='date_order']" position="replace">
                     <field name="date_order" invisible="1" />
                 </xpath>
             </field>
