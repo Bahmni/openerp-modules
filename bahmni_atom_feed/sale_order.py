@@ -32,4 +32,5 @@ class sale_order_line(osv.osv):
 
     _columns = {
         'external_id': fields.char('external_id', size=64),
+        'external_order_id': fields.char('External Order id', size=64),
     }
