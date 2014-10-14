@@ -49,49 +49,65 @@ class atom_event_worker(osv.osv):
                 'product_uom': uom_obj,
                 'order_id': sale_order.id,
                 'external_id':order['encounterId'],
+                'external_order_id':order['orderId'],
                 'name': prod_obj.name,
                 'type': 'make_to_stock',
                 'state': 'draft',
             }
             self.pool.get('sale.order.line').create(cr, uid, sale_order_line, context=context)
 
-    def _update_sale_order_line(self, cr, uid, name, sale_order, order, context=None):
+    def _update_sale_order_line(self, cr, uid, name, sale_order, order, parent_order_line, context=None):
         uom_obj = self._find_product_uom(cr, uid, order, context=context)
         update_dict = {
             'product_uom_qty': order.get('quantity', 0),
             'product_uom': uom_obj,
+            'external_order_id': order.get('orderId'),
         }
-        line = self._find_sale_order_line_for_product(cr, uid, sale_order, order.get('productId', None), context)
-        if(line):
-            self.pool.get('sale.order.line').write(cr, uid, line.id, update_dict, context=context)
+        _logger.info("***********************************")
+        _logger.info(parent_order_line)
+        _logger.info(parent_order_line.order_id)
+        _logger.info(parent_order_line.order_id.state)
+        if(parent_order_line and parent_order_line.order_id.state == 'draft'):
+            _logger.info(update_dict)
+            self.pool.get('sale.order.line').write(cr, uid, parent_order_line.id, update_dict, context=context)
         else:
             self._create_sale_order_line(cr, uid, name, sale_order, order, context=context)
 
-    def _delete_sale_order_line(self, cr, uid, sale_order, order, context=None):
-        line = self._find_sale_order_line_for_product(cr, uid, sale_order, order.get('productId', None), context)
-        if(line):
-            self.pool.get('sale.order.line').unlink(cr, uid, [line.id], context=context)
+    def _delete_sale_order_line(self, cr, uid, sale_order, order, parent_order_line, context=None):
+        if(parent_order_line and parent_order_line.order_id.state == 'draft'):
+            self.pool.get('sale.order.line').unlink(cr, uid, [parent_order_line.id], context=context)
 
     def _fetch_parent(self, all_orders, child_order):
         for order in all_orders:
             if(order.get("orderId") == child_order.get("previousOrderId")):
                 return order
 
-    def _process_orders(self, cr, uid, name, sale_order, all_orders, order, processed_orders, context=None):
-        if(order in processed_orders):
+    def _fetch_order_in_db(self, cr, uid, order_uuid, context=None):
+        line_id = self.pool.get('sale.order.line').search(cr, uid, [('external_order_id', '=', order_uuid)], context=context)
+        if(line_id):
+            return self.pool.get('sale.order.line').browse(cr, uid, line_id, context=context)[0]
+        return None
+
+    def _process_orders(self, cr, uid, name, sale_order, all_orders, order, context=None):
+        order_in_db = self._fetch_order_in_db(cr, uid, order['orderId'], context=context)
+        if(order_in_db):
             return
 
-        parent_order = self._fetch_parent(all_orders, order)
-        if(parent_order):
-            self._process_orders(cr, uid, name, sale_order, all_orders, parent_order, processed_orders, context=None)
+        parent_order_line = None
+        if(order.get('previousOrderId', False)):
+            parent_order = self._fetch_parent(all_orders, order)
+            if(parent_order):
+                self._process_orders(cr, uid, name, sale_order, all_orders, parent_order, context=None)
+            parent_order_line = self._fetch_order_in_db(cr, uid, order['previousOrderId'], context=context)
+            if(not parent_order_line):
+                raise osv.except_osv(('Error!'),("Previous order id does not exist in DB. This can be because of previous failed events"))
 
         if(order["voided"] or order.get('action', "") == "DISCONTINUE"):
-            self._delete_sale_order_line(cr, uid, sale_order, order, context)
+            self._delete_sale_order_line(cr, uid, sale_order, order, parent_order_line, context)
         elif(order.get('action', "") == "REVISE"):
-            self._update_sale_order_line(cr, uid, name, sale_order, order, context)
+            self._update_sale_order_line(cr, uid, name, sale_order, order, parent_order_line, context)
         else:
             self._create_sale_order_line(cr, uid, name, sale_order, order, context)
-        processed_orders.append(order)
 
     def _create_sale_order(self, cr, uid, cus_id, name, shop_id, orders, context=None):
         sale_order = {
@@ -108,9 +124,8 @@ class atom_event_worker(osv.osv):
         if(orders):
             sale_order_id = self.pool.get('sale.order').create(cr, uid, sale_order, context=context)
             sale_order = self.pool.get('sale.order').browse(cr, uid, sale_order_id, context=context)
-            processed_orders = []
             for order in orders:
-                self._process_orders(cr, uid, name, sale_order, orders, order, processed_orders, context=context)
+                self._process_orders(cr, uid, name, sale_order, orders, order, context=context)
 
 
     def _update_sale_order(self, cr, uid, cus_id, name, shop_id, sale_order_id, orders, context=None):
@@ -120,9 +135,8 @@ class atom_event_worker(osv.osv):
         sale_order = self.pool.get('sale.order').browse(cr, uid, sale_order_id)
         if(sale_order.state != 'draft'):
             raise osv.except_osv(('Error!'),("Sale order is already approved"))
-        processed_orders = []
         for order in orders:
-            self._process_orders(cr, uid, name, sale_order, orders, order, processed_orders, context=context)
+            self._process_orders(cr, uid, name, sale_order, orders, order, context=context)
 
     def _create_orders(self, cr,uid,vals,context):
         customer_id = vals.get("customer_id")
