@@ -1,1 +1,1 @@
-import event_publisher,atom_feed_client,sale_order,lab_test_service,product_category,product_uom,drug_service,res_partner
+import event_publisher,atom_feed_client,sale_order,lab_test_service,product_category,product_uom,drug_service,res_partner,processed_drug_order

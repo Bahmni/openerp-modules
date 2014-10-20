@@ -35,10 +35,11 @@ class atom_event_worker(osv.osv):
         return self.pool.get('product.uom').search(cr, uid, [('name', '=', 'Unit(s)')], context=context)[0]
 
     def _create_sale_order_line(self, cr, uid, name, sale_order, order, context=None):
-        if(self._find_sale_order_line_for_product(cr, uid, sale_order, order.get('productId', None), context)):
+        # if(self._find_sale_order_line_for_product(cr, uid, sale_order, order.get('productId', None), context)):
+        if(self._order_already_processed(cr,uid,order['orderId'],context)):
             return
         stored_prod_ids = self.pool.get('product.product').search(cr, uid, [('uuid', '=', order['productId'])], context=context)
-        uom_obj = self._find_product_uom(cr, uid, order, context=context)
+        uom_obj = self._find_product_uom(cr, uid, order, context)
         if(stored_prod_ids):
             prod_id = stored_prod_ids[0]
             prod_obj = self.pool.get('product.product').browse(cr, uid, prod_id)
@@ -55,6 +56,8 @@ class atom_event_worker(osv.osv):
                 'state': 'draft',
             }
             self.pool.get('sale.order.line').create(cr, uid, sale_order_line, context=context)
+            self.pool.get('processed.drug.order').create(cr,uid,{'order_uuid':order.get('orderId')})
+
 
     def _update_sale_order_line(self, cr, uid, name, sale_order, order, parent_order_line, context=None):
         uom_obj = self._find_product_uom(cr, uid, order, context=context)
@@ -72,6 +75,7 @@ class atom_event_worker(osv.osv):
             self.pool.get('sale.order.line').write(cr, uid, parent_order_line.id, update_dict, context=context)
         else:
             self._create_sale_order_line(cr, uid, name, sale_order, order, context=context)
+        self.pool.get('processed.drug.order').create(cr,uid,{'order_uuid':order.get('orderId')})
 
     def _delete_sale_order_line(self, cr, uid, sale_order, order, parent_order_line, context=None):
         if(parent_order_line and parent_order_line.order_id.state == 'draft'):
@@ -88,9 +92,13 @@ class atom_event_worker(osv.osv):
             return self.pool.get('sale.order.line').browse(cr, uid, line_id, context=context)[0]
         return None
 
+    def _order_already_processed(self,cr,uid,order_uuid,context=None):
+        return self.pool.get('processed.drug.order').search(cr, uid, [('order_uuid', '=', order_uuid)], context)
+
     def _process_orders(self, cr, uid, name, sale_order, all_orders, order, context=None):
         order_in_db = self._fetch_order_in_db(cr, uid, order['orderId'], context=context)
-        if(order_in_db):
+
+        if(order_in_db or self._order_already_processed(cr,uid, order['orderId'],context)):
             return
 
         parent_order_line = None
@@ -99,7 +107,7 @@ class atom_event_worker(osv.osv):
             if(parent_order):
                 self._process_orders(cr, uid, name, sale_order, all_orders, parent_order, context=None)
             parent_order_line = self._fetch_order_in_db(cr, uid, order['previousOrderId'], context=context)
-            if(not parent_order_line):
+            if(not parent_order_line and not self._order_already_processed(cr,uid, order['previousOrderId'],context)):
                 raise osv.except_osv(('Error!'),("Previous order id does not exist in DB. This can be because of previous failed events"))
 
         if(order["voided"] or order.get('action', "") == "DISCONTINUE"):
