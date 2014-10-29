@@ -66,14 +66,12 @@ class stock_move(osv.osv):
             if((row['prodlot_id'] != None) ):
                 prodlot_qty_map[row['prodlot_id']] = row['qty']
             else :
-                if(row['qty'] > 0):
-                    sum_qty += row['qty']
+                sum_qty += row['qty']
         for lot_id, qty in prodlot_qty_map.iteritems():
-            if(qty >=0 ):
-                prod_lot = self.pool.get('stock.production.lot').browse(cr, uid, lot_id)
-                if(prod_lot and prod_lot.life_date):
-                    if(datetime.today() <= datetime.strptime(prod_lot.life_date, DEFAULT_SERVER_DATETIME_FORMAT)):
-                        sum_qty += qty
+            prod_lot = self.pool.get('stock.production.lot').browse(cr, uid, lot_id)
+            if(prod_lot and prod_lot.life_date):
+                if(datetime.today() <= datetime.strptime(prod_lot.life_date, DEFAULT_SERVER_DATETIME_FORMAT)):
+                    sum_qty += qty
 
         return sum_qty
 
