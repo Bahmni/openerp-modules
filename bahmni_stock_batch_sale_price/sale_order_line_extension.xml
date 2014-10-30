@@ -11,6 +11,10 @@
             <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='name']" position="attributes" >
                 <attribute name="invisible">1</attribute>
             </xpath>
+            <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='product_uom_qty']" position="before" >
+                <field name="product_dosage" on_change="onchange_product_dosage(product_dosage, product_number_of_days)"/>
+                <field name="product_number_of_days" on_change="onchange_product_dosage(product_dosage, product_number_of_days)"/>
+            </xpath>
             <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='product_uom']" position="replace" >
                 <field name="product_uom" groups="product.group_uom" class="oe_inline oe_no_button" string="Unit"
                     context="{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'shop':parent.shop_id, 'uom':product_uom}"

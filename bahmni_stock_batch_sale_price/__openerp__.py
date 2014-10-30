@@ -16,7 +16,6 @@
                 'sale_order_show_partner_reference.xml',
             ],
     'demo': [],
-    'css':['static/src/css/bahmni_batch_sale_price.css'],
     'auto_install': False,
     'application': True,
     'installable': True,

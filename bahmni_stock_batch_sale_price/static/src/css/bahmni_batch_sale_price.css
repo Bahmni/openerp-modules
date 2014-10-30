@@ -1,4 +1,0 @@
-.openerp .oe_list_content td.oe_number[data-field="product_uom_qty"],
-.openerp .oe_list_content td.oe_number[data-field="price_unit"] {
-    text-align:left  !important;
-}
