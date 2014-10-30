@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
-    <!-- noupdate = 1 fails!! -->
-    <data noupdate="0">
+    <data noupdate="1">
 
         <!-- Have to add an UUID to service before deleting, so that atom feed has uuid -->
         <record id="product.product_product_consultant_lab" model="product.product">
