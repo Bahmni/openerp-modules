@@ -268,7 +268,7 @@ class sale_order(osv.osv):
         for order in self.browse(cr, uid, ids, context=context):
             sale_order_items = []
             for line in order.order_line:
-                if line.product_id.categ_id.parent_id.name == "Drug" :
+                if line.product_id.categ_id.parent_id.name == "Drug" and line.external_order_id is not None:
                     sale_order_item = {'productUuid': line.product_id.uuid, 'dosage': line.product_dosage, 'numberOfDays': line.product_number_of_days, 'quantity': line.product_uos_qty, 'unit': line.product_uom.name}
                     sale_order_items.append(sale_order_item)
             if sale_order_items :
