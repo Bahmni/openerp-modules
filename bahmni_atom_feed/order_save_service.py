@@ -34,7 +34,6 @@ class order_save_service(osv.osv):
                 'state': 'draft',
                 }
             self.pool.get('sale.order.line').create(cr, uid, sale_order_line, context=context)
-            self.pool.get('processed.drug.order').create(cr,uid,{'order_uuid':order.get('orderId')})
 
 
     def _update_sale_order_line(self, cr, uid, name, sale_order, order, parent_order_line, context=None):
@@ -47,7 +46,6 @@ class order_save_service(osv.osv):
             self.pool.get('sale.order.line').write(cr, uid, parent_order_line.id, update_dict, context=context)
         else:
             self._create_sale_order_line(cr, uid, name, sale_order, order, context=context)
-        self.pool.get('processed.drug.order').create(cr,uid,{'order_uuid':order.get('orderId')})
 
     def _delete_sale_order_line(self, cr, uid, sale_order, order, parent_order_line, context=None):
         if(parent_order_line and parent_order_line.order_id.state == 'draft'):

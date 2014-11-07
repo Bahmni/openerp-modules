@@ -4,6 +4,7 @@ import decimal_precision as dp
 
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
+import uuid
 from osv import fields, osv
 from tools.translate import _
 from openerp import netsvc
@@ -268,8 +269,8 @@ class sale_order(osv.osv):
         for order in self.browse(cr, uid, ids, context=context):
             sale_order_items = []
             for line in order.order_line:
-                if line.product_id.categ_id.parent_id.name == "Drug" and line.external_order_id is not None:
-                    sale_order_item = {'productUuid': line.product_id.uuid, 'dosage': line.product_dosage, 'numberOfDays': line.product_number_of_days, 'quantity': line.product_uos_qty, 'unit': line.product_uom.name}
+                if line.product_id.categ_id.parent_id.name == "Drug" and not line.external_order_id:
+                    sale_order_item = {'productUuid': line.product_id.uuid, 'dosage': line.product_dosage, 'numberOfDays': line.product_number_of_days, 'quantity': line.product_uos_qty, 'unit': line.product_uom.name, 'orderUuid': line.order_uuid}
                     sale_order_items.append(sale_order_item)
             if sale_order_items :
                 data = {'id': order.id, 'saleOrderItems': sale_order_items, 'externalId': order.external_id or None, 'orderDate': order.datetime_order, 'customerId': order.partner_id.ref or None }
@@ -481,7 +482,41 @@ class sale_order(osv.osv):
     _defaults = {
         'datetime_order': lambda self,cr,uid, context=None: str(fields.datetime.context_timestamp(cr, uid, datetime.now().replace(microsecond=0), context=context)),
     }
-
-
-
 sale_order()
+
+
+class sale_order_line(osv.osv):
+    _name = "sale.order.line"
+    _inherit = "sale.order.line"
+
+    _columns = {
+        'order_uuid': fields.char('Order uuid', size=36)
+    }
+
+    def create(self, cr, uid, vals, context=None):
+        if not vals.get('external_order_id'):
+            vals['order_uuid'] = uuid.uuid4()
+
+        self._record_processed_drug_order(cr,uid,vals)
+        return super(sale_order_line, self).create(cr, uid, vals, context=context)
+
+    def write(self, cr, uid,ids, vals, context=None):
+        sale_order_lines = self.pool.get('sale.order.line').read(cr,uid,ids,['external_order_id','order_uuid'],context)
+        self._record_processed_drug_order(cr, uid, sale_order_lines)
+        return super(sale_order_line, self).write(cr, uid,ids, vals, context=context)
+
+    def _record_processed_drug_order(self, cr, uid, vals):
+        if type(vals) is list:
+            for val in vals:
+                self.pool.get('processed.drug.order').create(cr, uid, {'order_uuid': self._get_order_uuid(val)})
+        else:
+            self.pool.get('processed.drug.order').create(cr, uid, {'order_uuid': self._get_order_uuid(vals)})
+
+
+    def _get_order_uuid(self, val):
+        if not val.get('external_order_id'):
+            return val.get('order_uuid')
+        else:
+            return val.get('external_order_id')
+
+sale_order_line()

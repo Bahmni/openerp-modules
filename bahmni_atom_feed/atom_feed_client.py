@@ -107,7 +107,7 @@ class atom_event_worker(osv.osv):
         if(category == "create.customer"):
             self._create_or_update_customer( cr, patient_ref, uid, vals,context)
         if(category == "create.sale.order"):
-            sale_order  =  self.pool.get('order.save.service').create_orders(cr,uid,vals,context)
+            self.pool.get('order.save.service').create_orders(cr,uid,vals,context)
         if(category == "create.lab.test"):
             self.pool.get('lab.test.service').create_or_update_labtest(cr,uid,vals,context)
         if(category == "create.drug"):
