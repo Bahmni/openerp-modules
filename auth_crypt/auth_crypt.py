@@ -140,7 +140,8 @@ class res_users(osv.osv):
 
     def write(self, cr, uid, ids, values, context=None):
         if(values.get('password')):
-            values['password'] = md5crypt(values.get('password'), gen_salt())
+            values['password_crypt'] = md5crypt(values.get('password'), gen_salt())
+            values['password'] = ''
         return super(res_users, self).write(cr, uid, ids, values, context)
 
 
