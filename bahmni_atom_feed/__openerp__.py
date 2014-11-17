@@ -7,8 +7,11 @@
 	"summary": "Event Publisher",
     "description": """
     """,
-    'data': ["atom_event_sequence.xml","sale_order_group_filter.xml"
-            ],
+    'data': [
+        "security/ir.model.access.csv",
+        "atom_event_sequence.xml",
+        "sale_order_group_filter.xml"
+    ],
     'demo': [],
     'css' : [
         ],
