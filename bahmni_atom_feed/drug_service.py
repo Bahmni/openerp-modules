@@ -23,8 +23,7 @@ class drug_service(osv.osv):
         drug = {}
         category_name = drug_from_feed.get("dosageForm")
         category_from_db = self._get_object_by_domain(cr, uid, "product.category", [('name', '=', category_name)])
-        categ_id = category_from_db and category_from_db.id or self._create_in_drug_category(cr, uid, category_name)
-
+        categ_id = category_from_db and category_from_db.get('id') or self._create_in_drug_category(cr, uid, category_name)
 
         drug["uuid"] = drug_from_feed.get("uuid")
         drug["name"] = drug_from_feed.get("name")
