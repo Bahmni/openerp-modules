@@ -5,55 +5,43 @@ from psycopg2._psycopg import DATETIME
 from openerp import netsvc
 from openerp.osv import fields, osv
 
-
 _logger = logging.getLogger(__name__)
-
 
 class drug_service(osv.osv):
     _name = 'drug.service'
     _auto = False
 
     def create_or_update_drug(self, cr, uid, vals, context=None):
-        drug = json.loads(vals.get("drug"))
-
-        object_ids = self.pool.get("product.product").search(cr, uid, [('uuid', '=', drug.get("id"))],context={"active_test":False})
-        updated_drug = self._fill_drug_object(cr,uid,drug)
+        object_ids = self.pool.get("product.product").search(cr, uid, [('uuid', '=', vals.get("uuid"))], context={"active_test":False})
+        updated_drug = self._fill_drug_object(cr, uid, vals)
         if object_ids :
-            prod_id = self.pool.get('product.product').write(cr, uid,object_ids[0:1] , updated_drug, context)
+            prod_id = self.pool.get('product.product').write(cr, uid, object_ids[0:1], updated_drug, context)
         else:
-            prod_id = self.pool.get('product.product').create(cr, uid , updated_drug, context)
-
+            prod_id = self.pool.get('product.product').create(cr, uid, updated_drug, context)
 
     def _fill_drug_object(self, cr, uid, drug_from_feed):
         drug = {}
-        category = drug_from_feed.get("category")
-        category_from_db = self._get_object_by_uuid(cr, uid, "product.category", category.get("id"))
-        sale_unit_of_measure = drug_from_feed.get("saleUnitOfMeasure")
-        sale_uom_from_db = self._get_object_by_uuid(cr, uid, "product.uom", sale_unit_of_measure.get("id"))
-        purchase_unit_of_measure = drug_from_feed.get("purchaseUnitOfMeasure")
-        purchase_uom_from_db = self._get_object_by_uuid(cr, uid, "product.uom", purchase_unit_of_measure.get("id"))
+        category_name = drug_from_feed.get("dosageForm")
+        category_from_db = self._get_object_by_domain(cr, uid, "product.category", [('name', '=', category_name)])
+        categ_id = category_from_db and category_from_db.id or self._create_in_drug_category(cr, uid, category_name)
 
-        drug["uuid"] = drug_from_feed.get("id")
+
+        drug["uuid"] = drug_from_feed.get("uuid")
         drug["name"] = drug_from_feed.get("name")
         drug["default_code"] = drug_from_feed.get("shortName")
-        drug["manufacturer"] = drug_from_feed.get("manufacturer")
         drug["drug"] = drug_from_feed.get("genericName")
-        drug["categ_id"] = category_from_db.get("id")
-        drug["list_price"] = drug_from_feed.get("salePrice")
-        drug["active"] = drug_from_feed.get("isActive")
-        drug["uom_id"] = sale_uom_from_db.get("id")
+        drug["categ_id"] = categ_id
         drug["type"] = "product"
         drug["sale_ok"] = 1
         drug["purchase_ok"] = 1
-
-        if purchase_uom_from_db :
-            drug["uom_po_id"] = purchase_uom_from_db.get("id")
-        if sale_uom_from_db and purchase_uom_from_db:
-            cost_price = drug_from_feed.get("costPrice")
-            cost_price_in_sale_uom = cost_price * purchase_uom_from_db.get("factor")/ sale_uom_from_db.get("factor")
-            drug["standard_price"] = cost_price_in_sale_uom
-
         return drug
+
+    def _create_in_drug_category(self, cr, uid, name, context=None):
+        parent_categ = self.pool.get("product.category").search(cr, uid, [('name', '=', "Drug")])
+        category = {'name': name}
+        if(parent_categ):
+            category['parent_id'] = parent_categ[0]
+        return self.pool.get('product.category').create(cr, uid, category)
 
     def create_or_update_drug_category(self, cr, uid, vals, context=None):
         drug_categ = json.loads(vals.get("drug_category"))
@@ -72,7 +60,6 @@ class drug_service(osv.osv):
         return self.pool.get('product.category').create(cr, uid, updated_categ)
 
     def _fill_drug_category(self,cr,uid,drug_categ_from_feed,parent_id=None):
-
         drug_categ = {}
         drug_categ["name"] = drug_categ_from_feed.get("name")
         drug_categ["uuid"] = drug_categ_from_feed.get("id")
@@ -91,6 +78,9 @@ class drug_service(osv.osv):
             return obj[0]
         return None
 
-
-
-
+    def _get_object_by_domain(self, cr, uid, object_type, domain=None):
+        object_ids = self.pool.get(object_type).search(cr, uid, domain)
+        obj = self.pool.get(object_type).read(cr, uid, object_ids)
+        if obj:
+            return obj[0]
+        return None
