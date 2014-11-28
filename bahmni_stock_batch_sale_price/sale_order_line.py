@@ -188,6 +188,7 @@ class sale_order_line(osv.osv):
         'product_number_of_days': fields.integer('No. Days'),
     }
 
+    _order = 'id'
     _defaults = {
         'product_dosage': 1,
         'product_number_of_days': 1,
