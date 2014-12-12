@@ -26,7 +26,7 @@ class QuotationController(openerp.addons.web.http.Controller):
         with registry.cursor() as cr:
             pool = pooler.get_pool(dbname)
             patient_id = pool.get('res.partner').search(cr, uid, [('ref', '=', patient_ref)])
-            quotation_ids = pool.get('sale.order').search(cr, uid, [('partner_id', 'in', patient_id), ('state', '=', 'draft')])
+            quotation_ids = pool.get('sale.order').search(cr, uid, [('partner_id', 'in', patient_id), ('state', '=', 'draft'), ('origin', '=', "ATOMFEED SYNC")])
             redirect_link = "/#view_type=list&model=sale.order&menu_id=296&action=372"
             if(len(quotation_ids) > 0):
                 redirect_link = "/#id={0}&view_type=form&model=sale.order&menu_id=296&action=372".format(quotation_ids[0])
