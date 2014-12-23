@@ -33,6 +33,8 @@
                     <group string="Group By...">
                         <filter string="Account" name="groupby_account_head" 
                             icon="terp-go-month" domain="[]" context="{'group_by':'account_id'}"/>
+                        <filter string="Date" name="groupby_date_head"
+                            icon="terp-go-month" domain="[]" context="{'group_by':'date'}"/>
                     </group>
                 </search>
             </field>
