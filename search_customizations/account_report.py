@@ -27,7 +27,7 @@ class account_report(osv.osv):
                     ail.account_id,
                     CASE
                     WHEN ai.type = 'out_refund' THEN 0
-                    ELSE sum(ail.price_subtotal * (ai.amount_total / (ai.amount_tax + ai.amount_untaxed)))
+                    ELSE sum(ail.price_subtotal)
                     END AS actual_amount,
                     CASE
                     WHEN ai.type = 'out_refund' THEN sum(
