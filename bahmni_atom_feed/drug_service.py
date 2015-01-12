@@ -13,17 +13,18 @@ class drug_service(osv.osv):
 
     def create_or_update_drug(self, cr, uid, vals, context=None):
         object_ids = self.pool.get("product.product").search(cr, uid, [('uuid', '=', vals.get("uuid"))], context={"active_test":False})
-        updated_drug = self._fill_drug_object(cr, uid, vals)
+        updated_drug = self._fill_drug_object(cr, uid, vals, object_ids)
         if object_ids :
             prod_id = self.pool.get('product.product').write(cr, uid, object_ids[0:1], updated_drug, context)
         else:
             prod_id = self.pool.get('product.product').create(cr, uid, updated_drug, context)
 
-    def _fill_drug_object(self, cr, uid, drug_from_feed):
+    def _fill_drug_object(self, cr, uid, drug_from_feed, drug_ids_from_db):
         drug = {}
         category_name = drug_from_feed.get("dosageForm")
         category_from_db = self._get_object_by_domain(cr, uid, "product.category", [('name', '=', category_name)])
         categ_id = category_from_db and category_from_db.get('id') or self._create_in_drug_category(cr, uid, category_name)
+        list_price = drug_ids_from_db and self.pool.get('product.product').browse(cr, uid, drug_ids_from_db[0]).list_price or 0.0
 
         drug["uuid"] = drug_from_feed.get("uuid")
         drug["name"] = drug_from_feed.get("name")
@@ -31,6 +32,7 @@ class drug_service(osv.osv):
         drug["drug"] = drug_from_feed.get("genericName")
         drug["categ_id"] = categ_id
         drug["type"] = "product"
+        drug["list_price"] = list_price
         drug["sale_ok"] = 1
         drug["purchase_ok"] = 1
         return drug
