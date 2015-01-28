@@ -35,6 +35,7 @@ class sale_order_line(osv.osv):
             location_id = shop.warehouse_id and shop.warehouse_id.lot_stock_id.id
             if location_id:
                 prodlot_context['location_id'] = location_id
+                prodlot_context['search_in_child'] = True
         return prodlot_context
 
     def product_id_change(self, cr, uid, ids, pricelist, product, qty=0,
@@ -70,8 +71,8 @@ class sale_order_line(osv.osv):
         result['batch_name'] = None
         result['batch_id'] = None
 
-        for prodlot_id in stock_prod_lot.search(cr, uid,[('product_id','=',product_obj.id)]):
-            prodlot_context = self._get_prodlot_context(cr, uid, context=context)
+        prodlot_context = self._get_prodlot_context(cr, uid, context=context)
+        for prodlot_id in stock_prod_lot.search(cr, uid,[('product_id','=',product_obj.id)], context=prodlot_context):
             prodlot = stock_prod_lot.browse(cr, uid, prodlot_id, context=prodlot_context)
             if(prodlot.life_date and datetime.strptime(prodlot.life_date, tools.DEFAULT_SERVER_DATETIME_FORMAT) < datetime.today()):
                 continue
