@@ -1,10 +1,10 @@
 from openerp.osv import fields, osv
 from openerp.osv.orm import browse_null
 from openerp import pooler
+import openerp.addons.decimal_precision as dp
 import openerp
 import logging
 import re
-
 
 _logger = logging.getLogger(__name__)
 
@@ -40,10 +40,12 @@ class purchase_order_line(osv.osv):
         if (product_id):
             product = self.pool.get('product.product').browse(cr, uid, product_id, context)
             res['value']['manufacturer'] = product and product.manufacturer or False
+            res['value']['mrp'] = product and product.get_mrp(partner_id, context=context) or False
         return res
 
     _columns = {
         'manufacturer':fields.char('Manufacturer', size=64),
+        'mrp': fields.float('MRP', required=True, digits_compute= dp.get_precision('Product Price')),
     }
 
 
@@ -58,7 +60,6 @@ class stock_picking_in(osv.osv):
     _defaults = {
         'warned': False
     }
-
 
 class stock_partial_picking(osv.osv_memory):
     _name = "stock.partial.picking"

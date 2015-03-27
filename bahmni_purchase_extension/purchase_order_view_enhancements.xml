@@ -15,6 +15,9 @@
                 <xpath expr="/form/sheet/notebook/page[@string='Purchase Order']//field[@name='order_line']/tree//field[@name='name']" position="before">
                     <field name="manufacturer"/>
                 </xpath>
+                <xpath expr="/form/sheet/notebook/page[@string='Purchase Order']//field[@name='order_line']/tree//field[@name='price_unit']" position="after">
+                    <field name="mrp"/>
+                </xpath>
                 <xpath expr="/form/sheet/notebook/page[@string='Purchase Order']//field[@name='order_line']/tree//field[@name='name']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>

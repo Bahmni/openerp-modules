@@ -14,6 +14,9 @@
                         <field name="manufacturer" />
                     </group>
                 </xpath>
+                <xpath expr="/form/sheet/notebook/page[@string='Procurements']//field[@name='standard_price']" position="after">
+                    <field name="mrp" />
+                </xpath>
             </field>
         </record>
 
