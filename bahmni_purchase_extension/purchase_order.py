@@ -43,6 +43,11 @@ class purchase_order_line(osv.osv):
             res['value']['mrp'] = product and product.get_mrp(partner_id, context=context) or False
         return res
 
+    def onchange_mrp(self, cr, uid, ids, partner_id, product_id, qty, uom_id, mrp, context=None):
+        product = self.pool.get('product.product').browse(cr, uid, product_id, context=context)
+        product.set_mrp(partner_id, qty, mrp, context=None)
+        return {'value': {'mrp': mrp}}
+
     _columns = {
         'manufacturer':fields.char('Manufacturer', size=64),
         'mrp': fields.float('MRP', required=True, digits_compute= dp.get_precision('Product Price')),

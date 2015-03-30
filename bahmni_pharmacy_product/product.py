@@ -267,6 +267,23 @@ class product_product(osv.osv):
             return self.pool.get('product.supplierinfo').price_get(cr, uid, supplier_id, ids[0], context=context).get(supplier_id, False)
         return product and product.mrp
 
+    def set_mrp(self, cr, uid, ids, supplier_id, qty, mrp, context=None):
+        supplierinfo_obj = self.pool.get('product.supplierinfo')
+        pricelist_obj = self.pool.get('pricelist.partnerinfo')
+        product = self.browse(cr, uid, ids[0], context=context)
+        seller_ids = [seller_id.name.id for seller_id in product.seller_ids]
+        if(product is None or supplier_id is None or mrp is None):
+            return
+        if(supplier_id in seller_ids):
+            supplier_info_ids = supplierinfo_obj.search(cr, uid, [('name','=',supplier_id),('product_id','=',product.id)])
+            if(supplier_info_ids):
+                pricelist_ids = pricelist_obj.search(cr, uid, [('suppinfo_id', 'in', supplier_info_ids), ('min_quantity', '<=', qty)])
+                if(pricelist_ids):
+                    pricelist_obj.write(cr, uid, pricelist_ids, {'price': mrp}, context=context)
+        else:
+            new_pricelist_tuple = (0, 0, {'min_quantity': 0.0, 'price': mrp})
+            supplierinfo_obj.create(cr, uid, {'name': supplier_id, 'product_id': ids[0], 'pricelist_ids': [new_pricelist_tuple], 'min_qty': 0.0})
+
     _columns = {
         'uuid': fields.char('UUID', size=64),
         'drug':fields.char('Drug Name', size=64),
