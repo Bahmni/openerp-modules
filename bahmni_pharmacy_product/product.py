@@ -280,6 +280,8 @@ class product_product(osv.osv):
                 pricelist_ids = pricelist_obj.search(cr, uid, [('suppinfo_id', 'in', supplier_info_ids), ('min_quantity', '<=', qty)])
                 if(pricelist_ids):
                     pricelist_obj.write(cr, uid, pricelist_ids, {'price': mrp}, context=context)
+                else:
+                    supplierinfo_obj.write(cr, uid, supplier_info_ids, {'pricelist_ids': [(0, 0, {'min_quantity': 0.0, 'price': mrp})]})
         else:
             new_pricelist_tuple = (0, 0, {'min_quantity': 0.0, 'price': mrp})
             supplierinfo_obj.create(cr, uid, {'name': supplier_id, 'product_id': ids[0], 'pricelist_ids': [new_pricelist_tuple], 'min_qty': 0.0})
