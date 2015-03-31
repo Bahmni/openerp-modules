@@ -14,7 +14,6 @@ openerp.bahmni_print_bill = function(instance) {
             $('button#print-bill-button').click($.proxy(function() {
                 var self = this;
                 this.fetchAndPrintBill("Bill", function(bill) {
-                    self.printLatestPrescription(bill);
                     self.gotoQuotation();
                 });
             }, this));
@@ -26,9 +25,9 @@ openerp.bahmni_print_bill = function(instance) {
                 });
             }, this));
 
-            $('button#print-latest-prescription').click($.proxy(function() {
+            $('button#print-bill-latest-prescription').click($.proxy(function() {
                 var self = this;
-                this.fetch().done(function(bill) {
+                this.fetchAndPrintBill("Bill", function(bill) {
                     self.printLatestPrescription(bill);
                 });
             }, this));
