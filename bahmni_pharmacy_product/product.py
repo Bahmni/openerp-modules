@@ -12,6 +12,22 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
+class product_template(osv.osv):
+    _name = 'product.template'
+    _inherit = 'product.template'
+
+    # Removing constraint while changing product uom category if not stock move happened.
+    def write(self, cr, uid, ids, vals, context=None):
+        if 'uom_po_id' in vals:
+            new_uom = self.pool.get('product.uom').browse(cr, uid, vals['uom_po_id'], context=context)
+            stock_move_obj = self.pool.get('stock.move')
+            for product in self.browse(cr, uid, ids, context=context):
+                old_uom = product.uom_po_id
+                if old_uom.category_id.id != new_uom.category_id.id:
+                    if not stock_move_obj.search(cr, uid, [('product_id', '=', product.id)], context=context):
+                        cr.execute("update product_template set uom_id=%s, uom_po_id=%s where id=%s" % (new_uom.id, new_uom.id, product.id) )
+        return super(product_template, self).write(cr, uid, ids, vals, context=context)
+
 class product_product(osv.osv):
     
     _name = 'product.product'
