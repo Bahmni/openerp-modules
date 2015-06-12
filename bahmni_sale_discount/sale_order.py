@@ -476,7 +476,7 @@ class sale_order(osv.osv):
              help="The Total Outstanding amount at the time of sale order creation.",multi="all"),
     'partner_village': fields.function(_get_partner_details, type='char', string ='Village', readonly=True, multi=True),
     'partner_uuid': fields.function(_get_partner_details, type='char', string ='Customer UUID', readonly=True, multi=True,),
-
+    'care_setting': fields.selection([('ipd', 'IPD'), ('opd', 'OPD')], 'Care Setting'),
     }
 
     _defaults = {
