@@ -92,7 +92,7 @@ class order_save_service(osv.osv):
             'partner_id': cus_id,
             'name': name,
             'origin': 'ATOMFEED SYNC',
-            'date': datetime.date.today(),
+            'date_order': datetime.date.today(),
             'shop_id': shop_id,
             'partner_invoice_id': cus_id,
             'partner_shipping_id': cus_id,
