@@ -46,6 +46,7 @@ SELECT
 FROM account_voucher_line
 INNER JOIN account_move_line on account_voucher_line.move_line_id = account_move_line.id
 INNER JOIN sale_order on sale_order.name = account_move_line.ref
+WHERE date_order >= :'start_date' and date_order <= :'end_date'
 GROUP BY care_setting
 ORDER BY care_setting;
 
