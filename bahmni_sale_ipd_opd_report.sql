@@ -30,7 +30,7 @@ SELECT
     CASE WHEN care_setting is not NULL THEN care_setting
          ELSE 'N/A'
     END,
-    count(amount_total) as "Total Bill Amount"
+    sum(amount_total) as "Total Bill Amount"
 FROM sale_order
 WHERE date_order >= :'start_date' and date_order <= :'end_date'
 GROUP BY care_setting
