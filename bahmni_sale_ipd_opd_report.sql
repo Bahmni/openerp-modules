@@ -8,7 +8,9 @@ SELECT
     END,
     count(distinct partner_id) as "Number of patient"
 FROM sale_order
-WHERE date_order >= :'start_date' and date_order <= :'end_date'
+WHERE
+    date_order >= :'start_date' and date_order <= :'end_date'
+    AND sale_order.state != 'cancel'
 GROUP BY care_setting
 ORDER BY care_setting;
 
@@ -21,7 +23,9 @@ SELECT
     END,
     count(*) as "Number of Bill Raised"
 FROM sale_order
-WHERE date_order >= :'start_date' and date_order <= :'end_date'
+WHERE
+    date_order >= :'start_date' and date_order <= :'end_date'
+    AND sale_order.state != 'cancel'
 GROUP BY care_setting
 ORDER BY care_setting;
 
@@ -32,7 +36,9 @@ SELECT
     END,
     sum(amount_total) as "Total Bill Amount"
 FROM sale_order
-WHERE date_order >= :'start_date' and date_order <= :'end_date'
+WHERE
+    date_order >= :'start_date' and date_order <= :'end_date'
+    AND sale_order.state != 'cancel'
 GROUP BY care_setting
 ORDER BY care_setting;
 
@@ -44,9 +50,13 @@ SELECT
     END,
     sum(account_voucher_line.amount) as "Total Paid Amount"
 FROM account_voucher_line
+INNER JOIN account_voucher on account_voucher_line.voucher_id = account_voucher.id
 INNER JOIN account_move_line on account_voucher_line.move_line_id = account_move_line.id
 INNER JOIN sale_order on sale_order.name = account_move_line.ref
-WHERE date_order >= :'start_date' and date_order <= :'end_date'
+WHERE
+    date_order >= :'start_date' and date_order <= :'end_date'
+    AND sale_order.state != 'cancel'
+    AND account_voucher.state != 'cancel'
 GROUP BY care_setting
 ORDER BY care_setting;
 
@@ -58,7 +68,9 @@ SELECT
     END,
     sum(discount) as "Total Discount Amount"
 FROM sale_order
-WHERE date_order >= :'start_date' and date_order <= :'end_date'
+WHERE
+    date_order >= :'start_date' and date_order <= :'end_date'
+    AND sale_order.state != 'cancel'
 GROUP BY care_setting
 ORDER BY care_setting;
 
@@ -71,15 +83,18 @@ SELECT
     sum(amount_original - total_paid) as "Total Credit amount"
 FROM
     (Select 
-        name, move_line_id, amount_original, sum(amount) as total_paid, bool_or(reconcile) as reconciled
+        account_voucher_line.name, move_line_id, amount_original, sum(account_voucher_line.amount) as total_paid, bool_or(reconcile) as reconciled
     from account_voucher_line
-    group by name, move_line_id, amount_original
+    INNER JOIN account_voucher on account_voucher_line.voucher_id = account_voucher.id
+    WHERE account_voucher.state != 'cancel'
+    group by account_voucher_line.name, move_line_id, amount_original
     ) bill_payment
 INNER JOIN account_move_line on bill_payment.move_line_id = account_move_line.id
 INNER JOIN sale_order on sale_order.name = account_move_line.ref
 WHERE
     bill_payment.reconciled = false
     AND date_order >= :'start_date' and date_order <= :'end_date'
+    AND sale_order.state != 'cancel'
 GROUP BY care_setting
 ORDER BY care_setting;
 
@@ -93,6 +108,7 @@ SELECT
 FROM sale_order
 WHERE
     date_order >= :'start_date' and date_order <= :'end_date'
+    AND sale_order.state != 'cancel'
 GROUP BY care_setting
 ORDER BY care_setting;
 
@@ -105,14 +121,17 @@ SELECT
     sum(total_paid) / count(sale_order.id) as "Mean Paid amount"
 FROM
     (Select 
-        name, move_line_id, amount_original, sum(amount) as total_paid, bool_or(reconcile) as reconciled
+        account_voucher_line.name, move_line_id, amount_original, sum(account_voucher_line.amount) as total_paid, bool_or(reconcile) as reconciled
     from account_voucher_line
-    group by name, move_line_id, amount_original
+    INNER JOIN account_voucher on account_voucher_line.voucher_id = account_voucher.id
+    WHERE account_voucher.state != 'cancel'
+    group by account_voucher_line.name, move_line_id, amount_original
     ) bill_payment
 INNER JOIN account_move_line on bill_payment.move_line_id = account_move_line.id
 INNER JOIN sale_order on sale_order.name = account_move_line.ref
 WHERE
     date_order >= :'start_date' and date_order <= :'end_date'
+    AND sale_order.state != 'cancel'
 GROUP BY care_setting
 ORDER BY care_setting;
 
@@ -126,6 +145,7 @@ SELECT
 FROM sale_order
 WHERE
     date_order >= :'start_date' and date_order <= :'end_date'
+    AND sale_order.state != 'cancel'
 GROUP BY care_setting
 ORDER BY care_setting;
 
@@ -138,16 +158,19 @@ Select
     sum(amount_original - total_paid) / count(sale_order.id) as "Mean Credit Amount"
 FROM
     (Select 
-            name, move_line_id, amount_original, sum(amount) as total_paid, bool_or(reconcile) as reconciled
-        from account_voucher_line
-        group by name, move_line_id, amount_original 
-        order by name
+        account_voucher_line.name, move_line_id, amount_original, sum(account_voucher_line.amount) as total_paid, bool_or(reconcile) as reconciled
+    from account_voucher_line
+    INNER JOIN account_voucher on account_voucher_line.voucher_id = account_voucher.id
+    WHERE account_voucher.state != 'cancel'
+    group by account_voucher_line.name, move_line_id, amount_original
+    order by name
     ) bill_payment
 INNER JOIN account_move_line on bill_payment.move_line_id = account_move_line.id
 INNER JOIN sale_order on sale_order.name = account_move_line.ref
 WHERE
     bill_payment.reconciled = false
     AND date_order >= :'start_date' and date_order <= :'end_date'
+    AND sale_order.state != 'cancel'
 GROUP BY care_setting
 ORDER BY care_setting;
 
@@ -161,16 +184,19 @@ Select
     count(sale_order.id) as "Number of bill paid 100%"
 FROM
     (Select 
-            name, move_line_id, amount_original, sum(amount) as total_paid, bool_or(reconcile) as reconciled
-        from account_voucher_line
-        group by name, move_line_id, amount_original 
-        order by name
+        account_voucher_line.name, move_line_id, amount_original, sum(account_voucher_line.amount) as total_paid, bool_or(reconcile) as reconciled
+    from account_voucher_line
+    INNER JOIN account_voucher on account_voucher_line.voucher_id = account_voucher.id
+    WHERE account_voucher.state != 'cancel'
+    group by account_voucher_line.name, move_line_id, amount_original
+    order by name
     ) bill_payment
 INNER JOIN account_move_line on bill_payment.move_line_id = account_move_line.id
 INNER JOIN sale_order on sale_order.name = account_move_line.ref
 WHERE
     bill_payment.reconciled = true
     AND date_order >= :'start_date' and date_order <= :'end_date'
+    AND sale_order.state != 'cancel'
 GROUP BY care_setting
 ORDER BY care_setting;
 
@@ -185,6 +211,7 @@ FROM sale_order
 WHERE
     discount > 0
     AND date_order >= :'start_date' and date_order <= :'end_date'
+    AND sale_order.state != 'cancel'
 GROUP BY care_setting
 ORDER BY care_setting;
 
@@ -198,15 +225,18 @@ Select
     count(sale_order.id) as "Number of bills receiving credits"
 FROM
     (Select 
-            name, move_line_id, amount_original, sum(amount) as total_paid, bool_or(reconcile) as reconciled
-        from account_voucher_line
-        group by name, move_line_id, amount_original 
-        order by name
+        account_voucher_line.name, move_line_id, amount_original, sum(account_voucher_line.amount) as total_paid, bool_or(reconcile) as reconciled
+    from account_voucher_line
+    INNER JOIN account_voucher on account_voucher_line.voucher_id = account_voucher.id
+    WHERE account_voucher.state != 'cancel'
+    group by account_voucher_line.name, move_line_id, amount_original
+    order by name
     ) bill_payment
 INNER JOIN account_move_line on bill_payment.move_line_id = account_move_line.id
 INNER JOIN sale_order on sale_order.name = account_move_line.ref
 WHERE
     bill_payment.reconciled = false
     AND date_order >= :'start_date' and date_order <= :'end_date'
+    AND sale_order.state != 'cancel'
 GROUP BY care_setting
 ORDER BY care_setting;
