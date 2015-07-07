@@ -144,7 +144,8 @@ SELECT
     sum(discount)/count(*) as "Mean Discount Amount"
 FROM sale_order
 WHERE
-    date_order >= :'start_date' and date_order <= :'end_date'
+    discount != 0.0
+    AND date_order >= :'start_date' and date_order <= :'end_date'
     AND sale_order.state != 'cancel'
 GROUP BY care_setting
 ORDER BY care_setting;
