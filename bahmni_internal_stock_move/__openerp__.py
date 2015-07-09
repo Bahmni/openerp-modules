@@ -11,8 +11,10 @@
         'security/ir.model.access.csv',
         'stock_internal_move_view.xml',
         'stock_location_prod_lot_view.xml',
+        'products_by_last_moved_view.xml',
         'stock_view.xml',
-        'stock_move_view.xml'
+        'stock_move_view.xml',
+        'filters.xml'
     ],
     'demo': [],
     'auto_install': False,

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="ir.filters" id="products_not_sold_in_past_90_days">
+            <field name="name">Products not sold in past 90 days</field>
+            <field name="model_id">prod_last_moved.report</field>
+            <field name="user_id"></field>
+            <field name="domain">
+                [
+                ['last_moved_date', '&lt;', (context_today() - datetime.timedelta(90)).strftime('%Y-%m-%d')]
+                ]
+            </field>
+        </record>
+        <record model="ir.filters" id="products_not_sold_in_past_60_days">
+            <field name="name">Products not sold in past 60 days</field>
+            <field name="model_id">prod_last_moved.report</field>
+            <field name="user_id"></field>
+            <field name="domain">
+                [
+                ['last_moved_date', '&lt;', (context_today() - datetime.timedelta(60)).strftime('%Y-%m-%d')]
+                ]
+            </field>
+        </record>
+        <record model="ir.filters" id="products_not_sold_in_past_30_days">
+            <field name="name">Products not sold in past 30 days</field>
+            <field name="model_id">prod_last_moved.report</field>
+            <field name="user_id"></field>
+            <field name="domain">
+                [
+                ['last_moved_date', '&lt;', (context_today() - datetime.timedelta(30)).strftime('%Y-%m-%d')]
+                ]
+            </field>
+        </record>
+
+    </data>
+</openerp>

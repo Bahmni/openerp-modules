@@ -17,5 +17,23 @@
             id="menu_action_production_lot_location_form"
             parent="stock.menu_traceability" groups="stock.group_production_lot"
             sequence="3"/>
+
+    </data>
+    <data>
+        <record id="action_products_by_last_moved" model="ir.actions.act_window">
+            <field name="name">Products By Last Moved</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">prod_last_moved.report</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="products_by_last_moved_extended_tree_view"/>
+            <field name="search_view_id" ref="products_by_last_moved_extended_filter"/>
+            <field name="context">{}</field>
+        </record>
+
+        <menuitem action="action_products_by_last_moved"
+                  id="menu_action_products_by_last_moved"
+                  parent="stock.menu_traceability" groups="stock.group_production_lot"
+                  sequence="4"/>
     </data>
 </openerp>

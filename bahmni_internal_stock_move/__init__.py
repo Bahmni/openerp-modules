@@ -1,1 +1,1 @@
-import stock_move, stock_picking, stock_location,stock_report_prodlots
+import stock_move, stock_picking, stock_location,stock_report_prodlots, stock_report_prod_by_last_moved
