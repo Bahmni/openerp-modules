@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import simplejson
+import time
 import os
 import re
 import openerp
@@ -29,6 +30,8 @@ class InvoiceController(openerp.addons.web.http.Controller):
             pool = pooler.get_pool(dbname)
             account_voucher_obj = registry.get('account.voucher')
             company_obj = registry.get('res.company')
+            sale_order_obj = pool.get('sale.order')
+            invoice_obs = pool.get("account.invoice")
             voucher = account_voucher_obj.browse(cr, uid, voucher_id, context=context)
             company = company_obj.browse(cr, uid, voucher.company_id.id, context=context)
             voucher_line_ids = sorted(voucher.line_ids, key=lambda v: v.id,reverse=True)
@@ -36,12 +39,13 @@ class InvoiceController(openerp.addons.web.http.Controller):
             for voucher_line in voucher_line_ids:
                 if(voucher_line.type == 'cr'):
                     inv_no = voucher_line.name
-                    inv_ids = pool.get("account.invoice").search(cr, uid,[('number','=',inv_no)])
+                    inv_ids = invoice_obs.search(cr, uid,[('number','=',inv_no)])
                     if(inv_ids and len(inv_ids) > 0):
                         inv_id = inv_ids[0]
-                        invoice = pool.get("account.invoice").browse(cr,uid,inv_id,context=context)
+                        invoice = invoice_obs.browse(cr,uid,inv_id,context=context)
                     break
             invoice_line_items = []
+
             for invoice_line_item in invoice.invoice_line:
                 invoice_line_items.append({
                     'product_name': invoice_line_item.product_id.name,
@@ -51,6 +55,15 @@ class InvoiceController(openerp.addons.web.http.Controller):
                     'product_category': invoice_line_item.product_id.categ_id.name,
                 })
             number, number_in_words = convert(voucher.bill_amount)
+
+            invoice_perm = invoice_obs.perm_read(cr, uid, [invoice.id])[0]
+            bill_confirmed_date = invoice_perm.get('write_date', 'N/A')
+            bill_create_date = invoice_perm.get('create_date', 'N/A')
+            sale_order_ids = sale_order_obj.search(cr, uid, [('name', '=', invoice.reference)], context=context)
+            if sale_order_ids:
+                sale_order_perm = sale_order_obj.perm_read(cr, uid, sale_order_ids, context=context)[0]
+                bill_create_date = sale_order_perm.get('create_date', 'N/A')
+
             bill = {
                 'company': {
                     'name': company.name,
@@ -81,6 +94,8 @@ class InvoiceController(openerp.addons.web.http.Controller):
                 'partner_ref': voucher.partner_id.ref,
                 'partner_uuid': voucher.partner_id.uuid,
                 'cashier_initials': voucher.create_uid.initials,
+                'bill_confirmed_date': time.strftime('%d/%m/%Y %H:%M:%S',time.strptime(bill_confirmed_date,'%Y-%m-%d %H:%M:%S.%f')),
+                'bill_create_date': time.strftime('%d/%m/%Y %H:%M:%S',time.strptime(bill_create_date,'%Y-%m-%d %H:%M:%S.%f'))
             }
             return bill
         return {}

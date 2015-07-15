@@ -21,7 +21,7 @@
             .totalLabel { width: 60%; text-align: right;}
             .totalValue { width: 40%; text-align: right;}
             .right { text-align: right;}
-
+            .small { font-size: 75%;}
             hr.dashed {border-top: 1px dashed #000; color: #fff; background-color: #fff; height: 1px; }
         </style>
 
@@ -78,6 +78,8 @@
                 <div style="width: 40%; float: left; padding-top: 20px">
                     <div t-if="cashier_initials" id="cashier-initials"><t t-esc="cashier_initials"/></div>
                     <div id="message-bill">This is a computer generated receipt and does not require a signature.</div>
+                    <div class="small">Bill Created:<t t-esc="bill_create_date"/></div>
+                    <div class="small">Bill Confirmed:<t t-esc="bill_confirmed_date"/></div>
                 </div>
 
                 <div style="width:40%;float:right">
@@ -132,6 +134,7 @@
             #cashier-initials {margin-top: 40px; font-size: 8pt;}
             #message-bill {font-style: italic; margin-top: 10px}
             table.bottom-border {border-bottom: 1px dashed;}
+            .small { font-size: 75%;}
             .totalLabel { width: 60%; text-align: right;}
             .totalValue { width: 40%; text-align: right;}
             .right { text-align: right;}
@@ -182,6 +185,8 @@
                 <div style="width: 40%; float: left; padding-top: 20px">
                     <div t-if="cashier_initials" id="cashier-initials"><t t-esc="cashier_initials"/></div>
                     <div id="message-bill">This is a computer generated receipt and does not require a signature.</div>
+                    <div class="small">Bill Created:<t t-esc="bill_create_date"/></div>
+                    <div class="small">Bill Confirmed:<t t-esc="bill_confirmed_date"/></div>
                 </div>
 
                 <div style="width:40%;float:right">
