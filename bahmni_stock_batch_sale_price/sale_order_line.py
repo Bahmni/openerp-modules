@@ -38,6 +38,26 @@ class sale_order_line(osv.osv):
                 prodlot_context['search_in_child'] = True
         return prodlot_context
 
+    def get_available_batch_details(self, cr, uid, product_id, sale_order, context=None):
+        context = context or {}
+        context['shop_id'] = sale_order.shop_id.id
+        prodlot_context = self._get_prodlot_context(cr, uid, context=context)
+        stock_prod_lot = self.pool.get('stock.production.lot')
+
+        already_used_batch_ids = []
+        for line in sale_order.order_line:
+            if line.batch_id:
+                id = line.batch_id.id
+                already_used_batch_ids.append(id.__str__())
+
+        query = ['&',('product_id','=',product_id), ('id','not in',already_used_batch_ids)] if len(already_used_batch_ids) > 0 else [('product_id','=',product_id)]
+        for prodlot_id in stock_prod_lot.search(cr, uid, query, context=prodlot_context):
+            prodlot = stock_prod_lot.browse(cr, uid, prodlot_id, context=prodlot_context)
+            if(prodlot.life_date and datetime.strptime(prodlot.life_date, tools.DEFAULT_SERVER_DATETIME_FORMAT) >= datetime.today() and prodlot.future_stock_forecast > 0):
+                return prodlot
+        return None
+
+
     def product_id_change(self, cr, uid, ids, pricelist, product, qty=0,
                           uom=False, qty_uos=0, uos=False, name='', partner_id=False,
                           lang=False, update_tax=True, date_order=False, packaging=False, fiscal_position=False, flag=False, context=None):
@@ -72,7 +92,7 @@ class sale_order_line(osv.osv):
         result['batch_id'] = None
 
         prodlot_context = self._get_prodlot_context(cr, uid, context=context)
-        for prodlot_id in stock_prod_lot.search(cr, uid,[('product_id','=',product_obj.id)], context=prodlot_context):
+        for prodlot_id in stock_prod_lot.search(cr, uid,[('product_id','=',product_obj.id)],context=prodlot_context):
             prodlot = stock_prod_lot.browse(cr, uid, prodlot_id, context=prodlot_context)
             if(prodlot.life_date and datetime.strptime(prodlot.life_date, tools.DEFAULT_SERVER_DATETIME_FORMAT) < datetime.today()):
                 continue
@@ -173,6 +193,7 @@ class sale_order_line(osv.osv):
         warning_msgs = res_packing.get('warning') and res_packing['warning']['message'] or ''
         res['value']['delay'] = (product_obj.sale_delay or 0.0)
         res['value']['type'] = product_obj.procure_method
+
 
         return res
 

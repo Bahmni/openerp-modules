@@ -17,14 +17,24 @@ class order_save_service(osv.osv):
     def _create_sale_order_line(self, cr, uid, name, sale_order, order, context=None):
         if(self._order_already_processed(cr,uid,order['orderId'],context)):
             return
+        self._create_sale_order_line_function(cr, uid, name, sale_order, order, context=context)
+
+    def _create_sale_order_line_function(self, cr, uid, name, sale_order, order, context=None):
         stored_prod_ids = self.pool.get('product.product').search(cr, uid, [('uuid', '=', order['productId'])], context=context)
         if(stored_prod_ids):
             prod_id = stored_prod_ids[0]
             prod_obj = self.pool.get('product.product').browse(cr, uid, prod_id)
+            sale_order_line_obj = self.pool.get('sale.order.line')
+            prod_lot = sale_order_line_obj.get_available_batch_details(cr, uid, prod_id, sale_order, context=context)
+
+            product_uom_qty = order['quantity']
+            if(prod_lot != None and order['quantity'] > prod_lot.future_stock_forecast):
+                product_uom_qty = prod_lot.future_stock_forecast
+
             sale_order_line = {
                 'product_id': prod_id,
                 'price_unit': prod_obj.list_price,
-                'product_uom_qty': order['quantity'],
+                'product_uom_qty': product_uom_qty,
                 'product_uom': prod_obj.uom_id.id,
                 'order_id': sale_order.id,
                 'external_id':order['encounterId'],
@@ -32,24 +42,29 @@ class order_save_service(osv.osv):
                 'name': prod_obj.name,
                 'type': 'make_to_stock',
                 'state': 'draft',
-                }
-            self.pool.get('sale.order.line').create(cr, uid, sale_order_line, context=context)
+            }
+
+            if prod_lot != None:
+                sale_order_line['price_unit'] = prod_lot.sale_price
+                sale_order_line['batch_name'] = prod_lot.name
+                sale_order_line['batch_id'] = prod_lot.id
+
+            sale_order_line_obj.create(cr, uid, sale_order_line, context=context)
+
+            sale_order = self.pool.get('sale.order').browse(cr, uid, sale_order.id, context=context)
+
+            if product_uom_qty != order['quantity']:
+                order['quantity'] = order['quantity'] - product_uom_qty
+                self._create_sale_order_line_function(cr, uid, name, sale_order, order, context=context)
 
 
     def _update_sale_order_line(self, cr, uid, name, sale_order, order, parent_order_line, context=None):
-        update_dict = {
-            'product_uom_qty': order.get('quantity', 0),
-            'external_order_id': order.get('orderId'),
-            }
-        if(parent_order_line and parent_order_line.order_id.state == 'draft'):
-            _logger.info(update_dict)
-            self.pool.get('sale.order.line').write(cr, uid, parent_order_line.id, update_dict, context=context)
-        else:
-            self._create_sale_order_line(cr, uid, name, sale_order, order, context=context)
+        self._delete_sale_order_line( cr, uid, parent_order_line, context=context)
+        self._create_sale_order_line(cr, uid, name, sale_order, order, context=context)
 
-    def _delete_sale_order_line(self, cr, uid, sale_order, order, parent_order_line, context=None):
-        if(parent_order_line and parent_order_line.order_id.state == 'draft'):
-            self.pool.get('sale.order.line').unlink(cr, uid, [parent_order_line.id], context=context)
+    def _delete_sale_order_line(self, cr, uid, parent_order_line, context=None):
+        if(parent_order_line[0] and parent_order_line[0].order_id.state == 'draft'):
+            self.pool.get('sale.order.line').unlink(cr, uid, [parent.id for parent in parent_order_line], context=context)
 
     def _fetch_parent(self, all_orders, child_order):
         for order in all_orders:
@@ -59,7 +74,7 @@ class order_save_service(osv.osv):
     def _fetch_order_in_db(self, cr, uid, order_uuid, context=None):
         line_id = self.pool.get('sale.order.line').search(cr, uid, [('external_order_id', '=', order_uuid)], context=context)
         if(line_id):
-            return self.pool.get('sale.order.line').browse(cr, uid, line_id, context=context)[0]
+            return self.pool.get('sale.order.line').browse(cr, uid, line_id, context=context)
         return None
 
     def _order_already_processed(self,cr,uid,order_uuid,context=None):
@@ -81,7 +96,7 @@ class order_save_service(osv.osv):
                 raise osv.except_osv(('Error!'),("Previous order id does not exist in DB. This can be because of previous failed events"))
 
         if(order["voided"] or order.get('action', "") == "DISCONTINUE"):
-            self._delete_sale_order_line(cr, uid, sale_order, order, parent_order_line, context)
+            self._delete_sale_order_line(cr, uid, parent_order_line)
         elif(order.get('action', "") == "REVISE"):
             self._update_sale_order_line(cr, uid, name, sale_order, order, parent_order_line, context)
         else:
@@ -107,9 +122,6 @@ class order_save_service(osv.osv):
 
 
     def _update_sale_order(self, cr, uid, cus_id, name, shop_id, sale_order_id, orders, context=None):
-        prod_order_Map ={}
-        deleted_prod_ids = []
-        updated_prod_map = {}
         sale_order = self.pool.get('sale.order').browse(cr, uid, sale_order_id)
         if(sale_order.state != 'draft'):
             raise osv.except_osv(('Error!'),("Sale order is already approved"))
@@ -124,6 +136,7 @@ class order_save_service(osv.osv):
         return order_group.get('openERPOrders', None)
 
     def create_orders(self, cr,uid,vals,context):
+
         customer_id = vals.get("customer_id")
         orders = self._get_openerp_orders(vals)
         if(not orders):
