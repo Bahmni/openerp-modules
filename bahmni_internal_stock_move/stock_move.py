@@ -13,6 +13,7 @@ _logger = logging.getLogger(__name__)
 class stock_move(osv.osv):
     _name = "stock.move"
     _inherit = "stock.move"
+    _order = "id"
 
     def onchange_lot_id(self, cr, uid, ids, prodlot_id=False, product_qty=False,
                         loc_id=False, product_id=False, uom_id=False, context=None):
