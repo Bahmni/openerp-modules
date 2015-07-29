@@ -73,5 +73,18 @@
         </record>
         <menuitem action="outgoing_picking_list_to_invoice" id="menu_action_picking_list_to_invoice" parent="base.menu_invoiced" groups="sale_stock.group_invoice_deli_orders" sequence="20"/>
 
+
+        <record id="action_turn_around_time_report" model="ir.actions.act_window">
+            <field name="name">Turn Around Time Report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">turn_around_time.report</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="turn_around_time_extended_tree_view"/>
+            <field name="search_view_id" ref="turn_around_time_extended_filter"/>
+            <field name="context">{}</field>
+        </record>
+
+        <menuitem id="menu_sub_sales_menuitem" parent="base.menu_sales" name="Turn Around Time Report" sequence="1" action="action_turn_around_time_report" />
     </data>
 </openerp>

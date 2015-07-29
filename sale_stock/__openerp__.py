@@ -52,10 +52,11 @@ You can choose flexible invoicing methods:
                    'company_view.xml',
                    'sale_stock_view.xml',
                    'sale_stock_workflow.xml',
+                   'sale_turn_around_view.xml',
                    'stock_view.xml',
                    'res_config_view.xml',
                    'report/sale_report_view.xml',
-                   'process/sale_stock_process.xml',
+                   'process/sale_stock_process.xml'
                    ],
    'data': [],
    'demo_xml': ['sale_stock_demo.xml'],
