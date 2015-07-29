@@ -6,12 +6,14 @@
             <field name="model">turn_around_time.report</field>
             <field eval="7" name="priority"/>
             <field name="arch" type="xml">
-                <tree  string="Customer TOT">
-                    <field name="patient_id" />
+                <tree string="Customer TOT">
+                    <field name="patient_id"/>
                     <field name="patient_name"/>
                     <field name="bill_tot"/>
-                    <field name="pay_tot" />
-                    <field name="create_date" />
+                    <field name="pay_tot"/>
+                    <field name="bill_tot_sec"/>
+                    <field name="pay_tot_sec"/>
+                    <field name="create_date"/>
                 </tree>
             </field>
 
@@ -24,7 +26,7 @@
                 <search string="Search Customer TOT">
                     <field name="patient_id"/>
                     <field name="patient_name"/>
-                    <field name="create_date" />
+                    <field name="create_date"/>
                 </search>
             </field>
         </record>

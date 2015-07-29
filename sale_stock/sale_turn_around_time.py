@@ -14,7 +14,7 @@ class sale_turn_around_time(osv.osv):
         'bill_tot': fields.text('Bill TOT', readonly=True),
         'pay_tot':  fields.text('Pay TOT', readonly=True),
         'create_date':  fields.date('Invoice Date', readonly=True),
-        'bill_tot_sec':  fields.function("Average Bill TOT", readonly=True),
+        'bill_tot_sec':  fields.float("Average Bill TOT", readonly=True),
         'pay_tot_sec':  fields.float("Average Pay TOT", readonly=True),
 
     }
