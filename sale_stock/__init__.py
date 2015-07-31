@@ -25,5 +25,6 @@ import report
 import company
 import res_config
 import sale_turn_around_time
+import average_sale_turn_around_time
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="average_turn_around_time_extended_form_view" model="ir.ui.view">
+            <field name="name">average_turn_around_time.report.form</field>
+            <field name="type">form</field>
+            <field name="model">average_turn_around_time.report</field>
+            <field eval="7" name="priority"/>
+            <field name="arch" type="xml">
+                <form string="Customer TOT" version="7.0">
+                    <group>
+                        <field name="from_date"/>
+                        <field name="to_date"/>
+                        <field name="total"/>
+                    </group>
+                    <footer>
+                        <button name="yay" string="Click" type="object"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</openerp>
+

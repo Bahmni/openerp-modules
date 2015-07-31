@@ -53,6 +53,7 @@ You can choose flexible invoicing methods:
                    'sale_stock_view.xml',
                    'sale_stock_workflow.xml',
                    'sale_turn_around_view.xml',
+                   'average_sale_turn_around_view.xml',
                    'stock_view.xml',
                    'res_config_view.xml',
                    'report/sale_report_view.xml',
