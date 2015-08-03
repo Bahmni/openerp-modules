@@ -10,6 +10,7 @@
             <field name="arch" type="xml">
                 <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='price_unit']" position="after" >
                     <field name="batch_name"/>
+                    <field name="expiry_date"/>
                     <field name="batch_id" invisible="True"/>
                 </xpath>
             </field>

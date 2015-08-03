@@ -60,6 +60,7 @@
                 <thead>
                     <tr>
                         <th style="text-align:left;width:50%">Product</th>
+                        <th style="text-align:right">Expiry Date</th>
                         <th style="text-align:right">Quantity</th>
                         <th style="text-align:right">Unit Price</th>
                         <th style="text-align:right">SubTotal</th>
@@ -68,6 +69,7 @@
                 <tbody>
                     <tr t-foreach="invoice_line_items" t-as="invoice_line_item">
                         <td><t t-esc="invoice_line_item.product_name"/></td>
+                        <td class="right"><t t-esc="invoice_line_item.expiry_date"/></td>
                         <td class="right"><t t-esc="invoice_line_item.quantity"/></td>
                         <td class="right"><t t-esc="invoice_line_item.unit_price"/></td>
                         <td class="right"><t t-esc="invoice_line_item.subtotal"/></td>
