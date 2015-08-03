@@ -90,6 +90,7 @@ class sale_order_line(osv.osv):
         sale_price = 0.0
         result['batch_name'] = None
         result['batch_id'] = None
+        result['expiry_date'] = None
 
         prodlot_context = self._get_prodlot_context(cr, uid, context=context)
         for prodlot_id in stock_prod_lot.search(cr, uid,[('product_id','=',product_obj.id)],context=prodlot_context):
@@ -100,6 +101,7 @@ class sale_order_line(osv.osv):
                 sale_price = prodlot.sale_price
                 result['batch_name'] = prodlot.name
                 result['batch_id'] = prodlot.id
+                result['expiry_date'] = prodlot.life_date
                 break
         #-----------------------------------------------------------------
 
@@ -203,9 +205,17 @@ class sale_order_line(osv.osv):
             self.write(cr, uid, sale_order_line.id, {'product_uom_qty': qty})
         return {'value': {'product_uom_qty': qty}}
 
+
+    def _prepare_order_line_invoice_line(self, cr, uid, line, account_id=False, context=None):
+        res = super(sale_order_line, self)._prepare_order_line_invoice_line(cr, uid, line, account_id=account_id, context=context)
+        res["batch_name"] = line.batch_name
+        res["expiry_date"] = line.expiry_date
+        return res
+
     _columns = {
         'batch_id': fields.many2one('stock.production.lot', 'Batch No'),
         'batch_name': fields.char('Batch No'),
+        'expiry_date': fields.date('Expiry Date'),
         'product_dosage': fields.float('Dosage', digits_compute=dp.get_precision('Account')),
         'product_number_of_days': fields.integer('No. Days'),
     }

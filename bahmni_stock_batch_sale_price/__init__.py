@@ -1,1 +1,1 @@
-import stock_production_lot,sale_order_line,stock_move,product,batch_stock_future_view
+import stock_production_lot,sale_order_line,stock_move,product,batch_stock_future_view,account_invoice_line

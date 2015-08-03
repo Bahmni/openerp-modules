@@ -53,6 +53,7 @@ class InvoiceController(openerp.addons.web.http.Controller):
                     'quantity': invoice_line_item.quantity,
                     'subtotal': invoice_line_item.price_subtotal,
                     'product_category': invoice_line_item.product_id.categ_id.name,
+                    'expiry_date': time.strftime('%d/%m/%Y', time.strptime(invoice_line_item.expiry_date,'%Y-%m-%d')) if invoice_line_item.expiry_date else None,
                 })
             number, number_in_words = convert(voucher.bill_amount)
 
