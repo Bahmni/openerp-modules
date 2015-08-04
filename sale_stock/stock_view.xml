@@ -85,6 +85,17 @@
             <field name="context">{}</field>
         </record>
 
-        <menuitem id="menu_sub_sales_menuitem" parent="base.menu_sales" name="Turn Around Time Report" sequence="1" action="action_turn_around_time_report" />
+        <record id="action_average_turn_around_time_report" model="ir.actions.act_window">
+            <field name="name">Average Turn Around Time Report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">average_turn_around_time.report</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="average_turn_around_time_extended_form_view"/>
+            <field name="context">{}</field>
+        </record>
+
+        <menuitem id="menu_sub_sales_menuitem" parent="base.menu_sales" name="Turn Around Time Report" sequence="5" action="action_turn_around_time_report" />
+        <menuitem id="menu_sub_average_sales_menuitem" parent="base.menu_sales" name="Average Turn Around Time Report" sequence="6" action="action_average_turn_around_time_report" />
     </data>
 </openerp>

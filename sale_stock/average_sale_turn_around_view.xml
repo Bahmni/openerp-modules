@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="average_turn_around_time_extended_form_view" model="ir.ui.view">
+            <field name="name">Average TAT</field>
+            <field name="type">form</field>
+            <field name="model">average_turn_around_time.report</field>
+            <field name="arch" type="xml">
+                <form string="Customer TAT" version="7.0">
+                    <group>
+                        <field name="from_date"/>
+                        <field name="to_date"/>
+                        <field name="avg_billing"/>
+                        <field name="avg_pay"/>
+                        <field name="avg_total"/>
+                    </group>
+                    <footer>
+                        <button name="getAverage" string="Click" type="object"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</openerp>
+
