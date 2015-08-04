@@ -13,8 +13,8 @@ class sale_turn_around_time(osv.osv):
         'patient_id': fields.text('Patient ID', readonly=True),
         'patient_name': fields.text('Patient Name', readonly=True),
         'create_date': fields.date('Invoice Date', readonly=True),
-        'bill_tat': fields.float("TAT from billing to cashier window", readonly=True),
-        'pay_tat': fields.float("TAT at cashier window", readonly=True),
+        'bill_tat': fields.float("Quotation to sales order creation", readonly=True),
+        'pay_tat': fields.float("Sales order to receipt generation", readonly=True),
         'total': fields.float("TAT total", readonly=True)
     }
 

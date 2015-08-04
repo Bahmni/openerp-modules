@@ -95,7 +95,7 @@
             <field name="context">{}</field>
         </record>
 
-        <menuitem id="menu_sub_sales_menuitem" parent="base.menu_sales" name="Turn Around Time Report" sequence="1" action="action_turn_around_time_report" />
-        <menuitem id="menu_sub_average_sales_menuitem" parent="base.menu_sales" name="Average Turn Around Time" sequence="2" action="action_average_turn_around_time_report" />
+        <menuitem id="menu_sub_sales_menuitem" parent="base.menu_sales" name="Turn Around Time Report" sequence="5" action="action_turn_around_time_report" />
+        <menuitem id="menu_sub_average_sales_menuitem" parent="base.menu_sales" name="Average Turn Around Time Report" sequence="6" action="action_average_turn_around_time_report" />
     </data>
 </openerp>
