@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="order_type_shop_map_form_view" model="ir.ui.view">
+            <field name="name">Order Type Shop Map</field>
+            <field name="type">form</field>
+            <field name="model">order.type.shop.map</field>
+            <field name="arch" type="xml">
+                <form string="Order Type Shop Map" version="7.0">
+                    <group>
+                        <field name="order_type"/>
+                        <field name="shop_id"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="order_type_shop_map_tree_view" model="ir.ui.view">
+            <field name="name">order.type.shop.map.tree</field>
+            <field name="model">order.type.shop.map</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Order Type Shop">
+                    <field name="order_type"/>
+                    <field name="shop_id"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <record id="order_type_shop_map_filter" model="ir.ui.view">
+            <field name="name">order.type.shop.map.filter</field>
+            <field name="model">order.type.shop.map</field>
+            <field name="arch" type="xml">
+                <search string="Search Order Type Shop">
+                    <field name="order_type"/>
+                    <field name="shop_id"/>
+                </search>
+            </field>
+        </record>
+
+
+        <record id="action_order_type_shop_mapping" model="ir.actions.act_window">
+            <field name="name">Order Type - Shop mapping</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">order.type.shop.map</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{}</field>
+        </record>
+
+        <menuitem action="action_order_type_shop_mapping"
+                  id="menu_action_order_type_shop_mapping"
+                  parent="base.menu_base_config" groups="base.group_system"
+                  sequence="1"/>
+
+    </data>
+</openerp>
+

@@ -4,6 +4,7 @@ import logging
 from psycopg2._psycopg import DATETIME
 from openerp import netsvc
 from openerp.osv import fields, osv
+from itertools import groupby
 import datetime
 
 
@@ -86,7 +87,7 @@ class order_save_service(osv.osv):
         if(order_in_db or self._order_already_processed(cr,uid, order['orderId'],context)):
             return
 
-        parent_order_line = None
+        parent_order_line = []
         if(order.get('previousOrderId', False)):
             parent_order = self._fetch_parent(all_orders, order)
             if(parent_order):
@@ -100,6 +101,7 @@ class order_save_service(osv.osv):
         elif(order.get('action', "") == "REVISE"):
             self._update_sale_order_line(cr, uid, name, sale_order, order, parent_order_line, context)
         else:
+
             self._create_sale_order_line(cr, uid, name, sale_order, order, context)
 
     def _create_sale_order(self, cr, uid, cus_id, name, shop_id, orders, context=None):
@@ -113,7 +115,7 @@ class order_save_service(osv.osv):
             'partner_shipping_id': cus_id,
             'order_policy': 'manual',
             'pricelist_id': 1,
-            }
+        }
         if(orders):
             sale_order_id = self.pool.get('sale.order').create(cr, uid, sale_order, context=context)
             sale_order = self.pool.get('sale.order').browse(cr, uid, sale_order_id, context=context)
@@ -138,18 +140,25 @@ class order_save_service(osv.osv):
     def create_orders(self, cr,uid,vals,context):
 
         customer_id = vals.get("customer_id")
-        orders = self._get_openerp_orders(vals)
-        if(not orders):
+        all_orders = self._get_openerp_orders(vals)
+        if(not all_orders):
             return ""
         customer_ids = self.pool.get('res.partner').search(cr, uid, [('ref', '=', customer_id)], context=context)
         if(customer_ids):
             cus_id = customer_ids[0]
-            shop_id = self.pool.get('sale.shop').search(cr, uid, [('name', '=', 'Pharmacy')], context=context)[0]
-            name = self.pool.get('ir.sequence').get(cr, uid, 'sale.order')
-            sale_order_ids = self.pool.get('sale.order').search(cr, uid, [('partner_id', '=', cus_id), ('state', '=', 'draft'), ('origin', '=', 'ATOMFEED SYNC')], context=context)
-            if(not sale_order_ids):
-                self._create_sale_order(cr, uid, cus_id, name, shop_id, orders, context)
-            else:
-                self._update_sale_order(cr, uid, cus_id, name, shop_id, sale_order_ids[0], orders, context)
+
+            for orderType, ordersGroup in groupby(all_orders, lambda order: order.get('type')):
+                orders = list(ordersGroup)
+                map_id_List = self.pool.get('order.type.shop.map').search(cr, uid, [('order_type', '=', orderType)], context=context)
+                if(map_id_List):
+                    order_type_map = self.pool.get('order.type.shop.map').browse(cr, uid, map_id_List[0], context=context)
+                    shop_id = order_type_map.shop_id.id
+
+                    name = self.pool.get('ir.sequence').get(cr, uid, 'sale.order')
+                    sale_order_ids = self.pool.get('sale.order').search(cr, uid, [('partner_id', '=', cus_id), ('shop_id', '=', shop_id), ('state', '=', 'draft'), ('origin', '=', 'ATOMFEED SYNC')], context=context)
+                    if(not sale_order_ids):
+                        self._create_sale_order(cr, uid, cus_id, name, shop_id, orders, context)
+                    else:
+                        self._update_sale_order(cr, uid, cus_id, name, shop_id, sale_order_ids[0], orders, context)
         else:
             raise osv.except_osv(('Error!'), ("Patient Id not found in openerp"))
