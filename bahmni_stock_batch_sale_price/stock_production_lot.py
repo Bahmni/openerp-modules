@@ -86,6 +86,15 @@ class stock_production_lot(osv.osv):
             ids = self.search(cr, uid, args, limit=limit, context=context)
         return self.name_get(cr, uid, ids, context)
 
+    def write(self, cr, uid, ids, values, context=None):
+        val = super(stock_production_lot, self).write(cr, uid, ids, values, context)
+        if val:
+            current_product_lot = self.browse(cr, uid, ids[0], context=context)
+            product = current_product_lot.product_id
+            self.pool.get('product.template').write(cr, uid, product.product_tmpl_id.id,{'list_price':current_product_lot.sale_price}, context=context)
+
+        return val
+
     _columns = {
         'sale_price':fields.float('Sale Price',digits=(4,2)),
         'mrp':fields.float('MRP',digits=(4,2)),
