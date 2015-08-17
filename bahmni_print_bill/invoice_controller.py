@@ -5,6 +5,11 @@ import time
 import os
 import re
 import openerp
+import pytz
+from dateutil import parser
+from datetime import datetime
+from dateutil.tz import tzlocal
+
 from openerp.modules.registry import RegistryManager
 from openerp.addons.web.controllers.main import manifest_list, module_boot, html_template
 from openerp import pooler, tools
@@ -16,6 +21,7 @@ import openerp.addons.web.http as openerpweb
 import logging
 
 _logger = logging.getLogger(__name__)
+_localtimezone = tzlocal()
 
 class InvoiceController(openerp.addons.web.http.Controller):
     _cp_path = '/invoice'
@@ -95,8 +101,8 @@ class InvoiceController(openerp.addons.web.http.Controller):
                 'partner_ref': voucher.partner_id.ref,
                 'partner_uuid': voucher.partner_id.uuid,
                 'cashier_initials': voucher.create_uid.initials,
-                'bill_confirmed_date': time.strftime('%d/%m/%Y %H:%M:%S',time.strptime(bill_confirmed_date,'%Y-%m-%d %H:%M:%S.%f')),
-                'bill_create_date': time.strftime('%d/%m/%Y %H:%M:%S',time.strptime(bill_create_date,'%Y-%m-%d %H:%M:%S.%f'))
+                'bill_confirmed_date': parser.parse(bill_confirmed_date).replace(tzinfo=pytz.utc).astimezone(_localtimezone).strftime("%d/%m/%Y %H:%M:%S"),
+                'bill_create_date': parser.parse(bill_create_date).replace(tzinfo=pytz.utc).astimezone(_localtimezone).strftime("%d/%m/%Y %H:%M:%S")
             }
             return bill
         return {}
