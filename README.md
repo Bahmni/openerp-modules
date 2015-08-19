@@ -16,4 +16,4 @@ The following module is custom to __JSS__:
 1. bahmni_seed_setup
 
 Please read the following document on OpenERP setup:
-https://github.com/Bhamni/bahmni-environment/blob/master/bahmni_box_setup_steps.txt
+https://github.com/Bhamni/bahmni-environment/blob/master/bahmni_box_setup_steps.md
