@@ -91,8 +91,8 @@ class stock_production_lot(osv.osv):
         if val:
             current_product_lot = self.browse(cr, uid, ids[0], context=context)
             product = current_product_lot.product_id
-            self.pool.get('product.template').write(cr, uid, product.product_tmpl_id.id,{'list_price':current_product_lot.sale_price}, context=context)
-
+            updated_values = {'list_price':current_product_lot.sale_price, 'standard_price': current_product_lot.cost_price}
+            self.pool.get('product.template').write(cr, uid, product.product_tmpl_id.id, updated_values, context=context)
         return val
 
     _columns = {
