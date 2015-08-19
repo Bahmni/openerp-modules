@@ -45,7 +45,7 @@ class order_save_service(osv.osv):
             }
 
             if prod_lot != None:
-                sale_order_line['price_unit'] = prod_lot.sale_price
+                sale_order_line['price_unit'] = prod_lot.sale_price if prod_lot.sale_price > 0.0 else sale_order_line['price_unit']
                 sale_order_line['batch_name'] = prod_lot.name
                 sale_order_line['batch_id'] = prod_lot.id
 
