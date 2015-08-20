@@ -41,20 +41,32 @@ class prodlots_report(osv.osv):
         drop_view_if_exists(cr, 'prodlots_report')
         cr.execute("""
             create or replace view prodlots_report as (
-            select 
-              batch_stock_future_forecast.id,
-              location_id, 
-              prodlot_id, 
-              (qty * product_uom.factor) as qty,
-              batch_stock_future_forecast.product_id, 
-              life_date, 
-              product_uom.id as unit_id
-            from
-              batch_stock_future_forecast
-            left join product_product on (product_product.id=batch_stock_future_forecast.product_id)
+            select report_without_unit.id, location_id, prodlot_id, (qty * product_uom.factor) as qty, product_id, life_date, product_uom.id as unit_id from
+                  (select max(id) as id, location_id, product_id, prodlot_id, life_date, sum(qty) as qty
+                      from (
+                          select -max(sm.id) as id, sm.location_id, sm.product_id, sm.prodlot_id, spl.life_date, -sum(sm.product_qty /uo.factor) as qty
+                          from stock_move as sm
+                          left join stock_production_lot spl on (spl.id = sm.prodlot_id)
+                          left join stock_location sl on (sl.id = sm.location_id)
+                          left join product_uom uo on (uo.id=sm.product_uom)
+                          where state in ('done', 'confirmed')
+                          group by sm.location_id, sm.product_id, sm.product_uom, sm.prodlot_id, spl.life_date
+
+                          union all
+
+                          select max(sm.id) as id, sm.location_dest_id as location_id, sm.product_id, sm.prodlot_id, spl.life_date, sum(sm.product_qty /uo.factor) as qty
+                          from stock_move as sm
+                          left join stock_production_lot spl on (spl.id = sm.prodlot_id)
+                          left join stock_location sl on (sl.id = sm.location_dest_id)
+                          left join product_uom uo on (uo.id=sm.product_uom)
+                          where sm.state in ('done', 'confirmed')
+                          group by sm.location_dest_id, sm.product_id, sm.product_uom, sm.prodlot_id, spl.life_date
+                      ) as report
+                      group by location_id, product_id, prodlot_id, life_date
+                  ) as report_without_unit
+            left join product_product on (product_product.id=report_without_unit.product_id)
             left join product_template on (product_template.id=product_product.product_tmpl_id)
             left join product_uom on (product_uom.id=product_template.uom_id)
-            left join stock_production_lot spl on spl.id = batch_stock_future_forecast.prodlot_id
             )""")
 
     def unlink(self, cr, uid, ids, context=None):
