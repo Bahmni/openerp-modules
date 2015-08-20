@@ -40,7 +40,7 @@ class sale_order_line(osv.osv):
 
     def get_available_batch_details(self, cr, uid, product_id, sale_order, context=None):
         context = context or {}
-        context['shop_id'] = sale_order.shop_id.id
+        context['shop'] = sale_order.shop_id.id
         prodlot_context = self._get_prodlot_context(cr, uid, context=context)
         stock_prod_lot = self.pool.get('stock.production.lot')
 
