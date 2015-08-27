@@ -3,9 +3,10 @@ import logging
 
 from psycopg2._psycopg import DATETIME
 from openerp import netsvc
+from openerp import tools
 from openerp.osv import fields, osv
 from itertools import groupby
-import datetime
+from datetime import date, datetime
 
 
 _logger = logging.getLogger(__name__)
@@ -46,9 +47,11 @@ class order_save_service(osv.osv):
             }
 
             if prod_lot != None:
+                life_date = prod_lot.life_date and datetime.strptime(prod_lot.life_date, tools.DEFAULT_SERVER_DATETIME_FORMAT)
                 sale_order_line['price_unit'] = prod_lot.sale_price if prod_lot.sale_price > 0.0 else sale_order_line['price_unit']
                 sale_order_line['batch_name'] = prod_lot.name
                 sale_order_line['batch_id'] = prod_lot.id
+                sale_order_line['expiry_date'] = life_date and life_date.strftime('%d/%m/%Y')
 
             sale_order_line_obj.create(cr, uid, sale_order_line, context=context)
 
@@ -109,7 +112,7 @@ class order_save_service(osv.osv):
             'partner_id': cus_id,
             'name': name,
             'origin': 'ATOMFEED SYNC',
-            'date_order': datetime.date.today(),
+            'date_order': date.today(),
             'shop_id': shop_id,
             'partner_invoice_id': cus_id,
             'partner_shipping_id': cus_id,

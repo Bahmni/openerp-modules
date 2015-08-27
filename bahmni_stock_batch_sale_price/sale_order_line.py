@@ -91,7 +91,6 @@ class sale_order_line(osv.osv):
         result['batch_name'] = None
         result['batch_id'] = None
         result['expiry_date'] = None
-        result['expiry_date_formatted'] = None
 
         prodlot_context = self._get_prodlot_context(cr, uid, context=context)
         for prodlot_id in stock_prod_lot.search(cr, uid,[('product_id','=',product_obj.id)],context=prodlot_context):
@@ -103,8 +102,7 @@ class sale_order_line(osv.osv):
                 sale_price = prodlot.sale_price
                 result['batch_name'] = prodlot.name
                 result['batch_id'] = prodlot.id
-                result['expiry_date'] = life_date.strftime(tools.DEFAULT_SERVER_DATETIME_FORMAT)
-                result['expiry_date_formatted'] = life_date.strftime('%d/%m/%Y')
+                result['expiry_date'] = life_date.strftime('%d/%m/%Y')
                 break
         #-----------------------------------------------------------------
 
@@ -215,14 +213,10 @@ class sale_order_line(osv.osv):
         res["expiry_date"] = line.expiry_date
         return res
 
-    def _format_date(self, cr, uid, ids, name, args, context=None):
-        return {}
-
     _columns = {
         'batch_id': fields.many2one('stock.production.lot', 'Batch No'),
         'batch_name': fields.char('Batch No'),
-        'expiry_date': fields.char('Expiry Date Hidden'),
-        'expiry_date_formatted': fields.function(_format_date, string='Expiry Date', type='char'),
+        'expiry_date': fields.char('Expiry Date'),
         'product_dosage': fields.float('Dosage', digits_compute=dp.get_precision('Account')),
         'product_number_of_days': fields.integer('No. Days'),
     }

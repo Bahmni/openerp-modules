@@ -10,7 +10,7 @@ class account_invoice_line(osv.osv):
     _columns = {
         # 'batch_id': fields.many2one('stock.production.lot', 'Batch No'),
         'batch_name': fields.char('Batch No'),
-        'expiry_date': fields.date('Expiry Date'),
+        'expiry_date': fields.char('Expiry Date'),
     }
 
 account_invoice_line()
