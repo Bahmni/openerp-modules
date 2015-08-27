@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="old_prodlot_move_form_view" model="ir.ui.view">
+            <field name="name">Move Old Serial Numbers</field>
+            <field name="type">form</field>
+            <field name="model">old.prodlot.move</field>
+            <field name="arch" type="xml">
+                <form string="Move Old Serial Numbers" version="7.0">
+                    <group>
+                        <field name="location_id"/>
+                        <field name="location_dest_id"/>
+                    </group>
+                    <footer>
+                        <button name="action_move_all_but_latest_batch" string="Create Moves" type="object"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="action_move_old_prodlot" model="ir.actions.act_window">
+            <field name="name">Move Old Serial Number</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">old.prodlot.move</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="old_prodlot_move_form_view"/>
+            <field name="context">{}</field>
+        </record>
+
+        <menuitem id="menu_old_prodlot_move" parent="stock.menu_stock_inventory_control" name="Move Old Serial numbers" sequence="3" action="action_move_old_prodlot" groups="base.group_erp_manager"/>
+
+    </data>
+</openerp>
+
