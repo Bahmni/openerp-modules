@@ -13,9 +13,9 @@ class sale_turn_around_time(osv.osv):
         'patient_id': fields.text('Patient ID', readonly=True),
         'patient_name': fields.text('Patient Name', readonly=True),
         'create_date': fields.date('Invoice Date', readonly=True),
-        'bill_tat': fields.float("Quotation to sales order creation", readonly=True),
-        'pay_tat': fields.float("Sales order to receipt generation", readonly=True),
-        'total': fields.float("TAT total", readonly=True)
+        'bill_tat': fields.float("Quotation to sales order creation (mins)", readonly=True),
+        'pay_tat': fields.float("Sales order to receipt generation (sec)", readonly=True),
+        'total': fields.float("TAT total (mins)", readonly=True)
     }
 
     def _project_count(self):
@@ -28,11 +28,11 @@ class sale_turn_around_time(osv.osv):
         cr.execute("""
             create or replace view turn_around_time_report as (
            select so.id, so.partner_id,rp.name patient_name,rp.ref patient_id,
-    EXTRACT(EPOCH FROM (ao.create_date-so.create_date)) bill_tat,
+    EXTRACT(EPOCH FROM (ao.create_date-so.create_date))/60 bill_tat,
     EXTRACT(EPOCH FROM (ao.write_date-ao.create_date)) pay_tat,
     (EXTRACT(EPOCH FROM (ao.create_date-so.create_date)) +
     EXTRACT(EPOCH FROM (ao.write_date-ao.create_date))
-     ) as total,
+     )/60 as total,
     ao.create_date
   from sale_order so
   join account_invoice ao on so.name = ao.reference

@@ -8,9 +8,9 @@ class average_sale_turn_around_time(osv.osv_memory):
     _columns = {
         'from_date': fields.datetime('From', required=True, store=False),
         'to_date': fields.datetime('To', required=True, store=False),
-        'avg_billing': fields.float('Average between Quotation to sales order creation', store=False),
-        'avg_pay': fields.float('Average between Sales order to receipt generation', store=False),
-        'avg_total': fields.float('Average TAT Total', store=False),
+        'avg_billing': fields.float('Average between Quotation to sales order creation (mins)', store=False),
+        'avg_pay': fields.float('Average between Sales order to receipt generation (sec)', store=False),
+        'avg_total': fields.float('Average TAT Total (mins)', store=False),
     }
 
     def getAverage(self, cr, uid, ids, context=None):
