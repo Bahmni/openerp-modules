@@ -67,8 +67,9 @@ class order_save_service(osv.osv):
         self._create_sale_order_line(cr, uid, name, sale_order, order, context=context)
 
     def _delete_sale_order_line(self, cr, uid, parent_order_line, context=None):
-        if(parent_order_line[0] and parent_order_line[0].order_id.state == 'draft'):
-            self.pool.get('sale.order.line').unlink(cr, uid, [parent.id for parent in parent_order_line], context=context)
+        if(parent_order_line):
+            if(parent_order_line[0] and parent_order_line[0].order_id.state == 'draft'):
+                self.pool.get('sale.order.line').unlink(cr, uid, [parent.id for parent in parent_order_line], context=context)
 
     def _fetch_parent(self, all_orders, child_order):
         for order in all_orders:
