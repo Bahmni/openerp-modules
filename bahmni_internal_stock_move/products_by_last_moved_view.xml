@@ -11,6 +11,7 @@
                     <field name="product_id" />
                     <field name="origin"/>
                     <field name="location_id"/>
+                    <field name="location_dest_id"/>
                     <field name="last_moved_date" />
                 </tree>
             </field>

@@ -32,6 +32,7 @@ class prod_last_moved_report(osv.osv):
         'product_id': fields.many2one('product.product', 'Product', readonly=True, select=True),
         'origin': fields.text('Source', readonly=True),
         'location_id': fields.many2one('stock.location', 'Source Location', readonly=True, select=True),
+        'location_dest_id': fields.many2one('stock.location', 'Destination Location', readonly=True, select=True),
         'last_moved_date': fields.date('Last Moved Date', readonly=True)
     }
 
@@ -44,6 +45,7 @@ class prod_last_moved_report(osv.osv):
                   sm.name            AS desc,
                   sm.origin,
                   sm.location_id,
+                  sm.location_dest_id,
                   sm.product_id,
                   stock_picking_time AS last_moved_date
                 FROM stock_move sm
@@ -56,7 +58,6 @@ class prod_last_moved_report(osv.osv):
                                     sm.product_id,
                                     max(sm.stock_picking_time)
                                   FROM stock_move sm
-                                    JOIN stock_location sl ON sm.location_dest_id = sl.id AND sl.name = 'Customers'
                                   GROUP BY product_id)
                            GROUP BY product_id) AS csm
                       ON sm.id = csm.id
