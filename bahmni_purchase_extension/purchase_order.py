@@ -50,7 +50,7 @@ class purchase_order_line(osv.osv):
 
     _columns = {
         'manufacturer':fields.char('Manufacturer', size=64),
-        'mrp': fields.float('MRP', required=True, digits_compute= dp.get_precision('Product Price')),
+        'mrp': fields.float('MRP', required=False, digits_compute= dp.get_precision('Product Price')),
     }
 
 
