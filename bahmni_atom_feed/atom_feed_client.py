@@ -118,6 +118,8 @@ class atom_event_worker(osv.osv):
             self.pool.get('product.uom.service').create_or_update_product_uom(cr,uid,vals,context)
         if(category == "create.drug.uom.category"):
             self.pool.get('product.uom.service').create_or_update_product_uom_category(cr,uid,vals,context)
+        if(category == "create.radiology.test"):
+            self.pool.get('radiology.test.service').create_or_update_radiology_test(cr, uid, vals, context)
 
         self._create_or_update_marker(cr, uid, vals)
         return {'success': True}
