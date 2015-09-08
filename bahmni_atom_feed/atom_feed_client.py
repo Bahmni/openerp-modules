@@ -108,8 +108,6 @@ class atom_event_worker(osv.osv):
             self._create_or_update_customer( cr, patient_ref, uid, vals,context)
         if(category == "create.sale.order"):
             self.pool.get('order.save.service').create_orders(cr,uid,vals,context)
-        if(category == "create.lab.test"):
-            self.pool.get('lab.test.service').create_or_update_labtest(cr,uid,vals,context)
         if(category == "create.drug"):
             self.pool.get('drug.service').create_or_update_drug(cr,uid,vals,context)
         if(category == "create.drug.category"):
@@ -119,7 +117,11 @@ class atom_event_worker(osv.osv):
         if(category == "create.drug.uom.category"):
             self.pool.get('product.uom.service').create_or_update_product_uom_category(cr,uid,vals,context)
         if(category == "create.radiology.test"):
-            self.pool.get('radiology.test.service').create_or_update_radiology_test(cr, uid, vals, context)
+            self.pool.get('radiology.test.service').create_or_update_reference_data(cr, uid, vals, context)
+        if(category == "create.lab.test"):
+            self.pool.get('lab.test.service').create_or_update_reference_data(cr,uid,vals,context)
+        if(category == "create.lab.panel"):
+            self.pool.get('lab.panel.service').create_or_update_reference_data(cr, uid, vals, context)
 
         self._create_or_update_marker(cr, uid, vals)
         return {'success': True}
