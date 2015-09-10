@@ -10,7 +10,6 @@
                     <group>
                         <field name="order_type"/>
                         <field name="shop_id"/>
-                        <field name="location_name"/>
                     </group>
                 </form>
             </field>
@@ -25,7 +24,6 @@
                 <tree string="Order Type Shop">
                     <field name="order_type"/>
                     <field name="shop_id"/>
-                    <field name="location_name"/>
                 </tree>
             </field>
         </record>
@@ -38,7 +36,6 @@
                 <search string="Search Order Type Shop">
                     <field name="order_type"/>
                     <field name="shop_id"/>
-                    <field name="location_name"/>
                 </search>
             </field>
         </record>

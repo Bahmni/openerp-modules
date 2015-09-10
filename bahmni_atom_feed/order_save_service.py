@@ -161,7 +161,6 @@ class order_save_service(osv.osv):
     def create_orders(self, cr,uid,vals,context):
 
         customer_id = vals.get("customer_id")
-        location_name = vals.get("locationName")
         all_orders = self._get_openerp_orders(vals)
         if(not all_orders):
             return ""
@@ -173,9 +172,7 @@ class order_save_service(osv.osv):
                 orders = list(ordersGroup)
                 unprocessed_orders = self._filter_processed_orders(context, cr, orders, uid)
                 _logger.debug("unprocessed_order count is %s", unprocessed_orders)
-                map_id_List = self.pool.get('order.type.shop.map').search(cr, uid, [('order_type', '=', orderType),('location_name', '=', location_name)], context=context)
-                if(not map_id_List):
-                    map_id_List = self.pool.get('order.type.shop.map').search(cr, uid, [('order_type', '=', orderType), ('location_name', '=', None)], context=context)
+                map_id_List = self.pool.get('order.type.shop.map').search(cr, uid, [('order_type', '=', orderType)], context=context)
                 if(map_id_List):
                     order_type_map = self.pool.get('order.type.shop.map').browse(cr, uid, map_id_List[0], context=context)
                     shop_id = order_type_map.shop_id.id
