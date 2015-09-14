@@ -8,8 +8,7 @@ class res_partner(osv.osv):
         'local_name': fields.char('Local Name', size=128, required=False),
         'attributes': fields.one2many('res.partner.attributes', 'partner_id', 'Attributes'),
         'address': fields.one2many('res.partner.address', 'partner_id', 'Address'),
-        'uuid': fields.char('UUID', size=64),
-        'test123': fields.char('test123', size=64)
+        'uuid': fields.char('UUID', size=64)
     }
 
 
