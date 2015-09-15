@@ -30,7 +30,11 @@ class prodlots_report(osv.osv):
     _auto = False
     _columns = {
         'qty': fields.float('Quantity', readonly=True),
+        'reorder_level': fields.float('Reorder Level', readonly=True),
         'location_id': fields.many2one('stock.location', 'Location', readonly=True, select=True),
+        'category': fields.char('Product Type', readonly=True, select=True),
+        'list_price': fields.char('Sale Price', readonly=True, select=True),
+        'value': fields.char('Value', readonly=True, select=True),
         'product_id': fields.many2one('product.product', 'Product', readonly=True, select=True),
         'prodlot_id': fields.many2one('stock.production.lot', 'Serial Number', readonly=True, select=True),
         'life_date': fields.date('Expiry Date', readonly=True),
@@ -41,7 +45,8 @@ class prodlots_report(osv.osv):
         drop_view_if_exists(cr, 'prodlots_report')
         cr.execute("""
             create or replace view prodlots_report as (
-            select report_without_unit.id, location_id, prodlot_id, (qty * product_uom.factor) as qty, product_id, life_date, product_uom.id as unit_id from
+            select report_without_unit.id, report_without_unit.location_id, prodlot_id, (qty * product_uom.factor) as qty, product_category.name as category, list_price, (qty*list_price) as value, report_without_unit.product_id,
+             life_date, product_uom.id as unit_id, swo.product_min_qty as reorder_level from
                   (select max(id) as id, location_id, product_id, prodlot_id, life_date, sum(qty) as qty
                       from (
                           select -max(sm.id) as id, sm.location_id, sm.product_id, sm.prodlot_id, spl.life_date, -sum(sm.product_qty /uo.factor) as qty
@@ -66,7 +71,9 @@ class prodlots_report(osv.osv):
                   ) as report_without_unit
             left join product_product on (product_product.id=report_without_unit.product_id)
             left join product_template on (product_template.id=product_product.product_tmpl_id)
+            left join product_category on (product_category.id=product_template.categ_id)
             left join product_uom on (product_uom.id=product_template.uom_id)
+            left join stock_warehouse_orderpoint swo on (product_product.id=swo.product_id)
             )""")
 
     def unlink(self, cr, uid, ids, context=None):
