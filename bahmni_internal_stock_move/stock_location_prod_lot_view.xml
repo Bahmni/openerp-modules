@@ -7,13 +7,17 @@
             <field eval="7" name="priority"/>
             <field name="arch" type="xml">
 
-                <tree  string="Product Lots">
+                <tree  string="Product Lots" colors="red:qty&lt;=reorder_level">
                     <field name="prodlot_id" />
                     <field name="product_id"/>
+                    <field name="reorder_level"/>
                     <field name="life_date"/>
                     <field name="location_id"/>
                     <field name="qty" />
                     <field name="unit_id" />
+                    <field name="category"/>
+                    <field name="list_price"/>
+                    <field name="value"/>
                 </tree>
             </field>
         </record>
