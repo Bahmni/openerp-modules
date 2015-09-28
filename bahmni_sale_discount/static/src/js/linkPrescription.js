@@ -21,7 +21,7 @@ openerp.bahmni_sale_discount = function(instance) {
         },
 
         openLatestPrescription: function(partner_uuid) {
-            window.open("https://" + window.location.hostname + "/bahmni/clinical/#/patient/" + partner_uuid + "/treatment");
+            window.open("https://" + window.location.hostname + "/bahmni/clinical/#/default/patient/" + partner_uuid + "/treatment");
         },
     });
 
