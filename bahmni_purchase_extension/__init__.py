@@ -1,2 +1,2 @@
-import sale_price_autocalculator, purchase_order
+import sale_price_autocalculator, purchase_order, product_supplierinfo
 import report

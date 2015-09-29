@@ -39,9 +39,23 @@ class purchase_order_line(osv.osv):
 
         if (product_id):
             product = self.pool.get('product.product').browse(cr, uid, product_id, context)
-            res['value']['manufacturer'] = product and product.manufacturer or False
-            res['value']['mrp'] = product and product.get_mrp(partner_id, context=context) or False
+            if (product):
+                query = [('product_id','=',product_id), ('name', '=', partner_id)]
+                product_supplier_info_ids = self.pool.get('product.supplierinfo').search(cr, uid, query)
+                res['value']['manufacturer'] = self.get_manufacturer(cr, uid, context, product_supplier_info_ids, product)
+                res['value']['price_unit'] = self.get_unit_price(cr, uid, context, product_supplier_info_ids)
+                res['value']['mrp'] = product.get_mrp(partner_id, context=context) or False
         return res
+
+    def get_unit_price(self, cr, uid, context, product_supplier_info_ids):
+        pricelist_ids = product_supplier_info_ids and self.pool.get('pricelist.partnerinfo').search(cr, uid, [('suppinfo_id','=',product_supplier_info_ids[0])]) or False
+        pricelist = pricelist_ids and self.pool.get('pricelist.partnerinfo').browse(cr, uid, pricelist_ids[0], context) or False
+        return pricelist and pricelist.unit_price or 0
+
+    def get_manufacturer(self, cr, uid, context, product_supplier_info_ids, product):
+        product_supplier_info = product_supplier_info_ids and self.pool.get('product.supplierinfo').browse(cr, uid, product_supplier_info_ids[0], context) or False
+        manufacturer_value = product_supplier_info and product_supplier_info.manufacturer or product.manufacturer or False
+        return manufacturer_value
 
     def onchange_mrp(self, cr, uid, ids, partner_id, product_id, qty, uom_id, mrp, context=None):
         product = self.pool.get('product.product').browse(cr, uid, product_id, context=context)
