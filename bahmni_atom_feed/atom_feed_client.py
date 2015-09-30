@@ -70,13 +70,8 @@ class atom_event_worker(osv.osv):
         existing_attribute = self.pool.get('res.partner.attributes').search(cr, uid, [('partner_id' , '=', cust_id)])
         for key in attributes:
             column_dict.update({'x_'+key : attributes[key]})
-
-        if len(existing_attribute)>0:
-            self.pool.get('res.partner.attributes').write(cr, uid, existing_attribute, column_dict, context=context)
-        else:
-            self.pool.get('res.partner.attributes').create(cr, uid, column_dict, context=context)
-
-
+        self.pool.get('res.partner.attributes').unlink(cr, uid,existing_attribute ,context=context )
+        self.pool.get('res.partner.attributes').create(cr, uid, column_dict, context=context)
 
     def _create_or_update_person_address(self, cr, uid, cust_id, vals, context=None):
         try:
