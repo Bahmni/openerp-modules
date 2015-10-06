@@ -63,7 +63,7 @@ class account_voucher(osv.osv):
         balance = 0.0
         for voucher in self.browse(cr, uid, ids, context=context):
             partner = voucher.partner_id
-            balance = partner.credit
+            balance = abs(partner.credit - partner.debit)
         return balance
 
     def _compute_writeoff_amount(self, cr, uid, line_dr_ids, line_cr_ids, amount, type):
@@ -81,12 +81,7 @@ class account_voucher(osv.osv):
     def _compute_total_balance(self, cr, uid, partner_id,amount):
         partner_obj = self.pool.get('res.partner')
         partner = partner_obj.browse(cr,uid,partner_id)
-        return partner.credit - amount
-
-    def _compute_balance_before_pay(self, cr, uid, partner_id,amount):
-        partner_obj = self.pool.get('res.partner')
-        partner = partner_obj.browse(cr,uid,partner_id)
-        return partner.credit - amount
+        return abs(partner.credit - partner.debit) - amount
 
     def onchange_line_ids(self, cr, uid, ids, line_dr_ids, line_cr_ids, amount, voucher_currency, type, context=None):
         context = context or {}
