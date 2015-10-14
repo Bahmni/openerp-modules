@@ -25,6 +25,10 @@
                 <xpath expr="/tree/field[@name='delay']" position="before">
                     <field name="manufacturer"/>
                 </xpath>
+                <xpath expr="/tree/field[@name='delay']" position="after">
+                    <field name="unit_price"/>
+                </xpath>
+
             </field>
         </record>
     </data>
