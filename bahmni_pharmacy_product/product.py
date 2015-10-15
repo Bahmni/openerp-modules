@@ -29,7 +29,7 @@ class product_template(osv.osv):
         return super(product_template, self).write(cr, uid, ids, vals, context=context)
 
 class product_product(osv.osv):
-    
+
     _name = 'product.product'
     _inherit = 'product.product'
 
@@ -309,4 +309,8 @@ class product_product(osv.osv):
         'mrp': fields.float('MRP', required=False, digits_compute= dp.get_precision('Product Price')),
         'low_stock': fields.function(_check_low_stock, type="boolean", string="Low Stock", fnct_search=_search_low_stock),
         'actual_stock': fields.function(_get_actual_stock, type="float", string="Actual Stock"),
+    }
+
+    _defaults = {
+        'procure_method': 'make_to_order'
     }
