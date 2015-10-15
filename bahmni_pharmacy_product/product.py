@@ -306,7 +306,7 @@ class product_product(osv.osv):
         'uuid': fields.char('UUID', size=64),
         'drug':fields.char('Drug Name', size=64),
         'manufacturer':fields.char('Manufacturer', size=64),
-        'mrp': fields.float('MRP', required=True, digits_compute= dp.get_precision('Product Price')),
+        'mrp': fields.float('MRP', required=False, digits_compute= dp.get_precision('Product Price')),
         'low_stock': fields.function(_check_low_stock, type="boolean", string="Low Stock", fnct_search=_search_low_stock),
         'actual_stock': fields.function(_get_actual_stock, type="float", string="Actual Stock"),
     }
