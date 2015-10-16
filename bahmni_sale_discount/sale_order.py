@@ -270,7 +270,7 @@ class sale_order(osv.osv):
             sale_order_items = []
             for line in order.order_line:
                 if line.product_id.categ_id.parent_id.name == "Drug" and not line.external_order_id:
-                    sale_order_item = {'productUuid': line.product_id.uuid, 'dosage': line.product_dosage, 'numberOfDays': line.product_number_of_days, 'quantity': line.product_uos_qty, 'unit': line.product_uom.name, 'orderUuid': line.order_uuid}
+                    sale_order_item = {'productUuid': line.product_id.uuid, 'comments': line.comments, 'quantity': line.product_uos_qty, 'unit': line.product_uom.name, 'orderUuid': line.order_uuid}
                     sale_order_items.append(sale_order_item)
             if sale_order_items :
                 data = {'id': order.id, 'saleOrderItems': sale_order_items, 'externalId': order.external_id or None, 'orderDate': order.datetime_order, 'customerId': order.partner_id.ref or None }

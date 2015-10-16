@@ -29,6 +29,9 @@ class order_save_service(osv.osv):
             sale_order_line_obj = self.pool.get('sale.order.line')
             prod_lot = sale_order_line_obj.get_available_batch_details(cr, uid, prod_id, sale_order, context=context)
 
+            actual_quantity = order['quantity']
+            comments = " ".join([str(actual_quantity), str(order.get('quantityUnits', None))])
+            order['quantity'] = self._get_order_quantity(cr, uid, order)
             product_uom_qty = order['quantity']
             if(prod_lot != None and order['quantity'] > prod_lot.future_stock_forecast):
                 product_uom_qty = prod_lot.future_stock_forecast
@@ -36,6 +39,7 @@ class order_save_service(osv.osv):
             sale_order_line = {
                 'product_id': prod_id,
                 'price_unit': prod_obj.list_price,
+                'comments': comments,
                 'product_uom_qty': product_uom_qty,
                 'product_uom': prod_obj.uom_id.id,
                 'order_id': sale_order.id,
@@ -60,6 +64,11 @@ class order_save_service(osv.osv):
             if product_uom_qty != order['quantity']:
                 order['quantity'] = order['quantity'] - product_uom_qty
                 self._create_sale_order_line_function(cr, uid, name, sale_order, order, context=context)
+
+    def _get_order_quantity(self, cr, uid, order):
+        if(not self.pool.get('syncable.units').search(cr, uid, [('name', '=', order['quantityUnits'])])):
+            return 1
+        return order['quantity']
 
 
     def _update_sale_order_line(self, cr, uid, name, sale_order, order, parent_order_line, context=None):

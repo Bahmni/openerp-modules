@@ -11,7 +11,8 @@
         "security/ir.model.access.csv",
         "atom_event_sequence.xml",
         "sale_order_group_filter.xml",
-        "order_type_shop_map_view.xml"
+        "order_type_shop_map_view.xml",
+        "syncable_units_view.xml"
     ],
     'demo': [],
     'css' : [

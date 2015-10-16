@@ -9,10 +9,10 @@
     """,
     'data': [
                 'prod_lot_price_view.xml',
+                'sale_order_line_extension.xml',
                 'sale_batch_price_view.xml',
                 'stock_view_prodlot.xml',
                 'stock_move_view.xml',
-                'sale_order_line_extension.xml',
                 'sale_order_show_partner_reference.xml',
             ],
     'demo': [],
