@@ -196,16 +196,7 @@ class sale_order_line(osv.osv):
         warning_msgs = res_packing.get('warning') and res_packing['warning']['message'] or ''
         res['value']['delay'] = (product_obj.sale_delay or 0.0)
         res['value']['type'] = product_obj.procure_method
-
-
         return res
-
-    def onchange_product_dosage(self, cr, uid, ids, product_dosage, product_number_of_days, context=None):
-        qty = product_dosage*product_number_of_days
-        for sale_order_line in self.browse(cr, uid, ids, context=context):
-            self.write(cr, uid, sale_order_line.id, {'product_uom_qty': qty})
-        return {'value': {'product_uom_qty': qty}}
-
 
     def _prepare_order_line_invoice_line(self, cr, uid, line, account_id=False, context=None):
         res = super(sale_order_line, self)._prepare_order_line_invoice_line(cr, uid, line, account_id=account_id, context=context)
@@ -217,14 +208,9 @@ class sale_order_line(osv.osv):
         'batch_id': fields.many2one('stock.production.lot', 'Batch No'),
         'batch_name': fields.char('Batch No'),
         'expiry_date': fields.char('Expiry Date'),
-        'product_dosage': fields.float('Dosage', digits_compute=dp.get_precision('Account')),
-        'product_number_of_days': fields.integer('No. Days'),
+        'comments': fields.char('Comments'),
     }
 
     _order = 'id'
-    _defaults = {
-        'product_dosage': 1,
-        'product_number_of_days': 1,
-    }
 
 sale_order_line()
