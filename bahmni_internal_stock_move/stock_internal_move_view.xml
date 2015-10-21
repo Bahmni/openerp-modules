@@ -12,12 +12,12 @@
                 <xpath expr="/form/sheet/group" position="after" >
                     <group>
                         <group>
-                            <field name="location_id" context="{'short_name': True}" default_focus="1" string="Source Location"
+                            <field name="location_id" context="{'short_name': True}" default_focus="1" string="Source Location" domain="[('usage', '!=', 'view')]"
                                    on_change="onchange_location(location_id, location_dest_id, move_lines)"/>
                         </group>
                         <group>
                             <field name="location_dest_id" context="{'short_name': True}"
-                                   on_change="onchange_location(location_id, location_dest_id, move_lines)"/>
+                                   on_change="onchange_location(location_id, location_dest_id, move_lines)" domain="[('usage', '!=', 'view')]"/>
                         </group>
                     </group>
                 </xpath>
@@ -81,7 +81,6 @@
                 <xpath expr="/tree[@string='Stock Moves']//field[@name='product_id']" position="replace">
                     <field name="name" invisible="1"/>
                     <field name="product_id" on_change="onchange_product_id(product_id, parent.location_id, parent.location_dest_id, parent.partner_id)"/>
-                    <field name="location_id" invisible="1"/>
                 </xpath>
                 <xpath expr="/tree[@string='Stock Moves']//field[@name='location_dest_id']" position="attributes">
                     <attribute name="invisible">1</attribute>

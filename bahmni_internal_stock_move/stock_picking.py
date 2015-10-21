@@ -14,6 +14,7 @@ class stock_picking(osv.osv):
 
     def onchange_location(self, cr, uid, ids, location_id, location_dest_id, move_lines, context=None):
         for move_line in move_lines:
+            move_line[2] = move_line[2] if move_line[2] else {}
             move_line[2]['location_id'] = location_id
             move_line[2]['location_dest_id'] = location_dest_id
         return {'value': {'move_lines': move_lines}}
