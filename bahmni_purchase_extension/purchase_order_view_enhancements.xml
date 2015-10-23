@@ -18,12 +18,6 @@
                 <xpath expr="/form/sheet/notebook/page[@string='Purchase Order']//field[@name='order_line']/tree//field[@name='price_unit']" position="after">
                     <field name="mrp" on_change="onchange_mrp(parent.partner_id, product_id, product_qty, product_uom, mrp)"/>
                 </xpath>
-                <xpath expr="/form/sheet/notebook/page[@string='Purchase Order']//field[@name='order_line']/tree//field[@name='product_qty']" position="replace">
-                    <field name="product_qty" on_change="onchange_quantity(product_qty)"/>
-                </xpath>
-                <xpath expr="/form/sheet/notebook/page[@string='Purchase Order']//field[@name='order_line']/tree//field[@name='product_uom']" position="replace">
-                    <field name="product_uom" on_change="onchange_product_uom(product_uom)"/>
-                </xpath>
                 <xpath expr="/form/sheet/notebook/page[@string='Purchase Order']//field[@name='order_line']/tree//field[@name='name']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>

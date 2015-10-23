@@ -30,7 +30,7 @@ class purchase_order_line(osv.osv):
     def onchange_product_id(self, cr, uid, ids, pricelist_id, product_id, qty, uom_id,
             partner_id, date_order=False, fiscal_position_id=False, date_planned=False,
             name=False, price_unit=False, context=None):
-        res = super(purchase_order_line, self).onchange_product_id(cr, uid, ids, pricelist_id, product_id,
+        res = super(purchase_order_line, self).onchange_product_id(cr, uid, ids, pricelist_id, product_id, 
             qty, uom_id, partner_id, date_order, fiscal_position_id, date_planned, name, price_unit, context)
 
         supplierUnitConstraintWarningPattern = re.compile('The selected supplier only sells this product by .*')
@@ -62,16 +62,6 @@ class purchase_order_line(osv.osv):
         product = self.pool.get('product.product').browse(cr, uid, product_id, context=context)
         product.set_mrp(partner_id, qty, mrp, context=None)
         return {'value': {'mrp': mrp}}
-
-    def onchange_quantity(self, cr, uid, ids, qty):
-        return {'value': {
-            'product_qty': qty
-        }}
-
-    def onchange_product_uom(self, cr, uid, ids, product_uom):
-        return {'value': {
-            'product_uom': product_uom
-        }}
 
     _columns = {
         'manufacturer':fields.char('Manufacturer', size=64),
