@@ -102,7 +102,7 @@ class sale_order_line(osv.osv):
                 sale_price = prodlot.sale_price
                 result['batch_name'] = prodlot.name
                 result['batch_id'] = prodlot.id
-                result['expiry_date'] = life_date.strftime('%d/%m/%Y')
+                result['expiry_date'] = life_date.strftime('%d/%m/%Y') if (type(life_date) == 'datetime.datetime') else None
                 break
         #-----------------------------------------------------------------
 
@@ -204,11 +204,25 @@ class sale_order_line(osv.osv):
         res["expiry_date"] = line.expiry_date
         return res
 
+    def _in_stock(self, cr, uid, sale_order_line_ids, field_name, arg, context=None ):
+        returnData = {}
+        for sale_order_line_id in sale_order_line_ids:
+            sale_order_line_obj = self.pool.get('sale.order.line').browse(cr, uid, sale_order_line_id)
+            product_id = sale_order_line_obj.product_id.id
+            location_id = sale_order_line_obj.order_id.shop_id.warehouse_id.lot_stock_id.id
+            qty = sale_order_line_obj.product_uom_qty
+
+            stock_qty = self.pool.get('product.product').get_stock_for_location(cr, uid, location_id, product_id)
+            returnData[sale_order_line_id] = stock_qty >= qty
+
+        return returnData
+
     _columns = {
         'batch_id': fields.many2one('stock.production.lot', 'Batch No'),
         'batch_name': fields.char('Batch No'),
         'expiry_date': fields.char('Expiry Date'),
         'comments': fields.char('Comments'),
+        'flag_in_stock': fields.function(_in_stock, string="In Stock", type='boolean')
     }
 
     _order = 'id'

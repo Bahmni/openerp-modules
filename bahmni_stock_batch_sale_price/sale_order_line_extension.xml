@@ -19,7 +19,15 @@
                     context="{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'shop':parent.shop_id, 'uom':product_uom}"
                     on_change="product_uom_change(parent.pricelist_id,product_id,product_uom_qty,product_uom,product_uos_qty,product_uos,name,parent.partner_id, False, False, parent.date_order, context)"/>
             </xpath>
+            <xpath expr="/form/sheet/notebook/page/field/tree/field" position="after" >
+                <field name="flag_in_stock" invisible="1"></field>
+            </xpath>
+            <xpath expr="/form/sheet/notebook/page/field/tree" position="attributes" >
+                <attribute name="colors">red:(flag_in_stock==False)</attribute>
+            </xpath>
         </field>
     </record>
 </data>
 </openerp>
+
+

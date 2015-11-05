@@ -1,9 +1,11 @@
 import openerp
+from datetime import datetime
 import re
 from openerp import SUPERUSER_ID
 from openerp import pooler, tools
 from openerp.osv import osv, fields
 from openerp.tools.translate import _
+from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 import logging
 
@@ -83,3 +85,27 @@ class product_product(osv.osv):
                           }
                 result.append(_name_get(mydict, product))
         return result
+
+    def get_stock_for_location(self, cr, uid, loc_id, prod_id):
+        qty = 0
+        cr.execute('''select
+                    prodlot_id,
+                    qty
+                from
+                    batch_stock_future_forecast
+                where
+                    location_id = %s and product_id = %s ''',(loc_id, prod_id,))
+        sum_qty = 0.0
+        prodlot_qty_map = {}
+        for row in cr.dictfetchall():
+            if((row['prodlot_id'] != None) ):
+                prodlot_qty_map[row['prodlot_id']] = row['qty']
+            else :
+                sum_qty += row['qty']
+        for lot_id, qty in prodlot_qty_map.iteritems():
+            prod_lot = self.pool.get('stock.production.lot').browse(cr, uid, lot_id)
+            if(prod_lot and prod_lot.life_date):
+                if(datetime.today() <= datetime.strptime(prod_lot.life_date, DEFAULT_SERVER_DATETIME_FORMAT)):
+                    sum_qty += qty
+
+        return sum_qty
