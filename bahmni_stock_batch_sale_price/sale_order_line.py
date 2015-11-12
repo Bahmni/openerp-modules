@@ -206,14 +206,22 @@ class sale_order_line(osv.osv):
 
     def _in_stock(self, cr, uid, sale_order_line_ids, field_name, arg, context=None ):
         returnData = {}
+        prod_total_qty_map={}
+        for sale_order_line_id in sale_order_line_ids:
+            sale_order_line_obj = self.pool.get('sale.order.line').browse(cr, uid, sale_order_line_id)
+            product_id = sale_order_line_obj.product_id.id
+            qty = sale_order_line_obj.product_uom_qty
+            if product_id in prod_total_qty_map:
+                prod_total_qty_map[product_id] = (prod_total_qty_map[product_id] + qty)
+            else:
+                prod_total_qty_map[product_id] = qty
         for sale_order_line_id in sale_order_line_ids:
             sale_order_line_obj = self.pool.get('sale.order.line').browse(cr, uid, sale_order_line_id)
             product_id = sale_order_line_obj.product_id.id
             location_id = sale_order_line_obj.order_id.shop_id.warehouse_id.lot_stock_id.id
-            qty = sale_order_line_obj.product_uom_qty
 
             stock_qty = self.pool.get('product.product').get_stock_for_location(cr, uid, location_id, product_id)
-            returnData[sale_order_line_id] = stock_qty >= qty
+            returnData[sale_order_line_id] = stock_qty >= prod_total_qty_map[product_id]
 
         return returnData
 
