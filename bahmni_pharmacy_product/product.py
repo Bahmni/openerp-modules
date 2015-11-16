@@ -312,5 +312,5 @@ class product_product(osv.osv):
     }
 
     _defaults = {
-        'procure_method': 'make_to_order'
+        'procure_method': 'make_to_stock'
     }
