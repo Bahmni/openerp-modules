@@ -60,6 +60,7 @@
                         <field  name="round_off" readonly="1"/>
                         <field  name="discount" invisible="True" />
                         <field  name="chargeable_amount" groups="bahmni_sale_discount.group_final_so_charge" accesskey="F"/>
+                        <field  name="default_quantity" groups="bahmni_sale_discount.group_default_quantity"/>
                         <div class="oe_subtotal_footer_separator oe_inline">
                             <label for="amount_total" />
                             <button name="button_dummy"

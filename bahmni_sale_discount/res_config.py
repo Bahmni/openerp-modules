@@ -12,6 +12,8 @@ class bahmni_sale_configuration(osv.osv_memory):
     _columns = {
         'group_final_so_charge': fields.boolean('Allow to enter final Sale Order Charge',
             implied_group='bahmni_sale_discount.group_final_so_charge'),
+        'group_default_quantity': fields.boolean('Allow to enter default drug Quantity as -1',
+            implied_group='bahmni_sale_discount.group_default_quantity'),
     }
 
     def default_get(self, cr, uid, fields, context=None):

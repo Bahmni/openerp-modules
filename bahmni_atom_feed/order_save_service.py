@@ -31,7 +31,14 @@ class order_save_service(osv.osv):
 
             actual_quantity = order['quantity']
             comments = " ".join([str(actual_quantity), str(order.get('quantityUnits', None))])
-            order['quantity'] = self._get_order_quantity(cr, uid, order)
+
+            default_quantity_object = self.pool.get('ir.model.data').get_object_reference(cr, uid, 'bahmni_sale_discount', 'group_default_quantity')[1]
+            default_quantity_total = self.pool.get('res.groups').browse(cr, uid, default_quantity_object, context=context)
+            default_quantity_value = 1
+            if default_quantity_total and len(default_quantity_total.users) > 0:
+                default_quantity_value = -1
+
+            order['quantity'] = self._get_order_quantity(cr, uid, order, default_quantity_value)
             product_uom_qty = order['quantity']
             if(prod_lot != None and order['quantity'] > prod_lot.future_stock_forecast):
                 product_uom_qty = prod_lot.future_stock_forecast
@@ -65,9 +72,9 @@ class order_save_service(osv.osv):
                 order['quantity'] = order['quantity'] - product_uom_qty
                 self._create_sale_order_line_function(cr, uid, name, sale_order, order, context=context)
 
-    def _get_order_quantity(self, cr, uid, order):
+    def _get_order_quantity(self, cr, uid, order, default_quantity_value):
         if(not self.pool.get('syncable.units').search(cr, uid, [('name', '=', order['quantityUnits'])])):
-            return 1
+            return default_quantity_value
         return order['quantity']
 
 
