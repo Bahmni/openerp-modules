@@ -33,4 +33,4 @@ class CSVExportExtension(CSVExport):
             headers=[('Content-Disposition',
                             content_disposition(self.filename(model), req)),
                      ('Content-Type', self.content_type)],
-            cookies={'fileToken': int(token)})
+            cookies={'fileToken': token})
