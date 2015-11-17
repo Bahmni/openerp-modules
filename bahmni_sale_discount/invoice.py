@@ -47,12 +47,11 @@ class account_invoice(osv.osv):
             total = total + inv.discount - inv.round_off
         else :
             total = total - inv.discount + inv.round_off
-        total+= self._round_off_amount_for_nearest_five(total)
+        total+= self._round_off_amount_to_nearest_configured_value(cr, uid, total)
         return total, total_currency, invoice_move_lines
 
-    def _round_off_amount_for_nearest_five(self, value):
-        remainder = value % 5
-        return  -remainder if remainder < 2.5 else 5 - remainder
+    def _round_off_amount_to_nearest_configured_value(self, cr, uid, value):
+        return self.pool.get('rounding.off').round_off_to_nearest_configured_value(cr, uid, value)
 
     def action_move_create(self, cr, uid, ids, context=None):
         """Creates invoice related analytics and financial move lines"""
@@ -289,7 +288,7 @@ class account_invoice(osv.osv):
             #jss apply discount
             res[invoice.id]['discount']= invoice.discount
             amount_total = res[invoice.id]['amount_tax'] + res[invoice.id]['amount_untaxed'] - invoice.discount
-            round_off_amount = self._round_off_amount_for_nearest_five(amount_total)
+            round_off_amount = self._round_off_amount_to_nearest_configured_value(cr, uid, amount_total)
             amount_total += round_off_amount
             res[invoice.id]['amount_total'] = amount_total
             self.write(cr, uid, [invoice.id], {'round_off': round_off_amount})
