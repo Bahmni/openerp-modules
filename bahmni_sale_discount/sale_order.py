@@ -73,7 +73,7 @@ class sale_order(osv.osv):
             else:
                 res[order.id]['calculated_discount'] = order.discount_amount
             amount_total_before_round_off = res[order.id]['amount_untaxed'] + res[order.id]['amount_tax'] - res[order.id]['calculated_discount']
-            round_off_amount = self._round_off_amount_for_nearest_five(amount_total_before_round_off)
+            round_off_amount = self._round_off_amount_to_nearest_configured_value(cr, uid, amount_total_before_round_off)
             res[order.id]['discount'] = res[order.id]['calculated_discount']
             res[order.id]['amount_total'] = amount_total_before_round_off + round_off_amount
             self.write(cr, uid, order.id, {'discount_amount': res[order.id]['calculated_discount'], 'round_off': round_off_amount})
@@ -91,9 +91,13 @@ class sale_order(osv.osv):
             else:
                 self.write(cr, uid, order.id, {'discount_acc_id': calculated_overcharge_head})
 
-    def _round_off_amount_for_nearest_five(self, value):
-        remainder = value % 5
-        return  -remainder if remainder < 2.5 else 5 - remainder
+    def _round_off_amount_to_nearest_configured_value(self, cr, uid, value):
+        round_off_by = self.pool.get('ir.values').get_default(cr, uid, 'sale.config.settings', 'round_off_by')
+        if(round_off_by > 0):
+            half_round_off_by = round_off_by / 2.0
+            remainder = value % round_off_by
+            return  -remainder if remainder < half_round_off_by else round_off_by - remainder
+        return 0
 
     def _prepare_invoice(self, cr, uid, order, lines, context=None):
         """Prepare the dict of values to create the new invoice for a

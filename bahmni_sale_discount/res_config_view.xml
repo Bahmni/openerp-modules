@@ -12,8 +12,8 @@
                         <label for="group_final_so_charge"/>
                     </div>
                     <div>
-                        <field name="group_default_quantity" class="oe_inline"/>
-                        <label for="group_default_quantity"/>
+                        <field name="round_off_by" class="oe_inline"/>
+                        <label for="round_off_by"/>
                     </div>
                 </div>
             </field>
