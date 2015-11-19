@@ -55,6 +55,7 @@ class order_save_service(osv.osv):
                 'name': prod_obj.name,
                 'type': 'make_to_stock',
                 'state': 'draft',
+
             }
 
             if prod_lot != None:
@@ -124,7 +125,7 @@ class order_save_service(osv.osv):
 
             self._create_sale_order_line(cr, uid, name, sale_order, order, context)
 
-    def _create_sale_order(self, cr, uid, cus_id, name, shop_id, orders, context=None):
+    def _create_sale_order(self, cr, uid, cus_id, name, shop_id, orders, care_setting, context=None):
         sale_order = {
             'partner_id': cus_id,
             'name': name,
@@ -135,6 +136,7 @@ class order_save_service(osv.osv):
             'partner_shipping_id': cus_id,
             'order_policy': 'manual',
             'pricelist_id': 1,
+            'care_setting' : care_setting
         }
         if(orders):
             sale_order_id = self.pool.get('sale.order').create(cr, uid, sale_order, context=context)
@@ -143,12 +145,14 @@ class order_save_service(osv.osv):
                 self._process_orders(cr, uid, name, sale_order, orders, order, context=context)
 
 
-    def _update_sale_order(self, cr, uid, cus_id, name, shop_id, sale_order_id, orders, context=None):
+    def _update_sale_order(self, cr, uid, cus_id, name, shop_id, care_setting,  sale_order_id, orders, context=None):
         sale_order = self.pool.get('sale.order').browse(cr, uid, sale_order_id)
+        sale_order.write({'care_setting': care_setting})
         if(sale_order.state != 'draft'):
             raise osv.except_osv(('Error!'),("Sale order is already approved"))
         for order in orders:
             self._process_orders(cr, uid, name, sale_order, orders, order, context=context)
+
 
     def _get_openerp_orders(self, vals):
         if(not vals.get("orders", None)):
@@ -161,7 +165,6 @@ class order_save_service(osv.osv):
         unprocessed_orders = []
         for order in orders:
             if (not self._order_already_processed(cr, uid, order['orderId'], context=context)):
-                _logger.debug("The order %s is unprocessed. Adding it to the list",order['orderId'])
                 unprocessed_orders.append(order)
         return self._filter_products_undefined(context,cr,unprocessed_orders,uid)
 
@@ -170,25 +173,25 @@ class order_save_service(osv.osv):
         for order in orders:
             stored_prod_ids = self.pool.get('product.product').search(cr, uid, [('uuid', '=', order['productId'])], context=context)
             if(stored_prod_ids):
-                _logger.debug("The productId %s is available in the system. Adding it to the final list",order['productId'])
                 products_in_system.append(order)
         return products_in_system
 
     def create_orders(self, cr,uid,vals,context):
-
         customer_id = vals.get("customer_id")
         location_name = vals.get("locationName")
         all_orders = self._get_openerp_orders(vals)
         if(not all_orders):
             return ""
+
         customer_ids = self.pool.get('res.partner').search(cr, uid, [('ref', '=', customer_id)], context=context)
         if(customer_ids):
             cus_id = customer_ids[0]
 
             for orderType, ordersGroup in groupby(all_orders, lambda order: order.get('type')):
+
                 orders = list(ordersGroup)
+                care_setting = orders[0].get('visitType').lower()
                 unprocessed_orders = self._filter_processed_orders(context, cr, orders, uid)
-                _logger.debug("unprocessed_order count is %s", unprocessed_orders)
                 map_id_List = self.pool.get('order.type.shop.map').search(cr, uid, [('order_type', '=', orderType),('location_name', '=', location_name)], context=context)
                 if(not map_id_List):
                     map_id_List = self.pool.get('order.type.shop.map').search(cr, uid, [('order_type', '=', orderType), ('location_name', '=', None)], context=context)
@@ -199,8 +202,8 @@ class order_save_service(osv.osv):
                     name = self.pool.get('ir.sequence').get(cr, uid, 'sale.order')
                     sale_order_ids = self.pool.get('sale.order').search(cr, uid, [('partner_id', '=', cus_id), ('shop_id', '=', shop_id), ('state', '=', 'draft'), ('origin', '=', 'ATOMFEED SYNC')], context=context)
                     if(not sale_order_ids):
-                        self._create_sale_order(cr, uid, cus_id, name, shop_id, unprocessed_orders, context)
+                        self._create_sale_order(cr, uid, cus_id, name, shop_id, unprocessed_orders, care_setting, context)
                     else:
-                        self._update_sale_order(cr, uid, cus_id, name, shop_id, sale_order_ids[0], unprocessed_orders, context)
+                        self._update_sale_order(cr, uid, cus_id, name, shop_id, care_setting, sale_order_ids[0], unprocessed_orders, context)
         else:
             raise osv.except_osv(('Error!'), ("Patient Id not found in openerp"))
