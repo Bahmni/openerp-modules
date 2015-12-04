@@ -193,17 +193,27 @@ class order_save_service(osv.osv):
                 care_setting = orders[0].get('visitType').lower()
                 unprocessed_orders = self._filter_processed_orders(context, cr, orders, uid)
                 map_id_List = self.pool.get('order.type.shop.map').search(cr, uid, [('order_type', '=', orderType),('location_name', '=', location_name)], context=context)
+                shop_id = None
                 if(not map_id_List):
                     map_id_List = self.pool.get('order.type.shop.map').search(cr, uid, [('order_type', '=', orderType), ('location_name', '=', None)], context=context)
                 if(map_id_List):
                     order_type_map = self.pool.get('order.type.shop.map').browse(cr, uid, map_id_List[0], context=context)
                     shop_id = order_type_map.shop_id.id
+                if(not map_id_List) :
+                    shop_list = self.pool.get('sale.shop').search(cr, uid, [], context=context)
 
+                    if(shop_list) :
+                        shop = self.pool.get('sale.shop').browse(cr, uid, shop_list[0], context=context)
+                        shop_id = shop.id
+
+                if (shop_id) :
                     name = self.pool.get('ir.sequence').get(cr, uid, 'sale.order')
                     sale_order_ids = self.pool.get('sale.order').search(cr, uid, [('partner_id', '=', cus_id), ('shop_id', '=', shop_id), ('state', '=', 'draft'), ('origin', '=', 'ATOMFEED SYNC')], context=context)
                     if(not sale_order_ids):
                         self._create_sale_order(cr, uid, cus_id, name, shop_id, unprocessed_orders, care_setting, context)
                     else:
                         self._update_sale_order(cr, uid, cus_id, name, shop_id, care_setting, sale_order_ids[0], unprocessed_orders, context)
+                else:
+                    raise osv.except_osv(('Error!'), ("Shop not found in openerp"))
         else:
             raise osv.except_osv(('Error!'), ("Patient Id not found in openerp"))
