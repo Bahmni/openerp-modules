@@ -12,23 +12,29 @@ openerp.bahmni_print_bill = function(instance) {
        start: function() {
             this._super.apply(this, arguments);
             $('button#print-bill-button').click($.proxy(function() {
+                $('button#print-bill-button').attr("disabled", true);
                 var self = this;
                 this.fetchAndPrintBill("Bill", function(bill) {
                     self.gotoQuotation();
+                    $('button#print-bill-button').attr("disabled", false);
                 });
             }, this));
 
             $('button#print-summary-bill-button').click($.proxy(function() {
+                $('button#print-summary-bill-button').attr("disabled", true);
                 var self = this;
                 this.fetchAndPrintBill("BillSummary", function(bill) {
                     self.gotoQuotation();
+                    $('button#print-summary-bill-button').attr("disabled", false);
                 });
             }, this));
 
             $('button#print-bill-latest-prescription').click($.proxy(function() {
+                $('button#print-bill-latest-prescription').attr("disabled", true);
                 var self = this;
                 this.fetchAndPrintBill("Bill", function(bill) {
                     self.printLatestPrescription(bill);
+                    $('button#print-bill-latest-prescription').attr("disabled", false);
                 });
             }, this));
         },
