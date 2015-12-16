@@ -63,7 +63,7 @@ class account_voucher(osv.osv):
         balance = 0.0
         for voucher in self.browse(cr, uid, ids, context=context):
             partner = voucher.partner_id
-            balance = abs(partner.credit - partner.debit)
+            balance = partner.credit or partner.debit
         return balance
 
     def _compute_writeoff_amount(self, cr, uid, line_dr_ids, line_cr_ids, amount, type):
@@ -78,10 +78,11 @@ class account_voucher(osv.osv):
     def _convert_to_float(self, amount):
         return amount;
 
-    def _compute_total_balance(self, cr, uid, partner_id,amount):
+    def _compute_total_balance(self, cr, uid, partner_id, amount, context=None):
         partner_obj = self.pool.get('res.partner')
         partner = partner_obj.browse(cr,uid,partner_id)
-        return abs(partner.credit - partner.debit) - amount
+        balance = partner.credit or partner.debit
+        return balance - amount
 
     def onchange_line_ids(self, cr, uid, ids, line_dr_ids, line_cr_ids, amount, voucher_currency, type, context=None):
         context = context or {}
@@ -105,7 +106,7 @@ class account_voucher(osv.osv):
                 if voucher_line.get('currency_id', company_currency) != company_currency:
                     is_multi_currency = True
                     break
-        balance = self._compute_total_balance(cr, uid, partner_id, amount)
+        balance = self._compute_total_balance(cr, uid, partner_id, amount, context=context)
         balance_before_pay = balance + amount
         return {'value': {'writeoff_amount': self._compute_writeoff_amount(cr, uid, line_dr_ids, line_cr_ids, amount, type),'balance_amount': balance,'balance_before_pay':balance_before_pay, 'is_multi_currency': is_multi_currency}}
 

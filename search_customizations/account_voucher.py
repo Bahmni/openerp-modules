@@ -13,6 +13,6 @@ class account_voucher(osv.osv):
         res = super(account_voucher, self).onchange_partner_id(cr, uid, ids, partner_id, journal_id, amount, currency_id, ttype, date, context=context)
         if(res.get('value', False) and partner_id):
             partner = self.pool.get('res.partner').browse(cr, uid, partner_id, context=context)
-            res['value']['amount'] = abs(partner.credit - partner.debit) if partner else 0.0
+            res['value']['amount'] = (partner.credit or partner.debit) if partner else 0.0
         return res
 
