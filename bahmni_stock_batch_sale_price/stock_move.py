@@ -139,9 +139,14 @@ class stock_move_split_lines_exist_with_price(osv.osv_memory):
 
     def _get_default_cost_price(self, cr, uid, context=None):
         context = context or {}
+        tax_amount = 0
         stock_move_id = context.get('stock_move', None)
         stock_move = stock_move_id and self.pool.get('stock.move').browse(cr, uid, stock_move_id, context=context)
-        return (stock_move and stock_move.price_unit) or 0.0
+        if (stock_move and stock_move.purchase_line_id):
+            for tax in stock_move.purchase_line_id.taxes_id:
+                tax_amount = tax_amount + tax.amount
+
+        return (stock_move and (stock_move.price_unit + (stock_move.price_unit * tax_amount))) or 0.0
 
     _columns = {
         'cost_price': fields.float('Cost Price', digits_compute=dp.get_precision('Product Price')),
