@@ -47,6 +47,7 @@
                 <div style="width: 50%; float: left">
                     <div>Name: <t t-esc="partner_name"/></div>
                     <div>ID: <t t-esc="partner_ref"/></div>
+                    <div>Provider Name:<t t-esc="provider_name"/> </div>
                 </div>
                 <div style="width: 50%; float: right; text-align: right">
                     <div>Date: <t t-esc="voucher_date"/></div>

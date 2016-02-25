@@ -67,6 +67,8 @@ class InvoiceController(openerp.addons.web.http.Controller):
             bill_confirmed_date = invoice_perm.get('write_date', 'N/A')
             bill_create_date = invoice_perm.get('create_date', 'N/A')
             sale_order_ids = sale_order_obj.search(cr, uid, [('name', '=', invoice.reference)], context=context)
+            sale_id = sale_order_ids[0]
+            provider_name = sale_order_obj.browse(cr, uid,sale_id,context=context).provider_name
             if sale_order_ids:
                 sale_order_perm = sale_order_obj.perm_read(cr, uid, sale_order_ids, context=context)[0]
                 bill_create_date = sale_order_perm.get('create_date', 'N/A')
@@ -99,6 +101,7 @@ class InvoiceController(openerp.addons.web.http.Controller):
                 'partner_name': voucher.partner_id.name,
                 'partner_local_name': voucher.partner_id.local_name,
                 'partner_ref': voucher.partner_id.ref,
+                'provider_name': provider_name,
                 'partner_uuid': voucher.partner_id.uuid,
                 'cashier_initials': voucher.create_uid.initials,
                 'bill_confirmed_date': parser.parse(bill_confirmed_date).replace(tzinfo=pytz.utc).astimezone(_localtimezone).strftime("%d/%m/%Y %H:%M:%S"),
