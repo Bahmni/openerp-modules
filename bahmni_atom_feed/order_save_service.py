@@ -125,7 +125,7 @@ class order_save_service(osv.osv):
 
             self._create_sale_order_line(cr, uid, name, sale_order, order, context)
 
-    def _create_sale_order(self, cr, uid, cus_id, name, shop_id, orders, care_setting, context=None):
+    def _create_sale_order(self, cr, uid, cus_id, name, shop_id, orders, care_setting, provider_name, context=None):
         sale_order = {
             'partner_id': cus_id,
             'name': name,
@@ -136,7 +136,8 @@ class order_save_service(osv.osv):
             'partner_shipping_id': cus_id,
             'order_policy': 'manual',
             'pricelist_id': 1,
-            'care_setting' : care_setting
+            'care_setting' : care_setting,
+            'provider_name' : provider_name
         }
         if(orders):
             sale_order_id = self.pool.get('sale.order').create(cr, uid, sale_order, context=context)
@@ -145,9 +146,10 @@ class order_save_service(osv.osv):
                 self._process_orders(cr, uid, name, sale_order, orders, order, context=context)
 
 
-    def _update_sale_order(self, cr, uid, cus_id, name, shop_id, care_setting,  sale_order_id, orders, context=None):
+    def _update_sale_order(self, cr, uid, cus_id, name, shop_id, care_setting,  sale_order_id, orders, provider_name, context=None):
         sale_order = self.pool.get('sale.order').browse(cr, uid, sale_order_id)
         sale_order.write({'care_setting': care_setting})
+        sale_order.write({'provider_name': provider_name})
         if(sale_order.state != 'draft'):
             raise osv.except_osv(('Error!'),("Sale order is already approved"))
         for order in orders:
@@ -191,6 +193,7 @@ class order_save_service(osv.osv):
 
                 orders = list(ordersGroup)
                 care_setting = orders[0].get('visitType').lower()
+                provider_name = orders[0].get('providerName')
                 unprocessed_orders = self._filter_processed_orders(context, cr, orders, uid)
                 map_id_List = self.pool.get('order.type.shop.map').search(cr, uid, [('order_type', '=', orderType),('location_name', '=', location_name)], context=context)
                 if(not map_id_List):
@@ -202,8 +205,8 @@ class order_save_service(osv.osv):
                     name = self.pool.get('ir.sequence').get(cr, uid, 'sale.order')
                     sale_order_ids = self.pool.get('sale.order').search(cr, uid, [('partner_id', '=', cus_id), ('shop_id', '=', shop_id), ('state', '=', 'draft'), ('origin', '=', 'ATOMFEED SYNC')], context=context)
                     if(not sale_order_ids):
-                        self._create_sale_order(cr, uid, cus_id, name, shop_id, unprocessed_orders, care_setting, context)
+                        self._create_sale_order(cr, uid, cus_id, name, shop_id, unprocessed_orders, care_setting, provider_name, context)
                     else:
-                        self._update_sale_order(cr, uid, cus_id, name, shop_id, care_setting, sale_order_ids[0], unprocessed_orders, context)
+                        self._update_sale_order(cr, uid, cus_id, name, shop_id, care_setting, sale_order_ids[0], unprocessed_orders, provider_name, context)
         else:
             raise osv.except_osv(('Error!'), ("Patient Id not found in openerp"))

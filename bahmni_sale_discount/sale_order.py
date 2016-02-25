@@ -474,6 +474,7 @@ class sale_order(osv.osv):
     'partner_village': fields.function(_get_partner_details, type='char', string ='Village', readonly=True, multi=True),
     'partner_uuid': fields.function(_get_partner_details, type='char', string ='Customer UUID', readonly=True, multi=True,),
     'care_setting': fields.selection([('ipd', 'IPD'), ('opd', 'OPD')], 'Care Setting'),
+    'provider_name':fields.char("Provider Name", size=250, translate=False, required=False)
     }
 
     _defaults = {
