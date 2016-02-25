@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <report auto="False" id="sale_order_ext" model="sale.order" name="sale.order.sale_order_ext"
+                rml="bahmni_sale_discount/report/sale_order_ext.rml" string="Quotation / Order"
+                usage="default"/>
+
+    </data>
+</openerp>
