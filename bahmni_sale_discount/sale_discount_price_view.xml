@@ -18,10 +18,6 @@
                     <attribute name="invisible">1</attribute>
                 </page>
 
-                <field name="tax_id" widget="many2many_tags" domain="[('parent_id','=',False),('type_tax_use','&lt;&gt;','purchase')]" position="attributes">
-                    <attribute name="invisible">1</attribute>
-                </field>
-
                 <xpath expr="/form/sheet/notebook/page[@string='Other Information']" position="attributes" >
                     <attribute name="invisible">1</attribute>
                 </xpath>
@@ -47,11 +43,6 @@
                     <attribute name="invisible">1</attribute>/>
                 </button>
 
-                <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='tax_id']" position="attributes" >
-                    <attribute name="invisible">1</attribute>
-                </xpath>
-
-
                 <xpath expr="/form/sheet/notebook/page/group[@name='sale_total']" position="replace" >
                     <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
                         <field name="amount_untaxed" widget='monetary' options="{'currency_field': 'currency_id'}"/>
@@ -62,6 +53,7 @@
                         <field  name="discount_percentage"/>
                         <field  name="discount_amount" invisible="True"/>
                         <field  name="calculated_discount" />
+                        <field  name="amount_tax"/>
                         <field  name="round_off" readonly="1"/>
                         <field  name="discount" invisible="True" />
                         <field  name="chargeable_amount" groups="bahmni_sale_discount.group_final_so_charge" accesskey="F"/>
