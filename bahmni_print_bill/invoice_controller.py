@@ -69,6 +69,8 @@ class InvoiceController(openerp.addons.web.http.Controller):
             sale_order_ids = sale_order_obj.search(cr, uid, [('name', '=', invoice.reference)], context=context)
             sale_id = sale_order_ids[0]
             provider_name = sale_order_obj.browse(cr, uid,sale_id,context=context).provider_name
+            if not provider_name:
+                provider_name = ""
             if sale_order_ids:
                 sale_order_perm = sale_order_obj.perm_read(cr, uid, sale_order_ids, context=context)[0]
                 bill_create_date = sale_order_perm.get('create_date', 'N/A')
