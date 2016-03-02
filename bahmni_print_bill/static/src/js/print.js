@@ -73,6 +73,7 @@ openerp.bahmni_print_bill = function(instance) {
 
         transform: function(bill) {
             bill.voucher_date = $.datepicker.formatDate('dd/mm/yy', new Date(bill.voucher_date));
+            bill.amount_tax = bill.amount_tax.toFixed(2);
             bill.new_charges = bill.new_charges.toFixed(2);
             bill.discount = bill.discount.toFixed(2);
             bill.net_amount = bill.net_amount.toFixed(2);

@@ -88,6 +88,10 @@
                 <div style="width:40%;float:right">
                     <table class="bottom-border" style="width:100%">
                         <tr>
+                            <td class="totalLabel">Tax</td>
+                            <td class="totalValue"><t t-esc="amount_tax"/></td>
+                        </tr>
+                        <tr>
                             <td class="totalLabel">New Charges</td>
                             <td class="totalValue"><t t-esc="new_charges"/></td>
                         </tr>

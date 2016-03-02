@@ -68,9 +68,11 @@ class InvoiceController(openerp.addons.web.http.Controller):
             bill_create_date = invoice_perm.get('create_date', 'N/A')
             sale_order_ids = sale_order_obj.search(cr, uid, [('name', '=', invoice.reference)], context=context)
             sale_id = sale_order_ids[0]
-            provider_name = sale_order_obj.browse(cr, uid,sale_id,context=context).provider_name
-            if not provider_name:
-                provider_name = ""
+            sale_order = sale_order_obj.browse(cr, uid, sale_id, context=context)
+            amount_tax = sale_order.amount_tax
+            provider_name = sale_order.provider_name
+            provider_name = provider_name if provider_name else ""
+
             if sale_order_ids:
                 sale_order_perm = sale_order_obj.perm_read(cr, uid, sale_order_ids, context=context)[0]
                 bill_create_date = sale_order_perm.get('create_date', 'N/A')
@@ -91,6 +93,7 @@ class InvoiceController(openerp.addons.web.http.Controller):
                 'voucher_date': voucher.date,
                 'invoice_line_items': invoice_line_items,
                 'new_charges': voucher.bill_amount + invoice.discount,
+                'amount_tax': amount_tax,
                 'discount_head': invoice.discount_acc_id and invoice.discount_acc_id.name or None,
                 'discount': invoice.discount,
                 'net_amount': voucher.bill_amount,

@@ -8,7 +8,7 @@ from openerp import tools
 from openerp.osv import fields, osv
 from openerp.tools.translate import _
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT, DATETIME_FORMATS_MAP, float_compare
-
+from openerp.tools import pickle
 import openerp.addons.decimal_precision as dp
 
 _logger = logging.getLogger(__name__)
@@ -120,7 +120,20 @@ class sale_order_line(osv.osv):
                 uos = False
         fpos = fiscal_position and self.pool.get('account.fiscal.position').browse(cr, uid, fiscal_position) or False
         if update_tax: #The quantity only have changed
-            result['tax_id'] = self.pool.get('account.fiscal.position').map_tax(cr, uid, fpos, product_obj.taxes_id)
+            tax_id = product_obj.taxes_id
+            if not tax_id:
+                search_criteria = [
+                    ('key', '=', 'default'),
+                    ('model', '=', 'product.product'),
+                    ('name', '=', 'taxes_id'),
+                ]
+                ir_values_obj = self.pool.get('ir.values')
+                defaults = ir_values_obj.browse(cr, uid, ir_values_obj.search(cr, uid, search_criteria))
+                default_tax_id = pickle.loads(defaults[0].value.encode('utf-8')) if defaults else None
+                if default_tax_id:
+                    tax_id = self.pool.get('account.tax').browse(cr, uid, default_tax_id)
+
+            result['tax_id'] = self.pool.get('account.fiscal.position').map_tax(cr, uid, fpos, tax_id)
 
         if not flag:
             result['name'] = self.pool.get('product.product').name_get(cr, uid, [product_obj.id], context=context_partner)[0][1]
