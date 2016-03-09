@@ -9,9 +9,10 @@
 
             <field name="arch" type="xml">
                 <xpath expr="/form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='price_unit']" position="after" >
-                    <field name="batch_name"/>
+                    <field name="batch_name" invisible="True"/>
                     <field name="expiry_date" readonly="0"/>
-                    <field name="batch_id" invisible="True"/>
+                    <field name="batch_id" domain="[('product_id','=',product_id)]"
+                           on_change="batch_id_change(batch_id,product_id,context)"/>
                 </xpath>
             </field>
         </record>

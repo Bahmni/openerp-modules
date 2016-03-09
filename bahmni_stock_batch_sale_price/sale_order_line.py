@@ -57,6 +57,19 @@ class sale_order_line(osv.osv):
                 return prodlot
         return None
 
+    def batch_id_change(self, cr, uid, ids, batch_id, product_id, context=None):
+        if not product_id:
+            return {}
+        if not batch_id:
+            prod_obj = self.pool.get('product.product').browse(cr, uid, product_id)
+            return {'value': {'price_unit': prod_obj.list_price}}
+        context = context or {}
+        stock_prod_lot = self.pool.get('stock.production.lot')
+        sale_price = 0.0
+        for prodlot in stock_prod_lot.browse(cr, uid, [batch_id], context=context):
+            sale_price =  prodlot.sale_price
+        return {'value' : {'price_unit': sale_price}}
+
 
     def product_id_change(self, cr, uid, ids, pricelist, product, qty=0,
                           uom=False, qty_uos=0, uos=False, name='', partner_id=False,
@@ -77,6 +90,8 @@ class sale_order_line(osv.osv):
 
         if not product:
             return {'value': {'th_weight': 0,
+                              'batch_id': None,
+                              'price_unit': 0.0,
                               'product_uos_qty': qty}, 'domain': {'product_uom': [],
                                                                   'product_uos': []}}
         if not date_order:
