@@ -515,9 +515,9 @@ class sale_order_line(osv.osv):
     def _record_processed_drug_order(self, cr, uid, vals):
         if type(vals) is list:
             for val in vals:
-                self.pool.get('processed.drug.order').create(cr, uid, {'order_uuid': self._get_order_uuid(val)})
+                self.pool.get('processed.drug.order').create(cr, uid, {'order_uuid': self._get_order_uuid(val), 'dispensed_status': self._get_dispensed_status(val)})
         else:
-            self.pool.get('processed.drug.order').create(cr, uid, {'order_uuid': self._get_order_uuid(vals)})
+            self.pool.get('processed.drug.order').create(cr, uid, {'order_uuid': self._get_order_uuid(vals), 'dispensed_status': self._get_dispensed_status(vals)})
 
 
     def _get_order_uuid(self, val):
@@ -525,5 +525,8 @@ class sale_order_line(osv.osv):
             return val.get('order_uuid')
         else:
             return val.get('external_order_id')
+
+    def _get_dispensed_status(self, val):
+        return val.get('dispensed_status')
 
 sale_order_line()

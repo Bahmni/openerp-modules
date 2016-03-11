@@ -258,7 +258,8 @@ class sale_order_line(osv.osv):
         'batch_name': fields.char('Batch No'),
         'expiry_date': fields.char('Expiry Date'),
         'comments': fields.char('Comments'),
-        'flag_in_stock': fields.function(_in_stock, string="In Stock", type='boolean')
+        'flag_in_stock': fields.function(_in_stock, string="In Stock", type='boolean'),
+        'dispensed_status': fields.char('Dispensed Status')
     }
 
     _defaults = {

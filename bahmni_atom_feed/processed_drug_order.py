@@ -8,5 +8,6 @@ class processed_drug_order(osv.osv):
     _name = "processed.drug.order"
 
     _columns = {
-        'order_uuid'      : fields.char('Order UUID', size=38, required=True)
+        'order_uuid'      : fields.char('Order UUID', size=38, required=True),
+        'dispensed_status' : fields.char('Dispensed Status', size=38)
     }
