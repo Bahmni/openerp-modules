@@ -261,6 +261,10 @@ class sale_order_line(osv.osv):
         'flag_in_stock': fields.function(_in_stock, string="In Stock", type='boolean')
     }
 
+    _defaults = {
+        'flag_in_stock': True
+    }
+
     _order = 'id'
 
 sale_order_line()
