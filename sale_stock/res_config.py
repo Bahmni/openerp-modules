@@ -54,6 +54,8 @@ class sale_configuration(osv.osv_memory):
         'group_multiple_shops': fields.boolean("Manage multiple shops",
             implied_group='stock.group_locations',
             help="This allows to configure and use multiple shops."),
+        'convert_dispensed': fields.boolean('Allow to convert automatically quotation into sale order'),
+
         'module_project_timesheet': fields.boolean("Project Timesheet"),
         'module_project_mrp': fields.boolean("Project MRP"),
     }
@@ -61,6 +63,11 @@ class sale_configuration(osv.osv_memory):
     _defaults = {
         'default_order_policy': 'manual',
     }
+
+    def set_convert_dispensed(self, cr, uid, ids, context=None):
+        ir_values = self.pool.get('ir.values')
+        config = self.browse(cr, uid, ids[0], context)
+        ir_values.set_default(cr, uid, 'sale.config.settings', 'convert_dispensed', config.convert_dispensed)
 
     def default_get(self, cr, uid, fields, context=None):
         res = super(sale_configuration, self).default_get(cr, uid, fields, context)

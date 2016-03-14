@@ -7,6 +7,7 @@ from openerp import tools
 from openerp.osv import fields, osv
 from itertools import groupby
 from datetime import date, datetime
+from openerp.tools import pickle
 
 
 _logger = logging.getLogger(__name__)
@@ -17,7 +18,7 @@ class order_save_service(osv.osv):
     _auto = False
 
     def _create_sale_order_line(self, cr, uid, name, sale_order, order, context=None):
-        if(self._order_already_processed(cr,uid,order['orderId'],context)):
+        if(self._order_already_processed(cr,uid,order['orderId'],order['dispensed'],context)):
             return
         self._create_sale_order_line_function(cr, uid, name, sale_order, order, context=context)
 
@@ -198,6 +199,17 @@ class order_save_service(osv.osv):
 
         self.pool.get('sale.order.line').unlink(cr, uid, [sale_order_line_to_be_saved.id for sale_order_line_to_be_saved in sale_order_lines_to_be_saved], context=context)
 
+    def _get_default_value_of_convert_dispensed (self,cr,uid):
+        search_criteria = [
+            ('key', '=', 'default'),
+            ('model', '=', 'sale.config.settings'),
+            ('name', '=', 'convert_dispensed'),
+            ]
+        ir_values_obj = self.pool.get('ir.values')
+        defaults = ir_values_obj.browse(cr, uid, ir_values_obj.search(cr, uid, search_criteria))
+        default_convert_dispensed = pickle.loads(defaults[0].value.encode('utf-8'))
+        return default_convert_dispensed
+
 
     def create_orders(self, cr,uid,vals,context):
         customer_id = vals.get("customer_id")
@@ -226,7 +238,6 @@ class order_save_service(osv.osv):
                     name = self.pool.get('ir.sequence').get(cr, uid, 'sale.order')
                     #Getting the existing list of shops with the given location present in database
                     order_type_map = self.pool.get('order.type.shop.map').browse(cr, uid, map_id_List[0], context=context)
-
                     #Getting the local shop and the shop ids
                     shop_id = order_type_map.shop_id.id
                     local_shop_id = order_type_map.local_shop_id.id
@@ -264,6 +275,7 @@ class order_save_service(osv.osv):
 
                     if(len(unprocessed_dispensed_order) > 0 and local_shop_id) :
                         sale_order_ids = self.pool.get('sale.order').search(cr, uid, [('partner_id', '=', cus_id), ('shop_id', '=', unprocessed_dispensed_order[0]['custom_shop_id']), ('state', '=', 'draft'), ('origin', '=', 'ATOMFEED SYNC')], context=context)
+
                         sale_order_ids_for_dispensed = self.pool.get('sale.order').search(cr, uid, [('partner_id', '=', cus_id), ('shop_id', '=', unprocessed_dispensed_order[0]['custom_local_shop_id']), ('state', '=', 'draft'), ('origin', '=', 'ATOMFEED SYNC')], context=context)
 
                         if(not sale_order_ids_for_dispensed):
@@ -272,11 +284,16 @@ class order_save_service(osv.osv):
 
                             #Removing existing empty sale order
                             sale_order_line_ids = self.pool.get('sale.order.line').search(cr, uid, [('order_id', '=', sale_order_ids[0])], context=context)
+
                             if(len(sale_order_line_ids) == 0):
                                 self.pool.get('sale.order').unlink(cr, uid, sale_order_ids, context=context)
 
                             #Dispensed New
                             self._create_sale_order(cr, uid, cus_id, name, unprocessed_dispensed_order[0]['custom_local_shop_id'], unprocessed_dispensed_order, care_setting, provider_name, context)
+
+                            if(self._get_default_value_of_convert_dispensed (cr,uid)):
+                                sale_order_ids_for_dispensed = self.pool.get('sale.order').search(cr, uid, [('partner_id', '=', cus_id), ('shop_id', '=', unprocessed_dispensed_order[0]['custom_local_shop_id']), ('state', '=', 'draft'), ('origin', '=', 'ATOMFEED SYNC')], context=context)
+                                self.pool.get('sale.order').action_button_confirm(cr, uid, sale_order_ids_for_dispensed, context)
 
                         else:
                             #Remove existing sale order line

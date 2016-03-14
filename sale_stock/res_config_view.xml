@@ -5,7 +5,7 @@
          <record id="view_sales_config_sale_stock" model="ir.ui.view">
              <field name="name">sale settings</field>
              <field name="model">sale.config.settings</field>
-             <field name="inherit_id" ref="sale.view_sales_config"/>
+                 <field name="inherit_id" ref="sale.view_sales_config"/>
              <field name="arch" type="xml">
                  <data>
                      <xpath expr="//div[@name='Customer Features']" position="inside">
@@ -63,6 +63,12 @@
                          <div>
                              <field name="group_multiple_shops" class="oe_inline"/>
                              <label for="group_multiple_shops"/>
+                         </div>
+                     </xpath>
+                     <xpath expr="//div[@name='module_sale_margin']" position="before">
+                         <div>
+                             <field name="convert_dispensed" class="oe_inline"/>
+                             <label for="convert_dispensed"/>
                          </div>
                      </xpath>
                      <field name="group_invoice_so_lines" position="replace">
