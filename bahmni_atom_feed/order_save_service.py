@@ -211,6 +211,33 @@ class order_save_service(osv.osv):
         return default_convert_dispensed
 
 
+    def _get_shop_and_local_shop_id (self, cr, uid, orderType, location_name, context):
+        shop_list = self.pool.get('order.type.shop.map').search(cr, uid, [], context = context)
+        shop_list_with_orderType = self.pool.get('order.type.shop.map').search(cr, uid, [('order_type', '=', orderType)], context=context)
+        if(len(shop_list) == 0):  ##Checks if the order type to shop mapping table is empty or not, if empty then pick the first shop in the sale_shop list
+            shop_id_list = self.pool.get('sale.shop').search(cr, uid,[], context=context)
+            shop_id = self.pool.get('sale.shop').browse(cr, uid, shop_id_list[0], context=context).id
+            local_shop_id = False
+        elif(len(shop_list_with_orderType) == 0): ##orderType to shop mapping table may not be empty, but it may not contain the orderType that is sent
+            first_mapping_id = shop_list[0]
+            first_mapping_obj = self.pool.get('order.type.shop.map').browse(cr, uid, first_mapping_id, context=context)
+            shop_id = first_mapping_obj.shop_id.id
+
+            if(not first_mapping_obj.local_shop_id):
+                local_shop_id = False
+            else:
+                local_shop_id = first_mapping_obj.local_shop_id.id
+        else: ##orderType to shop mapping table is not empty and has a mapping of the orderType that is sent //general scenario
+            shop_mapping_with_locations = self.pool.get('order.type.shop.map').search(cr, uid, [('order_type', '=', orderType), ('location_name', '=', location_name)], context=context)
+            if(not shop_mapping_with_locations):
+                shop_mapping_with_locations = self.pool.get('order.type.shop.map').search(cr, uid, [('order_type', '=', orderType), ('location_name', '=', None)], context=context)
+            if(shop_mapping_with_locations):
+                order_type_map = self.pool.get('order.type.shop.map').browse(cr, uid, shop_mapping_with_locations[0], context=context)
+                shop_id = order_type_map.shop_id.id
+                local_shop_id = order_type_map.local_shop_id.id
+
+        return (shop_id, local_shop_id)
+
     def create_orders(self, cr,uid,vals,context):
         customer_id = vals.get("customer_id")
         location_name = vals.get("locationName")
@@ -229,82 +256,73 @@ class order_save_service(osv.osv):
                 provider_name = orders[0].get('providerName')
                 unprocessed_orders = self._filter_processed_orders(context, cr, orders, uid)
 
+                tup = self._get_shop_and_local_shop_id(cr, uid, orderType, location_name, context)
+                shop_id = tup[0]
+                local_shop_id = tup[1]
 
-                map_id_List = self.pool.get('order.type.shop.map').search(cr, uid, [('order_type', '=', orderType),('location_name', '=', location_name)], context=context)
+                name = self.pool.get('ir.sequence').get(cr, uid, 'sale.order')
+                #Adding both the ids to the unprocessed array of orders, Separating to dispensed and non-dispensed orders
+                unprocessed_dispensed_order = []
+                unprocessed_non_dispensed_order = []
+                for unprocessed_order in unprocessed_orders :
+                    unprocessed_order['custom_shop_id'] = shop_id
+                    unprocessed_order['custom_local_shop_id'] = local_shop_id
+                    if(unprocessed_order['dispensed'] == 'true') :
+                        unprocessed_dispensed_order.append(unprocessed_order)
+                    else :
+                        unprocessed_non_dispensed_order.append(unprocessed_order)
 
-                if(not map_id_List):
-                    map_id_List = self.pool.get('order.type.shop.map').search(cr, uid, [('order_type', '=', orderType), ('location_name', '=', None)], context=context)
-                if(map_id_List):
-                    name = self.pool.get('ir.sequence').get(cr, uid, 'sale.order')
-                    #Getting the existing list of shops with the given location present in database
-                    order_type_map = self.pool.get('order.type.shop.map').browse(cr, uid, map_id_List[0], context=context)
-                    #Getting the local shop and the shop ids
-                    shop_id = order_type_map.shop_id.id
-                    local_shop_id = order_type_map.local_shop_id.id
+                if(len(unprocessed_non_dispensed_order) > 0 ) :
+                    sale_order_ids = self.pool.get('sale.order').search(cr, uid, [('partner_id', '=', cus_id), ('shop_id', '=', unprocessed_non_dispensed_order[0]['custom_shop_id']), ('state', '=', 'draft'), ('origin', '=', 'ATOMFEED SYNC')], context=context)
 
-                    #Adding both the ids to the unprocessed array of orders, Separating to dispensed and non-dispensed orders
-                    unprocessed_dispensed_order = []
-                    unprocessed_non_dispensed_order = []
+                    if(not sale_order_ids):
+                        #Non Dispensed New
+                        self._create_sale_order(cr, uid, cus_id, name, unprocessed_non_dispensed_order[0]['custom_shop_id'], unprocessed_non_dispensed_order, care_setting, provider_name, context)
+                    else:
+                        #Non Dispensed Update
+                        self._update_sale_order(cr, uid, cus_id, name, unprocessed_non_dispensed_order[0]['custom_shop_id'], care_setting, sale_order_ids[0], unprocessed_non_dispensed_order, provider_name, context)
 
-                    for unprocessed_order in unprocessed_orders :
-                        unprocessed_order['custom_shop_id'] = shop_id
-                        unprocessed_order['custom_local_shop_id'] = local_shop_id
-                        if(unprocessed_order['dispensed'] == 'true') :
-                            unprocessed_dispensed_order.append(unprocessed_order)
-                        else :
-                            unprocessed_non_dispensed_order.append(unprocessed_order)
+                    sale_order_ids_for_dispensed = self.pool.get('sale.order').search(cr, uid, [('partner_id', '=', cus_id), ('shop_id', '=', unprocessed_non_dispensed_order[0]['custom_local_shop_id']), ('state', '=', 'draft'), ('origin', '=', 'ATOMFEED SYNC')], context=context)
 
-                    if(len(unprocessed_non_dispensed_order) > 0 ) :
-                        sale_order_ids = self.pool.get('sale.order').search(cr, uid, [('partner_id', '=', cus_id), ('shop_id', '=', unprocessed_non_dispensed_order[0]['custom_shop_id']), ('state', '=', 'draft'), ('origin', '=', 'ATOMFEED SYNC')], context=context)
-
-                        if(not sale_order_ids):
-                            #Non Dispensed New
-                            self._create_sale_order(cr, uid, cus_id, name, unprocessed_non_dispensed_order[0]['custom_shop_id'], unprocessed_non_dispensed_order, care_setting, provider_name, context)
-                        else:
-                            #Non Dispensed Update
-                            self._update_sale_order(cr, uid, cus_id, name, unprocessed_non_dispensed_order[0]['custom_shop_id'], care_setting, sale_order_ids[0], unprocessed_non_dispensed_order, provider_name, context)
-
-                        sale_order_ids_for_dispensed = self.pool.get('sale.order').search(cr, uid, [('partner_id', '=', cus_id), ('shop_id', '=', unprocessed_non_dispensed_order[0]['custom_local_shop_id']), ('state', '=', 'draft'), ('origin', '=', 'ATOMFEED SYNC')], context=context)
-
-                        if(len(sale_order_ids_for_dispensed) > 0):
-                            if(sale_order_ids_for_dispensed[0]) :
-                                sale_order_line_ids_for_dispensed = self.pool.get('sale.order.line').search(cr, uid, [('order_id', '=', sale_order_ids_for_dispensed[0])], context=context)
-                                if(len(sale_order_line_ids_for_dispensed) == 0):
-                                    self.pool.get('sale.order').unlink(cr, uid, sale_order_ids_for_dispensed, context=context)
+                    if(len(sale_order_ids_for_dispensed) > 0):
+                        if(sale_order_ids_for_dispensed[0]) :
+                            sale_order_line_ids_for_dispensed = self.pool.get('sale.order.line').search(cr, uid, [('order_id', '=', sale_order_ids_for_dispensed[0])], context=context)
+                            if(len(sale_order_line_ids_for_dispensed) == 0):
+                                self.pool.get('sale.order').unlink(cr, uid, sale_order_ids_for_dispensed, context=context)
 
 
-                    if(len(unprocessed_dispensed_order) > 0 and local_shop_id) :
-                        sale_order_ids = self.pool.get('sale.order').search(cr, uid, [('partner_id', '=', cus_id), ('shop_id', '=', unprocessed_dispensed_order[0]['custom_shop_id']), ('state', '=', 'draft'), ('origin', '=', 'ATOMFEED SYNC')], context=context)
+                if(len(unprocessed_dispensed_order) > 0 and local_shop_id) :
+                    sale_order_ids = self.pool.get('sale.order').search(cr, uid, [('partner_id', '=', cus_id), ('shop_id', '=', unprocessed_dispensed_order[0]['custom_shop_id']), ('state', '=', 'draft'), ('origin', '=', 'ATOMFEED SYNC')], context=context)
 
-                        sale_order_ids_for_dispensed = self.pool.get('sale.order').search(cr, uid, [('partner_id', '=', cus_id), ('shop_id', '=', unprocessed_dispensed_order[0]['custom_local_shop_id']), ('state', '=', 'draft'), ('origin', '=', 'ATOMFEED SYNC')], context=context)
+                    sale_order_ids_for_dispensed = self.pool.get('sale.order').search(cr, uid, [('partner_id', '=', cus_id), ('shop_id', '=', unprocessed_dispensed_order[0]['custom_local_shop_id']), ('state', '=', 'draft'), ('origin', '=', 'ATOMFEED SYNC')], context=context)
 
-                        if(not sale_order_ids_for_dispensed):
-                            #Remove existing sale order line
-                            self._remove_existing_sale_order_line(cr,uid,sale_order_ids[0],unprocessed_dispensed_order,context=context)
+                    if(not sale_order_ids_for_dispensed):
+                        #Remove existing sale order line
+                        self._remove_existing_sale_order_line(cr,uid,sale_order_ids[0],unprocessed_dispensed_order,context=context)
 
-                            #Removing existing empty sale order
-                            sale_order_line_ids = self.pool.get('sale.order.line').search(cr, uid, [('order_id', '=', sale_order_ids[0])], context=context)
+                        #Removing existing empty sale order
+                        sale_order_line_ids = self.pool.get('sale.order.line').search(cr, uid, [('order_id', '=', sale_order_ids[0])], context=context)
 
-                            if(len(sale_order_line_ids) == 0):
-                                self.pool.get('sale.order').unlink(cr, uid, sale_order_ids, context=context)
+                        if(len(sale_order_line_ids) == 0):
+                            self.pool.get('sale.order').unlink(cr, uid, sale_order_ids, context=context)
 
-                            #Dispensed New
-                            self._create_sale_order(cr, uid, cus_id, name, unprocessed_dispensed_order[0]['custom_local_shop_id'], unprocessed_dispensed_order, care_setting, provider_name, context)
+                        #Dispensed New
+                        self._create_sale_order(cr, uid, cus_id, name, unprocessed_dispensed_order[0]['custom_local_shop_id'], unprocessed_dispensed_order, care_setting, provider_name, context)
 
-                            if(self._get_default_value_of_convert_dispensed (cr,uid)):
-                                sale_order_ids_for_dispensed = self.pool.get('sale.order').search(cr, uid, [('partner_id', '=', cus_id), ('shop_id', '=', unprocessed_dispensed_order[0]['custom_local_shop_id']), ('state', '=', 'draft'), ('origin', '=', 'ATOMFEED SYNC')], context=context)
-                                self.pool.get('sale.order').action_button_confirm(cr, uid, sale_order_ids_for_dispensed, context)
+                        if(self._get_default_value_of_convert_dispensed (cr,uid)):
+                            sale_order_ids_for_dispensed = self.pool.get('sale.order').search(cr, uid, [('partner_id', '=', cus_id), ('shop_id', '=', unprocessed_dispensed_order[0]['custom_local_shop_id']), ('state', '=', 'draft'), ('origin', '=', 'ATOMFEED SYNC')], context=context)
+                            self.pool.get('sale.order').action_button_confirm(cr, uid, sale_order_ids_for_dispensed, context)
 
-                        else:
-                            #Remove existing sale order line
-                            self._remove_existing_sale_order_line(cr,uid,sale_order_ids[0],unprocessed_dispensed_order,context=context)
+                    else:
+                        #Remove existing sale order line
+                        self._remove_existing_sale_order_line(cr,uid,sale_order_ids[0],unprocessed_dispensed_order,context=context)
 
-                            #Removing existing empty sale order
-                            sale_order_line_ids = self.pool.get('sale.order.line').search(cr, uid, [('order_id', '=', sale_order_ids[0])], context=context)
-                            if(len(sale_order_line_ids) == 0):
-                                self.pool.get('sale.order').unlink(cr, uid, sale_order_ids, context=context)
+                        #Removing existing empty sale order
+                        sale_order_line_ids = self.pool.get('sale.order.line').search(cr, uid, [('order_id', '=', sale_order_ids[0])], context=context)
+                        if(len(sale_order_line_ids) == 0):
+                            self.pool.get('sale.order').unlink(cr, uid, sale_order_ids, context=context)
 
-                            #Dispensed Update
-                            self._update_sale_order(cr, uid, cus_id, name, unprocessed_dispensed_order[0]['custom_local_shop_id'], care_setting, sale_order_ids_for_dispensed[0], unprocessed_dispensed_order, provider_name, context)
+                        #Dispensed Update
+                        self._update_sale_order(cr, uid, cus_id, name, unprocessed_dispensed_order[0]['custom_local_shop_id'], care_setting, sale_order_ids_for_dispensed[0], unprocessed_dispensed_order, provider_name, context)
         else:
             raise osv.except_osv(('Error!'), ("Patient Id not found in openerp"))
