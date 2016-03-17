@@ -63,7 +63,7 @@ class sale_order(osv.osv):
                 sale_price = line.price_subtotal + self._amount_line_tax(cr, uid, line, context=context)
                 mrp = 0.0
                 if line.batch_id:
-                    mrp = line.batch_id.mrp * line.product_uos_qty
+                    mrp = line.batch_id.mrp * line.product_uom_qty
                     if mrp > 0.0 and mrp < sale_price:
                             raise osv.except_osv(_('Error!'), _('Unit price plus the taxes for %s is more than batch %s MRP.\n') % (line.product_id.name, line.batch_id.name))
 
