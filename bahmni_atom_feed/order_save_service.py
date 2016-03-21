@@ -22,8 +22,19 @@ class order_save_service(osv.osv):
             return
         self._create_sale_order_line_function(cr, uid, name, sale_order, order, context=context)
 
+    def _get_product_ids(self, cr, uid, order, context=None):
+        if order['productId']:
+            prod_ids = self.pool.get('product.product').search(cr, uid, [('uuid', '=', order['productId'])], context=context)
+        else:
+            prod_ids = self.pool.get('product.product').search(cr, uid, [('name_template', '=', order['conceptName'])], context=context)
+
+        return prod_ids
+
+
     def _create_sale_order_line_function(self, cr, uid, name, sale_order, order, context=None):
-        stored_prod_ids = self.pool.get('product.product').search(cr, uid, [('uuid', '=', order['productId'])], context=context)
+
+        stored_prod_ids = self._get_product_ids(cr, uid, order, context=context)
+
         if(stored_prod_ids):
             prod_id = stored_prod_ids[0]
             prod_obj = self.pool.get('product.product').browse(cr, uid, prod_id)
@@ -180,8 +191,9 @@ class order_save_service(osv.osv):
 
     def _filter_products_undefined(self,context,cr,orders,uid):
         products_in_system = []
+
         for order in orders:
-            stored_prod_ids = self.pool.get('product.product').search(cr, uid, [('uuid', '=', order['productId'])], context=context)
+            stored_prod_ids = self._get_product_ids(cr, uid, order, context=context)
             if(stored_prod_ids):
                 products_in_system.append(order)
         return products_in_system
@@ -242,6 +254,7 @@ class order_save_service(osv.osv):
         customer_id = vals.get("customer_id")
         location_name = vals.get("locationName")
         all_orders = self._get_openerp_orders(vals)
+
         if(not all_orders):
             return ""
 
