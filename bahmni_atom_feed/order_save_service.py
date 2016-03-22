@@ -211,7 +211,7 @@ class order_save_service(osv.osv):
 
         self.pool.get('sale.order.line').unlink(cr, uid, [sale_order_line_to_be_saved.id for sale_order_line_to_be_saved in sale_order_lines_to_be_saved], context=context)
 
-    def _get_default_value_of_convert_dispensed (self,cr,uid):
+    def _allow_automatic_convertion_to_saleorder (self,cr,uid):
         search_criteria = [
             ('key', '=', 'default'),
             ('model', '=', 'sale.config.settings'),
@@ -219,8 +219,10 @@ class order_save_service(osv.osv):
             ]
         ir_values_obj = self.pool.get('ir.values')
         defaults = ir_values_obj.browse(cr, uid, ir_values_obj.search(cr, uid, search_criteria))
-        default_convert_dispensed = pickle.loads(defaults[0].value.encode('utf-8'))
-        return default_convert_dispensed
+        if defaults:
+            default_convert_dispensed = pickle.loads(defaults[0].value.encode('utf-8'))
+            return default_convert_dispensed
+        return False
 
 
     def _get_shop_and_local_shop_id (self, cr, uid, orderType, location_name, context):
@@ -322,7 +324,7 @@ class order_save_service(osv.osv):
                         #Dispensed New
                         self._create_sale_order(cr, uid, cus_id, name, unprocessed_dispensed_order[0]['custom_local_shop_id'], unprocessed_dispensed_order, care_setting, provider_name, context)
 
-                        if(self._get_default_value_of_convert_dispensed (cr,uid)):
+                        if(self._allow_automatic_convertion_to_saleorder (cr,uid)):
                             sale_order_ids_for_dispensed = self.pool.get('sale.order').search(cr, uid, [('partner_id', '=', cus_id), ('shop_id', '=', unprocessed_dispensed_order[0]['custom_local_shop_id']), ('state', '=', 'draft'), ('origin', '=', 'ATOMFEED SYNC')], context=context)
                             self.pool.get('sale.order').action_button_confirm(cr, uid, sale_order_ids_for_dispensed, context)
 
