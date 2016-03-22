@@ -13,6 +13,7 @@
         'sale_discount_price_view.xml',
         'invoice_discount_view.xml',
         'quotation_view.xml',
+        'sale_order_view_extension.xml',
         'sale_order_form.xml',
         'sale_report.xml'],
     'demo': [],

@@ -419,6 +419,15 @@ class sale_order(osv.osv):
             res[order.id] = {'partner_village': partner.village, 'partner_uuid': partner.uuid}
         return res
 
+    def _get_dispensed_location(self, cr, uid, ids, name, args,context=None):
+        sale_shop_obj = self.pool.get('sale.shop')
+        result = {}
+        for order in self.browse(cr, uid, ids, context=context):
+            dispensed_location = sale_shop_obj.browse(cr, uid, order.shop_id.id, context)
+            result[order.id] = {'dispensed_location': dispensed_location['name']}
+        return result
+
+
     def create(self, cr, uid, vals, context=None):
         if vals.get('datetime_order'):
             date_parsed = datetime.strptime(vals.get('datetime_order'), '%Y-%m-%d %H:%M:%S')
@@ -481,6 +490,7 @@ class sale_order(osv.osv):
     'total_outstanding': fields.function(_calculate_balance, digits_compute=dp.get_precision('Account'), string='Total Outstanding',
              help="The Total Outstanding amount at the time of sale order creation.",multi="all"),
     'partner_village': fields.function(_get_partner_details, type='char', string ='Village', readonly=True, multi=True),
+    'dispensed_location': fields.function(_get_dispensed_location, type='char',store=True, string ='Shop', readonly=True, multi=True),
     'partner_uuid': fields.function(_get_partner_details, type='char', string ='Customer UUID', readonly=True, multi=True,),
     'care_setting': fields.selection([('ipd', 'IPD'), ('opd', 'OPD')], 'Care Setting'),
     'provider_name':fields.char("Provider Name", size=250, translate=False, required=False)

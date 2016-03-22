@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record id="view_order_tree_with_dispensed_location" model="ir.ui.view">
+            <field name="name">sale.order.tree</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_tree"/>
+            <field name="priority">2</field>
+            <field name="arch" type="xml">
+                <xpath expr="/tree/field[@name='partner_id']" position="after">
+                    <field name="dispensed_location"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</openerp>

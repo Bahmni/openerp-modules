@@ -10,6 +10,9 @@
                 <xpath expr="/tree/field[@name='partner_id']" position="after" >
                     <field name="partner_village"/>
                 </xpath>
+                <xpath expr="/tree/field[@name='partner_village']" position="before" >
+                    <field name="dispensed_location"/>
+                </xpath>
                 <xpath expr="/tree/field[@name='amount_total']" position="after" >
                     <field name="total_outstanding"/>
                 </xpath>
