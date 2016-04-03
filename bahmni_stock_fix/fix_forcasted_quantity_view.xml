@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="fix_forcasted_quantity_form_view" model="ir.ui.view">
+            <field name="name">Fix forcasted quantity</field>
+            <field name="type">form</field>
+            <field name="model">fix.forcasted.quantity</field>
+            <field name="arch" type="xml">
+                <form string="Fix Forecasted Quantity" version="7.0">
+                    <group>
+                        <field name="location_id"/>
+                        <field name="location_dest_id"/>
+                        <field name="product_id"/>
+                    </group>
+                    <footer>
+                        <button name="action_fix" string="Fix Quantity" type="object"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="action_fix_forcasted_quantity" model="ir.actions.act_window">
+            <field name="name">Fix forcasted quantity</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">fix.forcasted.quantity</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="fix_forcasted_quantity_form_view"/>
+            <field name="context">{}</field>
+        </record>
+
+        <menuitem id="menu_fix_forcasted_quantity" parent="stock.menu_stock_inventory_control" name="Fix forcasted quantity" sequence="3" action="action_fix_forcasted_quantity" groups="base.group_erp_manager"/>
+
+    </data>
+</openerp>
+
