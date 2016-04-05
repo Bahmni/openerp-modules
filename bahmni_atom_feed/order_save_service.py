@@ -18,7 +18,7 @@ class order_save_service(osv.osv):
     _auto = False
 
     def _create_sale_order_line(self, cr, uid, name, sale_order, order, context=None):
-        if(self._order_already_processed(cr,uid,order['orderId'],order['dispensed'],context)):
+        if(self._order_already_processed(cr,uid,order['orderId'],order.get('dispensed', False),context)):
             return
         self._create_sale_order_line_function(cr, uid, name, sale_order, order, context=context)
 
@@ -67,7 +67,7 @@ class order_save_service(osv.osv):
                 'name': prod_obj.name,
                 'type': 'make_to_stock',
                 'state': 'draft',
-                'dispensed_status': order['dispensed']
+                'dispensed_status': order.get('dispensed', False)
 
             }
 
@@ -120,7 +120,7 @@ class order_save_service(osv.osv):
 
         order_in_db = self._fetch_order_in_db(cr, uid, order['orderId'], context=context)
 
-        if(order_in_db or self._order_already_processed(cr,uid, order['orderId'], order['dispensed'],context)):
+        if(order_in_db or self._order_already_processed(cr,uid, order['orderId'], order.get('dispensed', False),context)):
             return
 
         parent_order_line = []
@@ -132,7 +132,7 @@ class order_save_service(osv.osv):
             if(parent_order):
                 self._process_orders(cr, uid, name, sale_order, all_orders, parent_order, context=None)
             parent_order_line = self._fetch_order_in_db(cr, uid, order['previousOrderId'], context=context)
-            if(not parent_order_line and not self._order_already_processed(cr,uid, order['previousOrderId'], order['dispensed'], context)):
+            if(not parent_order_line and not self._order_already_processed(cr,uid, order['previousOrderId'], order.get('dispensed', False), context)):
                 raise osv.except_osv(('Error!'),("Previous order id does not exist in DB. This can be because of previous failed events"))
 
         if(order["voided"] or order.get('action', "") == "DISCONTINUE"):
@@ -185,7 +185,7 @@ class order_save_service(osv.osv):
     def _filter_processed_orders(self, context, cr, orders, uid):
         unprocessed_orders = []
         for order in orders:
-            if (not self._order_already_processed(cr, uid, order['orderId'], order['dispensed'], context=context)):
+            if (not self._order_already_processed(cr, uid, order['orderId'], order.get('dispensed', False), context=context)):
                 unprocessed_orders.append(order)
         return self._filter_products_undefined(context,cr,unprocessed_orders,uid)
 
@@ -205,7 +205,7 @@ class order_save_service(osv.osv):
         for order in unprocessed_dispensed_order:
             for sale_order_line in sale_order_lines:
                 if(order['orderId'] == sale_order_line['external_order_id']):
-                    if(order['dispensed'] != sale_order_line['dispensed_status']):
+                    if(order.get('dispensed', 'false') != sale_order_line['dispensed_status']):
                         sale_order_line_to_be_saved = self.pool.get('sale.order.line').browse(cr, uid, sale_order_line['id'], context=context)
                         sale_order_lines_to_be_saved.append(sale_order_line_to_be_saved)
 
@@ -226,29 +226,28 @@ class order_save_service(osv.osv):
 
 
     def _get_shop_and_local_shop_id (self, cr, uid, orderType, location_name, context):
-        shop_list = self.pool.get('order.type.shop.map').search(cr, uid, [], context = context)
-        shop_list_with_orderType = self.pool.get('order.type.shop.map').search(cr, uid, [('order_type', '=', orderType)], context=context)
-        if(len(shop_list) == 0):  ##Checks if the order type to shop mapping table is empty or not, if empty then pick the first shop in the sale_shop list
-            shop_id_list = self.pool.get('sale.shop').search(cr, uid,[], context=context)
-            shop_id = self.pool.get('sale.shop').browse(cr, uid, shop_id_list[0], context=context).id
-            local_shop_id = False
-        elif(len(shop_list_with_orderType) == 0): ##orderType to shop mapping table may not be empty, but it may not contain the orderType that is sent
-            first_mapping_id = shop_list[0]
-            first_mapping_obj = self.pool.get('order.type.shop.map').browse(cr, uid, first_mapping_id, context=context)
-            shop_id = first_mapping_obj.shop_id.id
+        shop_list_with_orderType = []
+        if (location_name):
+            shop_list_with_orderType = self.pool.get('order.type.shop.map').search(cr, uid, [('order_type', '=', orderType), ('location_name', '=', location_name)], context=context)
 
-            if(not first_mapping_obj.local_shop_id):
-                local_shop_id = False
+        if (len(shop_list_with_orderType) == 0):
+            shop_list_with_orderType = self.pool.get('order.type.shop.map').search(cr, uid, [('order_type', '=', orderType)], context=context)
+
+        if(len(shop_list_with_orderType) == 0):
+            return (False, False)
+        else:
+            order_type_map_object = self.pool.get('order.type.shop.map').browse(cr, uid, shop_list_with_orderType[0], context=context)
+            if(order_type_map_object['shop_id']):
+                shop_id = order_type_map_object['shop_id'].id
             else:
-                local_shop_id = first_mapping_obj.local_shop_id.id
-        else: ##orderType to shop mapping table is not empty and has a mapping of the orderType that is sent //general scenario
-            shop_mapping_with_locations = self.pool.get('order.type.shop.map').search(cr, uid, [('order_type', '=', orderType), ('location_name', '=', location_name)], context=context)
-            if(not shop_mapping_with_locations):
-                shop_mapping_with_locations = self.pool.get('order.type.shop.map').search(cr, uid, [('order_type', '=', orderType), ('location_name', '=', None)], context=context)
-            if(shop_mapping_with_locations):
-                order_type_map = self.pool.get('order.type.shop.map').browse(cr, uid, shop_mapping_with_locations[0], context=context)
-                shop_id = order_type_map.shop_id.id
-                local_shop_id = order_type_map.local_shop_id.id
+                shop_id_list = self.pool.get('sale.shop').search(cr, uid,[], context=context)
+                first_shop = self.pool.get('sale.shop').browse(cr, uid, shop_id_list[0], context=context)
+                shop_id= first_shop['id']
+
+            if(order_type_map_object['local_shop_id']):
+                local_shop_id = order_type_map_object['local_shop_id'].id
+            else:
+                local_shop_id = False
 
         return (shop_id, local_shop_id)
 
@@ -275,6 +274,9 @@ class order_save_service(osv.osv):
                 shop_id = tup[0]
                 local_shop_id = tup[1]
 
+                if(not shop_id):
+                    continue
+
                 name = self.pool.get('ir.sequence').get(cr, uid, 'sale.order')
                 #Adding both the ids to the unprocessed array of orders, Separating to dispensed and non-dispensed orders
                 unprocessed_dispensed_order = []
@@ -282,7 +284,7 @@ class order_save_service(osv.osv):
                 for unprocessed_order in unprocessed_orders :
                     unprocessed_order['custom_shop_id'] = shop_id
                     unprocessed_order['custom_local_shop_id'] = local_shop_id
-                    if(unprocessed_order['dispensed'] == 'true') :
+                    if(unprocessed_order.get('dispensed', 'false') == 'true') :
                         unprocessed_dispensed_order.append(unprocessed_order)
                     else :
                         unprocessed_non_dispensed_order.append(unprocessed_order)
