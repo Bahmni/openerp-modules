@@ -45,7 +45,6 @@ class reference_data_service(osv.osv):
         reference_data["sale_ok"] = 1
         reference_data["purchase_ok"] = 0
         reference_data["type"] = "service"
-        reference_data["list_price"] = 0
         return reference_data
 
     def _get_category(self):
