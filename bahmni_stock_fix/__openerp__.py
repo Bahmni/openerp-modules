@@ -7,7 +7,7 @@
     "summary": "Code to create internal moves for old stock batches.",
     "description": """
     """,
-    'data': ['old_prodlot_move_view.xml'],
+    'data': ['old_prodlot_move_view.xml','fix_forcasted_quantity_view.xml'],
     'demo': [],
     'auto_install': False,
     'application': True,

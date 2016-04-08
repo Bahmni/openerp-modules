@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <record id="view_stock_reset_inventory" model="ir.ui.view">
+            <field name="name">Import Inventory for reset</field>
+            <field name="model">stock.reset.inventory</field>
+            <field name="arch" type="xml">
+                <form string="Import Inventory for reset" version="7.0">
+                    <separator string="Import the current inventory"/>
+                    <group>
+                        <field name="location_id" groups="stock.group_locations"/>
+                        <field name="product_id" groups="stock.group_locations"/>
+                    </group>
+                    <footer>
+                        <button name="fill_reset_inventory" string="Fill Reset Inventory" type="object" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_view_stock_reset_inventory" model="ir.actions.act_window">
+            <field name="name">Fill Reset Inventory</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">stock.reset.inventory</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_stock_reset_inventory"/>
+            <field name="target">new</field>
+            <field name="context">{'search_default_in_location':1}</field>
+        </record>
+
+        <record id="view_fix_inventory_tree" model="ir.ui.view">
+            <field name="name">stock.inventory.fix.tree</field>
+            <field name="model">stock.inventory.fix</field>
+            <field name="arch" type="xml">
+                <tree string="Lot Inventory" colors="grey:state == 'cancel'">
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_fix_inventory_form" model="ir.ui.view">
+            <field name="name">stock.inventory.fix.form</field>
+            <field name="model">stock.inventory.fix</field>
+            <field name="arch" type="xml">
+                <form string="Fix Physical Inventory" version="7.0">
+                    <header>
+                        <button name="action_fix_inventory" states="draft" string="Confirm" type="object" class="oe_highlight" groups="stock.group_stock_user"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,confirm"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_right oe_button_box">
+                            <button name="%(action_view_stock_reset_inventory)d" string="Fill Reset Inventory" states="draft,confirm" type="action" />
+                        </div>
+                        <group>
+                            <group>
+                                <field name="name" placeholder="e.g. Annual inventory"/>
+                            </group>
+                            <group>
+                                <field name="date"/>
+                                <field name="company_id" groups="base.group_multi_company" widget="selection"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="General Information">
+                                <field name="inventory_line_id">
+                                    <tree string="Products" editable="bottom">
+                                        <field domain="[('usage','=','internal')]" name="location_id" groups="stock.group_locations"/>
+                                        <field context="{'location':location_id, 'uom':product_uom, 'to_date':parent.date}" name="product_id" on_change="on_change_product_id(location_id,product_id,product_uom,parent.date)"  domain="[('type','&lt;&gt;','service')]"/>
+                                        <field name="product_qty"/>
+                                        <field name="product_uom" groups="product.group_uom"/>
+                                        <field name="prod_lot_id" groups="stock.group_production_lot"/>
+                                        <button name="%(stock.action_view_stock_inventory_line_split)d"
+                                                string="Split inventory lines" groups="stock.group_inventory_valuation"
+                                                type="action" icon="gtk-justify-fill" states="draft,confirm"/>
+                                        <field name="state" invisible="True"/>
+                                    </tree>
+                                    <form string="Products" version="7.0">
+                                        <group>
+                                            <group>
+                                                <field domain="[('usage','=','internal')]" name="location_id"/>
+                                                <field context="{'location':location_id, 'uom':product_uom, 'to_date':parent.date}" name="product_id" on_change="on_change_product_id(location_id,product_id,product_uom,parent.date)"  domain="[('type','&lt;&gt;','service')]"/>
+                                            </group>
+                                            <group>
+                                                <label for="product_qty"/>
+                                                <div>
+                                                    <field name="product_qty" class="oe_inline"/>
+                                                    <field name="product_uom" class="oe_inline" groups="product.group_uom"/>
+                                                </div>
+                                                <field name="prod_lot_id" groups="stock.group_production_lot"/>
+                                                <button name="%(stock.action_view_stock_inventory_line_split)d"
+                                                        string="Split inventory lines" groups="stock.group_inventory_valuation"
+                                                        type="action" icon="gtk-justify-fill"/>
+                                            </group>
+                                        </group>
+                                    </form>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_fix_inventory_form" model="ir.actions.act_window">
+            <field name="name">Fix Physical Inventories</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">stock.inventory.fix</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="view_fix_inventory_form"/>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to start an inventory.
+                </p><p>
+                Periodical Inventories are used to count the number of products
+                available per location. You can use it once a year when you do
+                the general inventory or whenever you need it, to adapt the
+                current inventory level of a product.
+            </p>
+            </field>
+        </record>
+        <menuitem action="action_fix_inventory_form" id="menu_action_fix_inventory_form" parent="stock.menu_stock_inventory_control" sequence="30"/>
+
+
+    </data>
+</openerp>
+
