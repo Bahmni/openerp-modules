@@ -231,7 +231,7 @@ class order_save_service(osv.osv):
             shop_list_with_orderType = self.pool.get('order.type.shop.map').search(cr, uid, [('order_type', '=', orderType), ('location_name', '=', location_name)], context=context)
 
         if (len(shop_list_with_orderType) == 0):
-            shop_list_with_orderType = self.pool.get('order.type.shop.map').search(cr, uid, [('order_type', '=', orderType)], context=context)
+            shop_list_with_orderType = self.pool.get('order.type.shop.map').search(cr, uid, [('order_type', '=', orderType),  ('location_name', '=', None)], context=context)
 
         if(len(shop_list_with_orderType) == 0):
             return (False, False)
