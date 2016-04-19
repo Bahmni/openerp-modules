@@ -16,6 +16,12 @@
                 <xpath expr="/tree/field[@name='amount_total']" position="after" >
                     <field name="total_outstanding"/>
                 </xpath>
+                <xpath expr="/tree/field[@name='total_outstanding']" position="after" >
+                    <field name="provider_name"/>
+                </xpath>
+                <xpath expr="/tree/field[@name='provider_name']" position="after" >
+                    <field name="discount_acc_id"/>
+                </xpath>
             </field>
         </record>
     </data>

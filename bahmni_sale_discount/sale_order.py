@@ -2,7 +2,7 @@ import logging
 import time
 import decimal_precision as dp
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from dateutil.relativedelta import relativedelta
 import uuid
 from osv import fields, osv
