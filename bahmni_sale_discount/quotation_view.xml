@@ -22,6 +22,9 @@
                 <xpath expr="/tree/field[@name='provider_name']" position="after" >
                     <field name="discount_acc_id"/>
                 </xpath>
+                <xpath expr="/tree/field[@name='discount_acc_id']" position="after" >
+                    <field name="care_setting"/>
+                </xpath>
             </field>
         </record>
     </data>
