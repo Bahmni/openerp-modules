@@ -2,7 +2,7 @@
 <openerp>
     <data>
         <record model="ir.filters" id="sale_order_of_last_week">
-            <field name="name">Reports of last week</field>
+            <field name="name">Reports for last week</field>
             <field name="model_id">sale.order</field>
             <field name="user_id"></field>
             <field name="domain">
@@ -13,7 +13,7 @@
             </field>
         </record>
         <record model="ir.filters" id="sale_order_of_last_month">
-            <field name="name">Reports of last month</field>
+   <field name="name">Reports for last month</field>
             <field name="model_id">sale.order</field>
             <field name="user_id"></field>
             <field name="domain">
