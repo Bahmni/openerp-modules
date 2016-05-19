@@ -54,7 +54,7 @@ class sale_configuration(osv.osv_memory):
         'group_multiple_shops': fields.boolean("Manage multiple shops",
             implied_group='stock.group_locations',
             help="This allows to configure and use multiple shops."),
-        'convert_dispensed': fields.boolean('Allow to convert automatically quotation into sale order'),
+        'convert_dispensed': fields.boolean('Allow to automatically convert quotation to sale order if drug is dispensed from local shop'),
 
         'module_project_timesheet': fields.boolean("Project Timesheet"),
         'module_project_mrp': fields.boolean("Project MRP"),
