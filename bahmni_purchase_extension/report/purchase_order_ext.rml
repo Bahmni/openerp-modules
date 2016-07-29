@@ -265,7 +265,7 @@
       <blockTable colWidths="140.0,70.0,60.0,60.0,70.0,60.0,75.0" style="Table_Order_Pur_line_Content">
         <tr>
           <td>
-            <para style="terp_default_9">[[ line.name ]]</para>
+            <para style="terp_default_9">[[ line.name ]] ([[ line.product_category ]])</para>
           </td>
           <td>
             <para style="terp_default_9">[[ line.manufacturer ]]</para>

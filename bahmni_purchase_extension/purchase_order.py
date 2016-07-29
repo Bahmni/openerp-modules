@@ -45,6 +45,7 @@ class purchase_order_line(osv.osv):
                 res['value']['manufacturer'] = self.get_manufacturer(cr, uid, context, product_supplier_info_ids, product)
                 res['value']['price_unit'] = self.get_unit_price(cr, uid, context, product_supplier_info_ids, product)
                 res['value']['mrp'] = product.get_mrp(partner_id, context=context) or False
+
         return res
 
     def get_unit_price(self, cr, uid, context, product_supplier_info_ids, product):
@@ -73,9 +74,18 @@ class purchase_order_line(osv.osv):
             'product_uom': product_uom
         }}
 
+    def _get_product_category(self, cr, uid, ids, name, args, context=None):
+        res = {}
+        for purchase_order_line in self.browse(cr, uid, ids):
+            product_templates =  self.pool.get('product.template').browse(cr, uid, purchase_order_line.product_id.id)
+            product_category = self.pool.get('product.category').browse(cr, uid, product_templates.categ_id.id, context)
+            res[purchase_order_line.id] = product_category.name
+        return res
+
     _columns = {
         'manufacturer':fields.char('Manufacturer', size=64),
         'mrp': fields.float('MRP', required=False, digits_compute= dp.get_precision('Product Price')),
+        'product_category':fields.function(_get_product_category, type='char', string='Product Category')
     }
 
 
