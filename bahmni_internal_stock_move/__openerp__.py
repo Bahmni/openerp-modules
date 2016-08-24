@@ -14,7 +14,8 @@
         'products_by_last_moved_view.xml',
         'stock_view.xml',
         'stock_move_view.xml',
-        'filters.xml'
+        'filters.xml',
+        'stock_report_ext.xml'
     ],
     'demo': [],
     'auto_install': False,

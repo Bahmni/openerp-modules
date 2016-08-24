@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <report id="report_picking_list_in"
+                model="stock.picking.in"
+                name="stock.picking.list_ext"
+                string="Receipt Slip"
+                rml="bahmni_internal_stock_move/report/picking_ext.rml"/>
+    </data>
+</openerp>
