@@ -10,6 +10,7 @@ from tools.translate import _
 from openerp import netsvc
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT, DATETIME_FORMATS_MAP, float_compare
 import logging
+from decimal import Decimal
 _logger = logging.getLogger(__name__)
 
 
@@ -61,10 +62,9 @@ class sale_order(osv.osv):
 
             for line in order.order_line:
                 sale_price = line.price_subtotal + self._amount_line_tax(cr, uid, line, context=context)
-                mrp = 0.0
                 if line.batch_id:
                     mrp = line.batch_id.mrp * line.product_uom_qty
-                    if mrp > 0.0 and mrp < sale_price:
+                    if Decimal('0.0') < Decimal(str(mrp)) < Decimal(str(sale_price)):
                             raise osv.except_osv(_('Error!'), _('Unit price plus the taxes for %s is more than batch %s MRP.\n') % (line.product_id.name, line.batch_id.name))
 
             for line in order.order_line:
