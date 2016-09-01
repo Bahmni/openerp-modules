@@ -448,10 +448,28 @@ class account_invoice(osv.osv):
 
         return {'value': {'discount': discount, 'invoice_line': invoice_line, 'amount_total': amount_total, 'amount_untaxed': amount_untaxed, 'round_off': round_off}}
 
+    def _calculate_discount(self, cr , uid, ids, field_name,  args, context={}):
+        res = {}
+        discount = 0.0
+        for self_obj in self.browse(cr, uid, ids, context=context):
+            if self_obj.discount_method == 'fix':
+                discount = self_obj.discount_amount
+                res[self_obj.id] = discount
+            elif self_obj.discount_method == 'per':
+                discount = self_obj.amount_untaxed * ((self_obj.discount_amount or 0.0) / 100.0)
+                res[self_obj.id] = discount
+            else:
+                res[self_obj.id] = discount
+        return res
 
     _columns={
-              
-            'discount':fields.float('Discount',digits=(4,2),readonly=True, states={'draft':[('readonly',False)]}),
+
+            'discount':fields.function(_calculate_discount,string='- Discount',
+                                    digits_compute=dp.get_precision('Account'),readonly=True,
+                                        states={'draft':[('readonly',False)]}),
+            'discount_method': fields.selection(
+                [('fix', 'Fixed'), ('per', 'Percentage')], 'Discount Method'),
+            'discount_amount': fields.float('Discount Amount'),
             'round_off':fields.float('Amount Round off',digits_compute=dp.get_precision('Account'),readonly=True, states={'draft':[('readonly',False)]}),
             'amount_total': fields.function(_amount_all, digits_compute=dp.get_precision('Account'), string='Net Amount',
                 store={
