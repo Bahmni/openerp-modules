@@ -36,7 +36,7 @@ class account_invoice(osv.osv):
                 i['amount_currency'] = False
                 i['currency_id'] = False
             i['ref'] = ref
-            if inv.type in ('out_invoice','in_refund'):
+            if inv.type in ('out_invoice','in_invoice','in_refund'):
                 total += i['price']
                 total_currency += i['amount_currency'] or i['price']
                 i['price'] = - i['price']
