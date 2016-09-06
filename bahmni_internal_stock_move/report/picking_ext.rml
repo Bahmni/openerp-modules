@@ -226,10 +226,6 @@
     <para style="terp_default_5cm_Above_Space">
       <font color="white"> </font>
     </para>
-    <para style="terp_default_Bold_9">Date of Reception : [[ get_formatted_date(picking.date_done)]]</para>
-    <para style="terp_default_3cm_Above_Space">
-      <font color="white"> </font>
-    </para>
     <blockTable colWidths="256.0,73.0,59.0,59.0,71.0" repeatRows="1" style="Move_Line_Header">
       <tr>
         <td>
@@ -299,6 +295,10 @@
         </tr>
       </blockTable>
     </section>
+    <para style="terp_default_5cm_Above_Space">
+      <font color="white"> </font>
+    </para>
+    <para style="terp_default_Bold_9">Date of Reception : [[ get_formatted_date(picking.date_done)]]</para>
     <para style="terp_default_2">
       <font color="white"> </font>
     </para>
