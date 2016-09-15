@@ -82,7 +82,7 @@ class prodlots_report(osv.osv):
                   left join product_template on (product_template.id=product_product.product_tmpl_id)
                   left join product_category on (product_category.id=product_template.categ_id)
                   left join product_uom on (product_uom.id=product_template.uom_id)
-                  left join stock_warehouse_orderpoint swo on (product_product.id=swo.product_id) )""")
+                  left join stock_warehouse_orderpoint swo on (product_product.id=swo.product_id) and swo.active = true )""")
 
     def unlink(self, cr, uid, ids, context=None):
         raise osv.except_osv(_('Error!'), _('You cannot delete any record!'))
