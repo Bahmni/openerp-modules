@@ -1,0 +1,11 @@
+@charset "utf-8";
+
+.openerp .oe_list_content td.oe_list_footer.oe_number[data-field='price_subtotal']{
+    width: 90px;
+}
+.openerp .oe_list_content td.oe_list_footer.oe_number[data-field='price_subtotal']::before {
+    content: 'Grand Total';
+    padding-right: 5px;
+    width: 100%;
+    display: block;
+}

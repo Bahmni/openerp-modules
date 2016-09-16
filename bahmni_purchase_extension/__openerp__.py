@@ -9,6 +9,9 @@
     """,
     'data': ['purchase_order_view_enhancements.xml', 'order_report.xml', 'product_supplier_view_enhancements.xml'],
     'demo': [],
+    'css' : [
+        "static/src/css/purchase_order_view_enhancements.css",
+    ],
     'auto_install': False,
     'application': True,
     'installable': True,
