@@ -248,9 +248,13 @@ class sale_order_line(osv.osv):
             product_id = sale_order_line_obj.product_id.id
             location_id = sale_order_line_obj.order_id.shop_id.warehouse_id.lot_stock_id.id
 
-            stock_qty = self.pool.get('product.product').get_stock_for_location(cr, uid, location_id, product_id)
-            returnData[sale_order_line_id] = stock_qty >= prod_total_qty_map[product_id]
-
+            prod_prod = self.pool.get('product.product')
+            stock_qty = prod_prod.get_stock_for_location(cr, uid, location_id, product_id)
+            type = prod_prod.browse(cr, uid, product_id).type
+            if type == 'service':
+                returnData[sale_order_line_id] = True
+            else:
+                returnData[sale_order_line_id] = stock_qty >= prod_total_qty_map[product_id]
         return returnData
 
     _columns = {
