@@ -22,7 +22,7 @@ class batch_stock_future_forecast_view(osv.osv):
                     location_id,
                     product_id,
                     prodlot_id,
-                    round(sum(qty),6) as qty
+                    round(sum(qty),3) as qty
                 from (
                     select -max(sm.id) as id,
                         sm.location_id,
