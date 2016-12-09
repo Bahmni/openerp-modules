@@ -90,6 +90,8 @@ class stock_production_lot(osv.osv):
         val = super(stock_production_lot, self).write(cr, uid, ids, values, context)
         if val:
             current_product_lot = self.browse(cr, uid, ids[0], context=context)
+            if current_product_lot.mrp < current_product_lot.sale_price:
+                raise osv.except_osv(_('Error!'), _('MRP cannot be less than sale price'))
             product = current_product_lot.product_id
             updated_values = {'list_price':current_product_lot.sale_price, 'standard_price': current_product_lot.cost_price}
             self.pool.get('product.template').write(cr, uid, product.product_tmpl_id.id, updated_values, context=context)
