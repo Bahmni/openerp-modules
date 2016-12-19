@@ -330,6 +330,56 @@ class order_save_service(osv.osv):
                             sale_order_ids_for_dispensed = self.pool.get('sale.order').search(cr, uid, [('partner_id', '=', cus_id), ('shop_id', '=', unprocessed_dispensed_order[0]['custom_local_shop_id']), ('state', '=', 'draft'), ('origin', '=', 'ATOMFEED SYNC')], context=context)
                             self.pool.get('sale.order').action_button_confirm(cr, uid, sale_order_ids_for_dispensed, context)
 
+                            converted_sale_order_id = self.pool.get('sale.order').search(cr, uid, [('partner_id', '=', cus_id), ('shop_id', '=', unprocessed_dispensed_order[0]['custom_local_shop_id']), ('state', '=', 'progress'), ('origin', '=', 'ATOMFEED SYNC')], context=context)
+
+                            active_ids = self.pool.get('stock.picking').search(cr, uid, [('sale_id', '=', converted_sale_order_id[0])], context=context)
+                            stock_move_ids = self.pool.get('stock.move').search(cr, uid, [('picking_id', '=', active_ids[0])], context=context)
+
+                            custom_context={
+                                "lang": "en_US",
+                                "tz": False,
+                                "uid": uid,
+                                "show_address": 1,
+                                "default_partner_id": cus_id,
+                                "active_id": active_ids[0],
+                                "active_ids": active_ids,
+                                "active_model": "stock.picking.out",
+                                "default_type": "out",
+                                "contact_display": "partner_address",
+                                "search_disable_custom_filters": True
+                            }
+
+                            fields = [
+                                "name", "product_id", "product_qty", "product_uom", "product_uos", "location_id",
+                                "picking_id", "create_date", "date_expected", "scrapped", "prodlot_id", "stock_available",
+                                "tracking_id", "location_dest_id", "state"
+                            ]
+                            result = self.pool.get('stock.move').read(cr, uid, stock_move_ids, fields)[0]
+
+                            new_stock_partial_picking = {
+                                "move_ids": [
+                                    [ 0,
+                                      False,
+                                      {
+                                        "product_id": result['product_id'][0],
+                                        "product_uom": result['product_uom'][0],
+                                        "prodlot_id": result['prodlot_id'][0],
+                                        "location_dest_id": result['location_dest_id'][0],
+                                        "location_id": result['location_id'][0],
+                                        "move_id": result['id'],
+                                        "quantity": result['product_qty'],
+                                        "tracking": result['tracking_id'],
+                                        "update_cost": False,
+                                        "cost": False,
+                                        "currency": False
+                                      }
+                                    ]
+                                ]
+                            }
+
+                            self.pool.get('stock.partial.picking').create(cr, uid, new_stock_partial_picking, context=custom_context)
+                            stock_partial_picking_ids = self.pool.get('stock.partial.picking').search(cr, uid, [('picking_id', 'in', active_ids)])
+                            self.pool.get('stock.partial.picking').do_partial(cr, uid, stock_partial_picking_ids, context=custom_context)
                     else:
                         #Remove existing sale order line
                         self._remove_existing_sale_order_line(cr,uid,sale_order_ids[0],unprocessed_dispensed_order,context=context)
