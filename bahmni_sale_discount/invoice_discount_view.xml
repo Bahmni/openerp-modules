@@ -7,70 +7,18 @@
             <field name="model">account.invoice</field>
             <field name="type">form</field>
             <field name="inherit_id" ref="account.invoice_form"/>
+			
+
             <field name="arch" type="xml">
-                <xpath expr="/form/sheet/notebook/page[1]/group[1]/field[@name='amount_untaxed']" position="after">
+                <xpath expr="/form/sheet/notebook/page[1]/group[1]/field[@name='amount_untaxed']" position="after" >
                     <field name="discount_acc_id" attrs="{'invisible': [('type','&lt;&gt;','out_invoice')]}"/>
-
-                    <label for="discount_method"/>
-                    <div>
-                        <field name="discount_method" class="oe_inline"/>
-                    </div>
-                    <label for="discount_amount"/>
-                    <div>
-                        <field name="discount_amount" class="oe_inline"/>
-                        <span attrs="{'invisible': [('discount_method', '!=', 'per')]}" class="oe_inline">%%</span>
-                        <span attrs="{'invisible': [('discount_method', '!=', 'fix')]}" class="oe_inline">&#8377;</span>
-                    </div>
-                    <label for="discount"/>
-                    <div>
-                        <field name="discount" class="oe_inline"/>
-                        <span class="oe_inline">&#8377;</span>
-                    </div>
-                    <label for="round_off"/>
-                    <div>
-                        <field name="round_off" class="oe_inline"/>
-                        <span class="oe_inline">&#8377;</span>
-                    </div>
-
-                    <label for="refund_amount"/>
-                    <div>
-                        <field name="refund_amount"
-                               attrs="{'invisible': [('type','&lt;&gt;','out_refund')]}"
-                               on_change="onchange_refund_amount(refund_amount, amount_total, invoice_line, discount, context)"/>
-                    </div>
+                    <field name="discount"/>
+                    <field name="round_off"/>
+                    <field name="refund_amount"
+                        attrs="{'invisible': [('type','&lt;&gt;','out_refund')]}"
+                        on_change="onchange_refund_amount(refund_amount, amount_total, invoice_line, discount, context)"/>
                 </xpath>
-                <xpath expr="/form/sheet/notebook/page[1]/field[@name='invoice_line']/tree/field[@name='invoice_line_tax_id']"
-                       position="replace">
-                </xpath>
-            </field>
-        </record>
-        <record id="view_account_invoice_discount_form" model="ir.ui.view">
-            <field name="name">account.invoice.discount.form.view</field>
-            <field name="model">account.invoice</field>
-            <field name="inherit_id" ref="account.invoice_supplier_form"/>
-            <field name="arch" type="xml">
-
-                <xpath expr="/form/sheet/notebook/page[1]/group[1]/field[@name='amount_untaxed']" position="after">
-                    <label for="discount_method"/>
-                    <div>
-                        <field name="discount_method" class="oe_inline"/>
-                    </div>
-                    <label for="discount_amount"/>
-                    <div>
-                        <field name="discount_amount" class="oe_inline"/>
-                        <span attrs="{'invisible': [('discount_method', '!=', 'per')]}" class="oe_inline">%%</span>
-                        <span attrs="{'invisible': [('discount_method', '!=', 'fix')]}" class="oe_inline">&#8377;</span>
-                    </div>
-                    <label for="discount"/>
-                    <div>
-                        <field name="discount" class="oe_inline"/>
-                        <span class="oe_inline">&#8377;</span>
-                    </div>
-                    <label for="round_off"/>
-                    <div>
-                        <field name="round_off" class="oe_inline"/>
-                        <span class="oe_inline">&#8377;</span>
-                    </div>
+                <xpath expr="/form/sheet/notebook/page[1]/field[@name='invoice_line']/tree/field[@name='invoice_line_tax_id']" position="replace" >
                 </xpath>
             </field>
         </record>
