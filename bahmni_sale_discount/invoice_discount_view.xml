@@ -15,11 +15,10 @@
                     <div>
                         <field name="discount_method" class="oe_inline"/>
                     </div>
-                    <label for="discount_amount"/>
-                    <div>
-                        <field name="discount_amount" class="oe_inline"/>
-                        <span attrs="{'invisible': [('discount_method', '!=', 'per')]}" class="oe_inline">%%</span>
-                        <span attrs="{'invisible': [('discount_method', '!=', 'fix')]}" class="oe_inline">&#8377;</span>
+                    <label for="discount_per" attrs="{'invisible': [('discount_method', '!=', 'per')]}" class="oe_inline"/>
+                    <div attrs="{'invisible': [('discount_method', '!=', 'per')]}" class="oe_inline">
+                        <field name="discount_per" class="oe_inline" on_change="calculate_discount(amount_untaxed, discount_per)"/>
+                        <span class="oe_inline">%%</span>
                     </div>
                     <label for="discount"/>
                     <div>
@@ -55,12 +54,13 @@
                     <div>
                         <field name="discount_method" class="oe_inline"/>
                     </div>
-                    <label for="discount_amount"/>
-                    <div>
-                        <field name="discount_amount" class="oe_inline"/>
-                        <span attrs="{'invisible': [('discount_method', '!=', 'per')]}" class="oe_inline">%%</span>
-                        <span attrs="{'invisible': [('discount_method', '!=', 'fix')]}" class="oe_inline">&#8377;</span>
+
+                    <label for="discount_per" attrs="{'invisible': [('discount_method', '!=', 'per')]}" class="oe_inline"/>
+                    <div attrs="{'invisible': [('discount_method', '!=', 'per')]}" class="oe_inline">
+                        <field name="discount_per" class="oe_inline" on_change="calculate_discount(amount_untaxed, discount_per)"/>
+                        <span class="oe_inline">%%</span>
                     </div>
+
                     <label for="discount"/>
                     <div>
                         <field name="discount" class="oe_inline"/>
