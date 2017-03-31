@@ -251,6 +251,14 @@ class order_save_service(osv.osv):
 
         return (shop_id, local_shop_id)
 
+    def ensureSalesOrdersAbscent(self, cr, uid, quotation_ids, unprocessed_dispensed_order, context):
+        if not quotation_ids:
+            return
+        self._remove_existing_sale_order_line(cr, uid, quotation_ids[0], unprocessed_dispensed_order, context=context)
+        sale_order_line_ids = self.pool.get('sale.order.line').search(cr, uid, [('order_id', '=', quotation_ids[0])], context=context)
+        if not sale_order_line_ids:
+            self.pool.get('sale.order').unlink(cr, uid, quotation_ids, context=context)
+
     def create_orders(self, cr,uid,vals,context):
         customer_id = vals.get("customer_id")
         location_name = vals.get("locationName")
@@ -314,14 +322,7 @@ class order_save_service(osv.osv):
                     sale_order_ids_for_dispensed = self.pool.get('sale.order').search(cr, uid, [('partner_id', '=', cus_id), ('shop_id', '=', unprocessed_dispensed_order[0]['custom_local_shop_id']), ('state', '=', 'draft'), ('origin', '=', 'ATOMFEED SYNC')], context=context)
 
                     if(not sale_order_ids_for_dispensed):
-                        #Remove existing sale order line
-                        self._remove_existing_sale_order_line(cr,uid,sale_order_ids[0],unprocessed_dispensed_order,context=context)
-
-                        #Removing existing empty sale order
-                        sale_order_line_ids = self.pool.get('sale.order.line').search(cr, uid, [('order_id', '=', sale_order_ids[0])], context=context)
-
-                        if(len(sale_order_line_ids) == 0):
-                            self.pool.get('sale.order').unlink(cr, uid, sale_order_ids, context=context)
+                        self.ensureSalesOrdersAbscent(cr,uid,sale_order_ids,unprocessed_dispensed_order,context)
 
                         #Dispensed New
                         self._create_sale_order(cr, uid, cus_id, name, unprocessed_dispensed_order[0]['custom_local_shop_id'], unprocessed_dispensed_order, care_setting, provider_name, context)
@@ -331,13 +332,7 @@ class order_save_service(osv.osv):
                             self.pool.get('sale.order').action_button_confirm(cr, uid, sale_order_ids_for_dispensed, context)
 
                     else:
-                        #Remove existing sale order line
-                        self._remove_existing_sale_order_line(cr,uid,sale_order_ids[0],unprocessed_dispensed_order,context=context)
-
-                        #Removing existing empty sale order
-                        sale_order_line_ids = self.pool.get('sale.order.line').search(cr, uid, [('order_id', '=', sale_order_ids[0])], context=context)
-                        if(len(sale_order_line_ids) == 0):
-                            self.pool.get('sale.order').unlink(cr, uid, sale_order_ids, context=context)
+                        self.ensureSalesOrdersAbscent(cr,uid,sale_order_ids,unprocessed_dispensed_order,context)
 
                         #Dispensed Update
                         self._update_sale_order(cr, uid, cus_id, name, unprocessed_dispensed_order[0]['custom_local_shop_id'], care_setting, sale_order_ids_for_dispensed[0], unprocessed_dispensed_order, provider_name, context)
