@@ -61,13 +61,6 @@ class sale_order(osv.osv):
             cur = order.pricelist_id.currency_id
 
             for line in order.order_line:
-                sale_price = line.price_subtotal + self._amount_line_tax(cr, uid, line, context=context)
-                if line.batch_id:
-                    mrp = line.batch_id.mrp * line.product_uom_qty
-                    if Decimal('0.0') < Decimal(str(mrp)) < Decimal(str(sale_price)):
-                            raise osv.except_osv(_('Error!'), _('Unit price plus the taxes for %s is more than batch %s MRP.\n') % (line.product_id.name, line.batch_id.name))
-
-            for line in order.order_line:
                 val1 += line.price_subtotal
                 val += self._amount_line_tax(cr, uid, line, context=context)
             res[order.id]['amount_tax'] = cur_obj.round(cr, uid, cur, val)
@@ -346,9 +339,21 @@ class sale_order(osv.osv):
 
     def action_button_confirm(self, cr, uid, ids, context=None):
         assert len(ids) == 1, 'This option should only be used for a single id at a time.'
+
+        for order in self.browse(cr, uid, ids, context=context):
+            for line in order.order_line:
+                sale_price = line.price_subtotal + self._amount_line_tax(cr, uid, line, context=context)
+                if line.batch_id:
+                    mrp = line.batch_id.mrp * line.product_uom_qty
+                    if Decimal('0.0') < Decimal(str(mrp)) < Decimal(str(sale_price)):
+                        raise osv.except_osv(_('Error!'), """Unit price plus the taxes for {PRODUCTNAME} is more than batch {BATCHNO} MRP.
+
+                        Update the MRP for the given batch before proceeding.
+                        """.format(PRODUCTNAME = line.product_id.name,BATCHNO = line.batch_id.name))
+
+
         wf_service = netsvc.LocalService('workflow')
         wf_service.trg_validate(uid, 'sale.order', ids[0], 'order_confirm', cr)
-
         return self.action_invoice_create(cr, uid, ids, False, None,False, context)
 
     def action_wait(self, cr, uid, ids, context=None):
