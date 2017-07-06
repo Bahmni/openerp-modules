@@ -5,7 +5,7 @@
         <button name="print" type="object" class="oe_highlight" id="print-bill-button" accesskey="P">Print</button>
         <button name="print-summary" type="object" class="oe_highlight" id="print-summary-bill-button" accesskey="B">Summarized Bill</button>
         <button name="print-bill-prescription" type="object" class="oe_highlight" id="print-bill-latest-prescription">Print Bill And Prescription</button>
-        <iframe id="printBillFrame" style="display:none"/>
+        <iframe id="printBillFrame" style="height:0; width:0; border:none"/>
     </span>
 
     <div t-name="Bill" t-attf-class="base" class="oe_web_example">
