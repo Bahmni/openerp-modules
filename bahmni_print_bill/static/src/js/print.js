@@ -15,7 +15,7 @@ openerp.bahmni_print_bill = function(instance) {
                 $('button#print-bill-button').attr("disabled", true);
                 var self = this;
                 this.fetchAndPrintBill("Bill", function(bill) {
-                    self.gotoQuotation();
+                    setTimeout(function() {self.gotoQuotation()}, 700);
                     $('button#print-bill-button').attr("disabled", false);
                 });
             }, this));
@@ -24,7 +24,7 @@ openerp.bahmni_print_bill = function(instance) {
                 $('button#print-summary-bill-button').attr("disabled", true);
                 var self = this;
                 this.fetchAndPrintBill("BillSummary", function(bill) {
-                    self.gotoQuotation();
+                    setTimeout(function() {self.gotoQuotation()}, 700);
                     $('button#print-summary-bill-button').attr("disabled", false);
                 });
             }, this));
@@ -56,11 +56,13 @@ openerp.bahmni_print_bill = function(instance) {
 
         printReceipt: function(bill, billTemplate) {
             var $ht = $(QWeb.render(billTemplate, bill))[0];
-            var hiddenFrame = $("#printBillFrame")[0]
+            var hiddenFrame = $("#printBillFrame")[0];
             var doc = hiddenFrame.contentWindow.document.open("text/html", "replace");
             doc.write($ht.innerHTML);
             doc.close();
-            hiddenFrame.contentWindow.print();
+            setTimeout(function() {
+                hiddenFrame.contentWindow.print();
+            }, 500);
         },
 
         printLatestPrescription: function(bill) {
