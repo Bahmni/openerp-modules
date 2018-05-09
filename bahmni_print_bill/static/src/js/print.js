@@ -70,7 +70,7 @@ openerp.bahmni_print_bill = function(instance) {
         },
 
         gotoQuotation: function() {
-            window.location = "/?ts=1370260915528#page=0&limit=80&view_type=list&model=sale.order&menu_id=296&action=373";
+            window.location = "/?ts=1370260915528#page=0&limit=80&view_type=list&model=account.voucher&menu_id=291&action=357";
         },
 
         transform: function(bill) {
