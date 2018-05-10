@@ -17,6 +17,7 @@
         'data/unit_of_measures.xml',
         'data/payment_method.xml',
         'data/products.xml',
+        'data/bahmni_menu_view.xml',
     ],
     'demo': [],
     'auto_install': False,
