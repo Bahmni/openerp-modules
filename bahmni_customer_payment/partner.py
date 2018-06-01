@@ -131,6 +131,6 @@ class res_partner(osv.osv, format_address):
             raise osv.except_osv(_('Warning'), _("Couldn't create contact without email address !"))
         if not name and email:
             name = email
-        rec_id = self.create(cr, uid, {self._rec_name: name or email, 'email': email or False}, context=context)
+        rec_id = self.create(cr, uid, {self._rec_name: name or email, 'email': email or False, 'company_id': ''}, context=context)
         return self.name_get(cr, uid, [rec_id], context)[0]
 res_partner()
