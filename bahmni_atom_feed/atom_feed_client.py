@@ -18,7 +18,7 @@ class atom_event_worker(osv.osv):
         local_name = vals.get("local_name")
         village = vals.get("village")
         uuid = vals.get("uuid")
-        customer = {'ref': ref, 'name': name, 'local_name': local_name, 'village': village, 'uuid': uuid}
+        customer = {'ref': ref, 'name': name, 'local_name': local_name, 'village': village, 'uuid': uuid, 'company_id': ''}
         return customer
 
 
