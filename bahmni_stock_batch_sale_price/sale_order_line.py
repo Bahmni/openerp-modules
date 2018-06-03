@@ -117,7 +117,7 @@ class sale_order_line(osv.osv):
                 sale_price = prodlot.sale_price
                 result['batch_name'] = prodlot.name
                 result['batch_id'] = prodlot.id
-                result['expiry_date'] = life_date.strftime('%d/%m/%Y') if (type(life_date) == 'datetime.datetime') else None
+                result['expiry_date'] = life_date.strftime('%d/%m/%Y') if (type(life_date) == datetime) else None
                 break
         #-----------------------------------------------------------------
 
