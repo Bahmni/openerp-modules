@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record model="ir.ui.menu" id="base.menu_partner_form">
+            <field name="name">Patients</field>        
+        </record>
+        <record model="ir.ui.menu" id="account.menu_finance_receivables">
+            <field name="name">Patients</field>        
+        </record>
+        <record model="ir.ui.menu" id="account.menu_account_customer">
+            <field name="name">Patients</field>        
+        </record>
+        <record model="ir.ui.menu" id="base.menu_sales">
+            <field name="name">Billing</field>        
+        </record>
+        <record model="ir.ui.menu" id="base.menu_base_partner">
+            <field name="name">Billing</field>        
+        </record>
+        <record model="ir.ui.menu" id="sale.menu_sale_quotations">
+            <field name="name">Provisional Bill</field>        
+        </record>
+        <record model="ir.ui.menu" id="sale.menu_sale_order">
+            <field name="name">Bills</field>        
+        </record>
+        <record model="ir.ui.menu" id="account.menu_action_invoice_tree1">
+            <field name="name">Patient Billing</field>        
+        </record>
+        <record model="ir.ui.menu" id="account.menu_action_invoice_tree3">
+            <field name="name">Patient Refund</field>        
+        </record>
+        <record model="ir.ui.menu" id="account_voucher.menu_action_vendor_receipt">
+            <field name="name">Patient Payments</field>        
+        </record>
+        <record id="bahmni_view_res_partner_filter" model="ir.ui.view">
+            <field name="name">bahmni.res.partner.select</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_res_partner_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//filter[@string='Customers']" position="attributes" >
+                   <attribute name="string">Patients</attribute>
+                </xpath>
+            </field>
+        </record>
+        <record id="base.action_partner_customer_form" model="ir.actions.act_window">
+            <field name="name">Patients</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to add a contact in your address book.
+                    </p><p>
+                    OpenERP helps you easily track all activities related to
+                    a patient; address, billing, prescriprions etc.
+                </p>
+            </field>
+        </record>             
+        <record id="base.action_partner_form" model="ir.actions.act_window">
+            <field name="name">Patients</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to add a contact in your address book.
+                    </p><p>
+                    OpenERP helps you easily track all activities related to
+                    a patient; address, billing, prescriprions etc.
+                </p>
+            </field>
+        </record>             
+        <record id="account.action_invoice_tree1" model="ir.actions.act_window">
+            <field name="name">Patient Billing</field>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Click to create a patient billing.
+              </p><p>
+                OpenERP's electronic invoicing allows to ease and fasten the
+                collection of patient billing. Your patient receives the
+                bill by email and he can pay online and/or import it
+                in his own system.
+              </p><p>
+                The discussions with your patient are automatically displayed at
+                the bottom of each bill.
+              </p>
+            </field>
+        </record>             
+    </data>
+</openerp>
