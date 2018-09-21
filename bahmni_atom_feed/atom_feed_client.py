@@ -66,12 +66,12 @@ class atom_event_worker(osv.osv):
 
     def _create_or_update_person_attributes(self, cr, uid, cust_id, vals, context=None):
         attributes = json.loads(vals.get("attributes", "{}"))
-        column_dict = {'partner_id': cust_id}
-        existing_attribute = self.pool.get('res.partner.attributes').search(cr, uid, [('partner_id' , '=', cust_id)])
         for key in attributes:
-            column_dict.update({'x_'+key : attributes[key]})
-        self.pool.get('res.partner.attributes').unlink(cr, uid,existing_attribute ,context=context )
-        self.pool.get('res.partner.attributes').create(cr, uid, column_dict, context=context)
+            column_dict = {'partner_id': cust_id}
+            existing_attribute = self.pool.get('res.partner.attributes').search(cr, uid, [('partner_id' , '=', cust_id), ('name', '=', key)])
+            column_dict.update({"name": key, "value" : attributes[key]})
+            self.pool.get('res.partner.attributes').unlink(cr, uid,existing_attribute ,context=context )
+            self.pool.get('res.partner.attributes').create(cr, uid, column_dict, context=context)
 
     def _create_or_update_person_address(self, cr, uid, cust_id, vals, context=None):
         try:

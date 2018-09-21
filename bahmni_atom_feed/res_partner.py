@@ -16,7 +16,9 @@ class res_partner_attributes(osv.osv):
     _name = 'res.partner.attributes'
 
     _columns = {
-        'partner_id': fields.many2one('res.partner', 'Partner', required=True, select=True, readonly=False)
+        'partner_id': fields.many2one('res.partner', 'Partner', required=True, select=True, readonly=False),
+        'name': fields.char('Name', size=128, required=True),
+        'value': fields.char('Value', size=128, required=False)
     }
 
 class res_partner_address(osv.osv):
