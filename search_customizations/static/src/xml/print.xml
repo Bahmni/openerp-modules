@@ -37,7 +37,15 @@
             </div>
 
             <div style="width: 100%; line-height: 1.5em;">
-                <div style="width: 100%; float:left;"><strong>रुग्णाचे नाव: </strong><t t-esc="partner_local_name"/></div>
+                <div style="width: 100%; float:left;">
+                  <strong>रुग्णाचे नाव: </strong>
+                    <t t-if="partner_local_name">
+                      <t t-esc="partner_local_name"/>
+                    </t>
+                    <t t-if="!partner_local_name">
+                      <t t-esc="partner_name"/>
+                    </t>
+                </div>
                 <div style="width: 100%; float:left;"><strong>रजि नं: </strong><div style="display:inline; font-size: .7em;"><t t-esc="partner_ref"/></div></div>
                 <div style="width: 100%; float:left;"><strong>बाबत: </strong><div style="display:inline; font-size: .7em;"><t t-esc="categories"/></div></div>
                 <div style="width: 100%; float:left;"><strong>फी रु.: </strong><t t-esc="net_amount_words"/></div>
