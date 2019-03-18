@@ -28,7 +28,7 @@ class reference_data_service(osv.osv):
 
     def _fill_reference_data_object(self, cr, uid, reference_data_from_feed):
         reference_data = {}
-        category_name = self._get_category()
+        category_name = self._get_category(reference_data_from_feed.get("product_category"))
         category_hierarchy = self._get_category_hierarchy()
 
         category_from_db = self._get_object_by_domain(
@@ -47,7 +47,7 @@ class reference_data_service(osv.osv):
         reference_data["type"] = "service"
         return reference_data
 
-    def _get_category(self):
+    def _get_category(self, ref_category=None):
         raise NotImplementedError
 
     def _get_category_hierarchy(self):
