@@ -120,6 +120,8 @@ class atom_event_worker(osv.osv):
             self.pool.get('lab.test.service').create_or_update_reference_data(cr,uid,vals,context)
         if(category == "create.lab.panel"):
             self.pool.get('lab.panel.service').create_or_update_reference_data(cr, uid, vals, context)
+        if(category == "create.sellable"):
+            self.pool.get('sellable.type.service').create_or_update_reference_data(cr, uid, vals, context)
 
         self._create_or_update_marker(cr, uid, vals)
         return {'success': True}

@@ -9,7 +9,7 @@ class lab_panel_service(reference_data_service):
     _name = "lab.panel.service"
     _auto = False
 
-    def _get_category(self):
+    def _get_category(self, ref_category=None):
         return "Panel"
 
     def _get_category_hierarchy(self):
